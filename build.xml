@@ -1,15 +1,15 @@
 <project default="SliceAndDaid">
-	<target name="SliceAndDaid">
-		<delete file="SliceAndDaid.jar"></delete>
-			<javac srcdir="." destdir="." />
-		<jar destfile="SliceAndDaid.jar" update="false">
-			<fileset dir=".">
-				<include name="**/*.class" />
-			</fileset>
+    <target name="SliceAndDaid">
+        <delete file="SliceAndDaid.jar"></delete>
+            <javac srcdir="." destdir="." includeantruntime="false" />
+        <jar destfile="SliceAndDaid.jar" update="false">
+            <fileset dir=".">
+                <include name="**/*.class" />
+            </fileset>
 
-			<manifest>
-				<attribute name="Main-Class" value="daid.sliceAndDaid.SliceAndDaidMain" />
-			</manifest>
-		</jar>
-	</target>
+            <manifest>
+                <attribute name="Main-Class" value="daid.sliceAndDaid.SliceAndDaidMain" />
+            </manifest>
+        </jar>
+    </target>
 </project>
