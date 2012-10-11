@@ -41,6 +41,7 @@ public class SliceAndDaidMain
         {
             // parse command line arguments
             String SourceFileName = null;
+            boolean showResultWindow = false; // defaults to no for true command line mode
             for (int i = 0; i < args.length; i++)
             {
                 if(true == args[i].startsWith("-"))
@@ -53,9 +54,14 @@ public class SliceAndDaidMain
                     {
                         System.out.println("Usage: Java -jar SliceAndDaid.jar [Options] SourceDataFileName");
                         System.out.println("Options can be:");
-                        System.out.println("  -v   - verbose output.");
-                        System.out.println("  -h   - print this help.");
+                        System.out.println("  -v           - verbose output.");
+                        System.out.println("  -h           - print this help.");
+                        System.out.println("  -showResult  - show graphic Window with result data.");
                         System.exit(0);
+                    }
+                    else if(true == "-showResult".equals(args[i]))
+                    {
+                        showResultWindow = true;
                     }
                     else
                     {
@@ -69,7 +75,7 @@ public class SliceAndDaidMain
             }
             if(null != SourceFileName)
             {
-                sliceModel(SourceFileName);
+                sliceModel(SourceFileName, showResultWindow);
             }
             else
             {
@@ -78,7 +84,7 @@ public class SliceAndDaidMain
         }
     }
 
-    public static void sliceModel(String filename)
+    public static void sliceModel(String filename, boolean showResultWindow)
     {
         long startTime = System.currentTimeMillis();
         CraftConfig.lastSlicedFile = filename;
@@ -160,13 +166,16 @@ public class SliceAndDaidMain
         /* Post slicing */
         long sliceTime = System.currentTimeMillis() - startTime;
         Logger.message("Slice time: " + (((double) sliceTime) / 1000) + " seconds");
-        SwingUtilities.invokeLater(new Runnable()
+        if(true == showResultWindow)
         {
-            public void run()
+            SwingUtilities.invokeLater(new Runnable()
             {
-                new PreviewFrame(layers);
-            }
-        });
+                public void run()
+                {
+                    new PreviewFrame(layers);
+                }
+            });
+        }
     }
 
     private static void printVersionInformation() throws IOException
