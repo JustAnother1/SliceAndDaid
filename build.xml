@@ -1,14 +1,18 @@
 <project default="SliceAndDaid">
     <target name="SliceAndDaid">
         <delete file="SliceAndDaid.jar"></delete>
-            <javac srcdir="." destdir="." includeantruntime="false" />
+        <tstamp>
+            <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+        </tstamp>
+        <javac srcdir="." destdir="." includeantruntime="false" />
         <jar destfile="SliceAndDaid.jar" update="false">
             <fileset dir=".">
                 <include name="**/*.class" />
             </fileset>
-
             <manifest>
                 <attribute name="Main-Class" value="daid.sliceAndDaid.SliceAndDaidMain" />
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Built-Date" value="${TODAY}"/>
             </manifest>
         </jar>
     </target>

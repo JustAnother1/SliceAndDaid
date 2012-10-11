@@ -2,7 +2,12 @@ package daid.sliceAndDaid;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.Vector;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
 
 import javax.swing.SwingUtilities;
 
@@ -21,9 +26,11 @@ import daid.sliceAndDaid.util.Vector2;
 
 public class SliceAndDaidMain
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         Logger.setLevel(Logger.LOG_LEVEL_MESSAGE);
+        printVersionInformation();
+
         CraftConfigLoader.loadConfig(null);
 
         if (args.length < 1)
@@ -148,5 +155,19 @@ public class SliceAndDaidMain
                 new PreviewFrame(layers);
             }
         });
+    }
+
+    private static void printVersionInformation() throws IOException
+    {
+        final ProtectionDomain domain = SliceAndDaidMain.class.getProtectionDomain();
+        final CodeSource source = domain.getCodeSource();
+        URL url = source.getLocation();
+        if(url.toExternalForm().endsWith(".jar"))
+        {
+                JarInputStream jarStream = new JarInputStream(url.openStream(), false);
+                Attributes attr = jarStream.getManifest().getMainAttributes();
+                String res = attr.getValue("Built-Date");
+                System.out.println("SliceAndDaid " + res);
+        }
     }
 }
