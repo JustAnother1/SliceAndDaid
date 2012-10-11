@@ -38,19 +38,10 @@ public class Logger
     {
         if(LOG_LEVEL_TRACE <= logLevel)
         {
-            String[] parts = message.split("{}", 2);
-            String combinedMessage = null;
-            if(1 == parts.length)
-            {
-                combinedMessage = parts[0] + obj.toString();
-            }
-            else
-            {
-                combinedMessage = parts[0] + obj.toString() + parts[1];
-            }
-            System.out.println(combinedMessage);
+            message = message.replace("{}", obj.toString());
+            System.out.println(message);
             for (LoggingInterface li : loggers)
-                li.message(combinedMessage);
+                li.message(message);
         }
     }
 
