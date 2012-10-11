@@ -49,6 +49,14 @@ public class SliceAndDaidMain
                     {
                         Logger.setLevel(Logger.LOG_LEVEL_TRACE);
                     }
+                    else if(true == "-h".equals(args[i]))
+                    {
+                        System.out.println("Usage: Java -jar SliceAndDaid.jar [Options] SourceDataFileName");
+                        System.out.println("Options can be:");
+                        System.out.println("  -v   - verbose output.");
+                        System.out.println("  -h   - print this help.");
+                        System.exit(0);
+                    }
                     else
                     {
                         System.err.println("Invalid Parameter : " + args[i]);
