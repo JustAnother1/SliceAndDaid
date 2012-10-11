@@ -35,34 +35,38 @@ public class SliceAndDaidMain
 
         if (args.length < 1)
         {
-
-            SwingUtilities.invokeLater(new Runnable()
+            startGUI();
+        }
+        else
+        {
+            // parse command line arguments
+            String SourceFileName = null;
+            for (int i = 0; i < args.length; i++)
             {
-                public void run()
+                if(true == args[i].startsWith("-"))
                 {
-                    try
+                    if(true == "-v".equals(args[i]))
                     {
-                        new ConfigWindow();
-                    } catch (Exception e)
+                        Logger.setLevel(Logger.LOG_LEVEL_TRACE);
+                    }
+                    else
                     {
-                        // We sometimes get a "Cannot write XdndAware property" exception in Java
-                        // 1.6.0_22 in Linux. Seems to be a java bug related to the text areas.
-
-                        // Just retry and hope for the best.
-                        if (e.getMessage().equals("Cannot write XdndAware property"))
-                        {
-                            new ConfigWindow();
-                            return;
-                        }
-                        e.printStackTrace();
-                        System.exit(-1);
+                        System.err.println("Invalid Parameter : " + args[i]);
                     }
                 }
-            });
-        } else
-        {
-            for (int i = 0; i < args.length; i++)
-                sliceModel(args[i]);
+                else
+                {
+                    SourceFileName = args[i];
+                }
+            }
+            if(null != SourceFileName)
+            {
+                sliceModel(SourceFileName);
+            }
+            else
+            {
+                System.err.println("No File Name of Source Data specified !");
+            }
         }
     }
 
@@ -169,5 +173,32 @@ public class SliceAndDaidMain
                 String res = attr.getValue("Built-Date");
                 System.out.println("SliceAndDaid " + res);
         }
+    }
+
+    private static void startGUI()
+    {
+        SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        new ConfigWindow();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        // We sometimes get a "Cannot write XdndAware property" exception in Java
+                        // 1.6.0_22 in Linux. Seems to be a java bug related to the text areas.
+
+                        // Just retry and hope for the best.
+                        if (e.getMessage().equals("Cannot write XdndAware property"))
+                        {
+                            new ConfigWindow();
+                            return;
+                        }
+                    }
+                }
+            } );
     }
 }
