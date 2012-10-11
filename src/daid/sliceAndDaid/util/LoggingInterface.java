@@ -8,4 +8,5 @@ public interface LoggingInterface
     void error(String error);
     void setProgress(int value, int max);
     void trace(String error);
+    void trace(String message, Object obj);
 }

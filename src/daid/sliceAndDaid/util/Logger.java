@@ -30,6 +30,30 @@ public class Logger
 
     private static int logLevel = LOG_LEVEL_ERROR;
 
+    /** debug statements describing details that happened.
+     *
+     * @param message whatever happened and needs to be traced.
+     */
+    public static void trace(String message, Object obj)
+    {
+        if(LOG_LEVEL_TRACE <= logLevel)
+        {
+            String[] parts = message.split("{}", 2);
+            String combinedMessage = null;
+            if(1 == parts.length)
+            {
+                combinedMessage = parts[0] + obj.toString();
+            }
+            else
+            {
+                combinedMessage = parts[0] + obj.toString() + parts[1];
+            }
+            System.out.println(combinedMessage);
+            for (LoggingInterface li : loggers)
+                li.message(combinedMessage);
+        }
+    }
+
 
     /** debug statements describing details that happened.
      *

@@ -95,4 +95,9 @@ public class LogWindow extends JFrame implements LoggingInterface
     public void trace(String error)
     {
     }
+
+    @Override
+    public void trace(String message, Object obj)
+    {
+    }
 }
