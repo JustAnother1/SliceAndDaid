@@ -163,7 +163,7 @@ public class SliceAndDaidMain
             for (String line : CraftConfig.endGCode.split("\n"))
                 gcodeFile.write(line);
             gcodeFile.close();
-            Logger.message("Expected print time: " + ((int) gcodeFile.getBuildTime() / 60) + " minutes");
+            reportTime("Expected print time", (long) (gcodeFile.getBuildTime() * 1000));
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -171,7 +171,8 @@ public class SliceAndDaidMain
 
         /* Post slicing */
         long sliceTime = System.currentTimeMillis() - startTime;
-        Logger.message("Slice time: " + (((double) sliceTime) / 1000) + " seconds");
+        reportTime("Slice time", sliceTime);
+
         if(true == showResultWindow)
         {
             SwingUtilities.invokeLater(new Runnable()
@@ -181,6 +182,40 @@ public class SliceAndDaidMain
                     new PreviewFrame(layers);
                 }
             });
+        }
+    }
+
+    private static void reportTime(String timesName, long time)
+    {
+
+        long minutes = 0;
+        long hours = 0;
+        int milis = (int)time%1000;
+        long seconds = time/1000;
+        if(seconds > 59)
+        {
+            minutes = seconds/60;
+            seconds = seconds%60;
+        }
+        if(minutes>59)
+        {
+            hours = minutes/60;
+            minutes = minutes%60;
+        }
+        if(0 < hours)
+        {
+            Logger.message(timesName + ": " + hours  + " hours and "
+                                            + minutes + " minutes and "
+                                            + seconds + "," + milis + " seconds");
+        }
+        else if(0 < minutes)
+        {
+            Logger.message(timesName +": " + minutes + " minutes and "
+                                           + seconds + "," + milis + " seconds");
+        }
+        else
+        {
+            Logger.message(timesName + ": " + seconds + "," + milis + " seconds");
         }
     }
 
