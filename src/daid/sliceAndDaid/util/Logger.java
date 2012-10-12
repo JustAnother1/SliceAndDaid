@@ -140,7 +140,7 @@ public class Logger
     {
         if(LOG_LEVEL_WARNING <= logLevel)
         {
-            System.err.println(warning);
+            System.out.println(warning);
             for (LoggingInterface li : loggers)
                 li.warning(warning);
         }
@@ -148,7 +148,7 @@ public class Logger
 
     public static void error(String error)
     {
-        System.err.println(error);
+        System.out.println(error);
         for (LoggingInterface li : loggers)
             li.error(error);
     }
