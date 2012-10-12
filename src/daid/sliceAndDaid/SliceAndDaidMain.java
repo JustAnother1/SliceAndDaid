@@ -35,6 +35,7 @@ public class SliceAndDaidMain
 
         if (args.length < 1)
         {
+            Logger.setLevel(Logger.LOG_LEVEL_PROGRESS);
             startGUI();
         }
         else
@@ -48,6 +49,10 @@ public class SliceAndDaidMain
                 {
                     if(true == "-v".equals(args[i]))
                     {
+                        Logger.setLevel(Logger.LOG_LEVEL_DEBUG);
+                    }
+                    else if(true == "-vv".equals(args[i]))
+                    {
                         Logger.setLevel(Logger.LOG_LEVEL_TRACE);
                     }
                     else if(true == "-h".equals(args[i]))
@@ -55,6 +60,7 @@ public class SliceAndDaidMain
                         System.out.println("Usage: Java -jar SliceAndDaid.jar [Options] SourceDataFileName");
                         System.out.println("Options can be:");
                         System.out.println("  -v           - verbose output.");
+                        System.out.println("  -vv          - very verbose output.");
                         System.out.println("  -h           - print this help.");
                         System.out.println("  -showResult  - show graphic Window with result data.");
                         System.exit(0);
