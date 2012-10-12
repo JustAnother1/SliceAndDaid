@@ -82,6 +82,7 @@ public class Model
 
     private void readBinarySTL(String filename) throws IOException
     {
+        Logger.message("Source File is in binary STL File Format.");
         RandomAccessFile raf = new RandomAccessFile(filename, "r");
         byte[] header = new byte[80];
         raf.read(header);
@@ -109,11 +110,12 @@ public class Model
             raf.readShort();// flags
             triangles.add(t);
         }
-        System.out.println(getMin());
+        Logger.message("min: " + getMin());
     }
 
     private void readAsciiSTL(String filename) throws IOException
     {
+        Logger.message("Source File is in ASCII STL File Format.");
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;
         int i = 0;
