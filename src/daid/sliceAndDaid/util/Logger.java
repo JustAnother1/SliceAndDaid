@@ -17,6 +17,7 @@ public class Logger
      *   warning
      *   updateStatus
      *   message
+     *   debug
      *   setProgress
      *   trace
      * least Important
@@ -25,8 +26,9 @@ public class Logger
     public final static int LOG_LEVEL_WARNING = 1;
     public final static int LOG_LEVEL_STATUS_UPDATE = 2;
     public final static int LOG_LEVEL_MESSAGE = 3;
-    public final static int LOG_LEVEL_PROGRESS = 4;
-    public final static int LOG_LEVEL_TRACE = 5;
+    public final static int LOG_LEVEL_DEBUG = 4;
+    public final static int LOG_LEVEL_PROGRESS = 5;
+    public final static int LOG_LEVEL_TRACE = 6;
 
     private static int logLevel = LOG_LEVEL_ERROR;
 
@@ -76,6 +78,35 @@ public class Logger
                 li.setProgress(value, max);
         }
     }
+    /** debug statements describing details that happened.
+    *
+    * @param message whatever happened and needs to be traced.
+    */
+   public static void debug(String message, Object obj)
+   {
+       if(LOG_LEVEL_DEBUG <= logLevel)
+       {
+           message = message.replace("{}", obj.toString());
+           System.out.println(message);
+           for (LoggingInterface li : loggers)
+               li.message(message);
+       }
+   }
+
+
+   /** debug statements.
+    *
+    * @param message whatever happened.
+    */
+   public static void debug(String message)
+   {
+       if(LOG_LEVEL_DEBUG <= logLevel)
+       {
+           System.out.println(message);
+           for (LoggingInterface li : loggers)
+               li.message(message);
+       }
+   }
 
     /** general informational statements.
      *
