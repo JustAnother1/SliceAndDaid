@@ -50,6 +50,9 @@ public class SliceTool
         {
             layers.add(new Layer(i, modelMin.x, modelMin.y, modelMax.x, modelMax.y));
         }
+
+        // with all Triangles do
+        // project the triangle to all layers that are between the min and max Z values of the triangle
         int n = 0;
         for (Triangle t : model.triangles)
         {
@@ -69,7 +72,7 @@ public class SliceTool
             {
                 if (i >= firstLayer && i < lastLayer)
                 {
-                    double layerZ = (((double) i) + firstLayerHeight) * layerHeight;
+                    double layerZ = (((double) i) + firstLayerHeight) * layerHeight;// TODO check
                     Segment2D s = t.project2D(layerZ);
                     if (s != null)
                         layers.get(i - firstLayer).addModelSegment(s);
