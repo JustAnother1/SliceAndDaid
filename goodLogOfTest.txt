@@ -19,6 +19,12 @@ No File Name of Source Data specified !
 SliceAndDaid 2012-10-13 00:41:36
 No File Name of Source Data specified !
 ========================================================================
+* Testing invalid option
+========================================================================
+SliceAndDaid 2012-10-13 00:41:36
+Invalid Parameter : -x
+No File Name of Source Data specified !
+========================================================================
 * Testing -v with data File
 ========================================================================
 SliceAndDaid 2012-10-13 00:41:36
@@ -42,7 +48,7 @@ Generating paths
 Setting speeds
 Generating GCode
 Expected print time: 13 minutes and 57,178 seconds
-Slice time: 0,258 seconds
+Slice time: 0,380 seconds
 ========================================================================
 * Testing -vv with data File
 ========================================================================
@@ -591,7 +597,7 @@ Generating GCode
 98/100
 99/100
 Expected print time: 13 minutes and 57,178 seconds
-Slice time: 0,306 seconds
+Slice time: 0,269 seconds
 ========================================================================
 * Testing no option with data File
 ========================================================================
@@ -609,6 +615,6 @@ Generating paths
 Setting speeds
 Generating GCode
 Expected print time: 13 minutes and 57,178 seconds
-Slice time: 0,313 seconds
+Slice time: 0,251 seconds
 ========================================================================
 * End of tests

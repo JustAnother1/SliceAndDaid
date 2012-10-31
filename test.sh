@@ -14,6 +14,10 @@ echo "* Testing -vv without data File" >> $out 2>>$out
 echo "========================================================================" >> $out 2>>$out
 java -jar SliceAndDaid.jar -vv >>$out 2>>$out
 echo "========================================================================" >> $out 2>>$out
+echo "* Testing invalid option" >> $out 2>>$out
+echo "========================================================================" >> $out 2>>$out
+java -jar SliceAndDaid.jar -x >>$out 2>>$out
+echo "========================================================================" >> $out 2>>$out
 echo "* Testing -v with data File" >> $out 2>>$out
 echo "========================================================================" >> $out 2>>$out
 java -jar SliceAndDaid.jar -v data/20mm_Calibration_Box.stl >>$out 2>>$out
