@@ -1,2 +1,5 @@
 /daid
 /SliceAndDaid.jar
+/bin
+.classpath
+.project
