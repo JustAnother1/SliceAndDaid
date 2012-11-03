@@ -42,7 +42,7 @@ public class SliceAndDaidMain
         {
             // parse command line arguments
             String SourceFileName = null;
-            boolean showResultWindow = false; // defaults to no for true command line mode
+            boolean showResultWindow = false; // defaults to false for command line mode
             for (int i = 0; i < args.length; i++)
             {
                 if(true == args[i].startsWith("-"))
