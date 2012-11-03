@@ -111,7 +111,7 @@ public class Model
             triangles.add(t);
         }
         raf.close();
-        Logger.message("min: " + getMin());        
+        Logger.message("min: " + getMin());
     }
 
     private void readAsciiSTL(String filename) throws IOException
