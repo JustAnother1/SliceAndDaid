@@ -79,6 +79,7 @@ public class SliceAndDaidMain
                     SourceFileName = args[i];
                 }
             }
+            // Do it now !
             if(null != SourceFileName)
             {
                 sliceModel(SourceFileName, showResultWindow);
@@ -107,13 +108,16 @@ public class SliceAndDaidMain
             return;
         }
         m.center();
+        
         SliceTool slicer = new SliceTool(m);
         final Vector<Layer> layers = slicer.sliceModel(CraftConfig.startLayerNr, CraftConfig.endLayerNr, 0.0);
+        
         Logger.updateStatus("Creating skirt");
         if (CraftConfig.skirtDistance > 0)
         {
             layers.get(0).skirt = new PerimeterTool(layers.get(0).modelPart, -CraftConfig.skirtDistance).createPerimeter().makeConvex();
         }
+        
         Logger.updateStatus("Creating outlines");
         for (int i = 0; i < layers.size(); i++)
         {
@@ -128,6 +132,7 @@ public class SliceAndDaidMain
                 layers.get(i).outlinePart[c] = prevPart;
             }
         }
+        
         Logger.updateStatus("Generating paths");
         Vector2 startPoint = new Vector2(0, 0);
         for (int i = 0; i < layers.size(); i++)
@@ -137,12 +142,14 @@ public class SliceAndDaidMain
             if (layers.get(i).pathStart != null)
                 startPoint = layers.get(i).pathStart.start;
         }
+        
         Logger.updateStatus("Setting speeds");
         for (int i = 0; i < layers.size(); i++)
         {
             Logger.setProgress(i, layers.size());
             new SpeedTool(layers.get(i)).updateSpeed();
         }
+        
         Logger.updateStatus("Generating GCode");
         try
         {
