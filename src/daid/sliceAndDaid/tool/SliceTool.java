@@ -1,8 +1,7 @@
 package daid.sliceAndDaid.tool;
 
-import java.util.Vector;
-
 import daid.sliceAndDaid.Layer;
+import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.Model;
 import daid.sliceAndDaid.Segment2D;
 import daid.sliceAndDaid.config.CraftConfig;
@@ -23,11 +22,11 @@ public class SliceTool
         this.model = model;
     }
 
-    public Vector<Layer> sliceModel(int startLayer, int endLayer, double extraLayerOffset)
+    public LayerStack sliceModel(int startLayer, int endLayer, double extraLayerOffset)
     {
         Logger.debug("Low Layer Limit : {}", startLayer);
         Logger.debug("High Layer Limit: {}", endLayer);
-        Vector<Layer> layers = new Vector<Layer>();
+        LayerStack layers = new LayerStack();
 
         double layerHeight = CraftConfig.layerHeight;
         Vector3 modelMin = model.getMin();
