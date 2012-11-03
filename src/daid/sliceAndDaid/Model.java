@@ -110,7 +110,8 @@ public class Model
             raf.readShort();// flags
             triangles.add(t);
         }
-        Logger.message("min: " + getMin());
+        raf.close();
+        Logger.message("min: " + getMin());        
     }
 
     private void readAsciiSTL(String filename) throws IOException
