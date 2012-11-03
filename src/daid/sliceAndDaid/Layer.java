@@ -167,4 +167,60 @@ public class Layer
         }
         modelPart.addPolygon(poly);
     }
+    
+    public double getMaxX()
+    {
+    	double maxX = Double.MIN_VALUE;
+    	for(int i = 0; i < modelSegmentList.size(); i++)
+    	{
+    		Segment2D s2 = modelSegmentList.get(i);
+    		if(s2.getMaxX() > maxX)
+    		{
+    			maxX = s2.getMaxX();
+    		}
+    	}
+    	return maxX;
+    }
+    
+    public double getMinX()
+    {
+    	double minX = Double.MAX_VALUE;
+    	for(int i = 0; i < modelSegmentList.size(); i++)
+    	{
+    		Segment2D s2 = modelSegmentList.get(i);
+    		if(s2.getMinX() < minX)
+    		{
+    			minX = s2.getMinY();
+    		}
+    	}
+    	return minX;
+    }
+    
+    public double getMaxY()
+    {
+    	double maxY = Double.MIN_VALUE;
+    	for(int i = 0; i < modelSegmentList.size(); i++)
+    	{
+    		Segment2D s2 = modelSegmentList.get(i);
+    		if(s2.getMaxY() > maxY)
+    		{
+    			maxY = s2.getMaxY();
+    		}
+    	}
+    	return maxY;
+    }
+    
+    public double getMinY()
+    {
+    	double minY = Double.MAX_VALUE;
+    	for(int i = 0; i < modelSegmentList.size(); i++)
+    	{
+    		Segment2D s2 = modelSegmentList.get(i);
+    		if(s2.getMinY() < minY)
+    		{
+    			minY = s2.getMinY();
+    		}
+    	}
+    	return minY;
+    }
 }

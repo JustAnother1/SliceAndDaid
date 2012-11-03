@@ -46,9 +46,9 @@ import daid.sliceAndDaid.util.Logger;
 
 /**
  * The ConfigWindow class generates a JFrame window with the configurable options.
- *
+ * 
  * It uses reflection to get the configurable settings. This makes adding new settings easy.
- *
+ * 
  * NOTE: I suck at UI coding.
  */
 public class ConfigWindow extends JFrame
@@ -133,9 +133,12 @@ public class ConfigWindow extends JFrame
                         {
                             try
                             {
-                                SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(), true);
+                                SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(), 
+                                                            true, /* graphic result window after operation */
+                                                            false /* no picture files of Layers */);
                                 logWindow.dispose();
-                            } catch (Exception e)
+                            }
+                            catch (Exception e)
                             {
                                 e.printStackTrace();
                                 logWindow.dispose();
@@ -282,10 +285,12 @@ public class ConfigWindow extends JFrame
                 c.gridx = 2;
                 p.add(comp, c);
                 c.gridy++;
-            } catch (IllegalArgumentException e)
+            }
+            catch (IllegalArgumentException e)
             {
                 e.printStackTrace();
-            } catch (IllegalAccessException e)
+            }
+            catch (IllegalAccessException e)
             {
                 e.printStackTrace();
             }
@@ -322,14 +327,16 @@ public class ConfigWindow extends JFrame
                         {
                             f.setInt(null, ((Integer) ((JSpinner) e.getSource()).getValue()).intValue());
                             CraftConfigLoader.saveConfig(null);
-                        } catch (Exception e1)
+                        }
+                        catch (Exception e1)
                         {
                             e1.printStackTrace();
                         }
                     }
                 });
                 return spinner;
-            } else
+            }
+            else
             {
                 Vector<String> items = new Vector<String>();
                 for (final Field enumField : CraftConfig.class.getFields())
@@ -353,7 +360,8 @@ public class ConfigWindow extends JFrame
                         {
                             f.setInt(null, combo.getSelectedIndex());
                             CraftConfigLoader.saveConfig(null);
-                        } catch (Exception e1)
+                        }
+                        catch (Exception e1)
                         {
                             e1.printStackTrace();
                         }
@@ -361,7 +369,8 @@ public class ConfigWindow extends JFrame
                 });
                 return combo;
             }
-        } else if (f.getType() == Double.TYPE)
+        }
+        else if (f.getType() == Double.TYPE)
         {
             JSpinner spinner = new JSpinner(new SpinnerNumberModel(f.getDouble(null), s.minValue(), s.maxValue(), 0.01));
             spinner.addChangeListener(new ChangeListener()
@@ -372,14 +381,16 @@ public class ConfigWindow extends JFrame
                     {
                         f.setDouble(null, ((Double) ((JSpinner) e.getSource()).getValue()).doubleValue());
                         CraftConfigLoader.saveConfig(null);
-                    } catch (Exception e1)
+                    }
+                    catch (Exception e1)
                     {
                         e1.printStackTrace();
                     }
                 }
             });
             return spinner;
-        } else if (f.getType() == Boolean.TYPE)
+        }
+        else if (f.getType() == Boolean.TYPE)
         {
             JCheckBox checkbox = new JCheckBox();
             checkbox.setSelected(f.getBoolean(null));
@@ -391,14 +402,16 @@ public class ConfigWindow extends JFrame
                     {
                         f.setBoolean(null, ((JCheckBox) e.getSource()).isSelected());
                         CraftConfigLoader.saveConfig(null);
-                    } catch (Exception e1)
+                    }
+                    catch (Exception e1)
                     {
                         e1.printStackTrace();
                     }
                 }
             });
             return checkbox;
-        } else
+        }
+        else
         {
             Logger.error("Unknown field type for config window: " + f.getType());
         }

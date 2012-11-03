@@ -148,4 +148,52 @@ public class Segment2D extends AABBrect
     {
         return prev;
     }
+    
+    public double getMaxX()
+    {
+    	if(start.x > end.x)
+    	{
+    		return start.x;
+    	}
+    	else
+    	{
+    		return end.x;
+    	}
+    }
+    
+    public double getMinX()
+    {
+    	if(start.x < end.x)
+    	{
+    		return start.x;
+    	}
+    	else
+    	{
+    		return end.x;
+    	}
+    }
+    
+    public double getMaxY()
+    {
+    	if(start.y > end.y)
+    	{
+    		return start.y;
+    	}
+    	else
+    	{
+    		return end.y;
+    	}
+    }
+    
+    public double getMinY()
+    {
+    	if(start.y < end.y)
+    	{
+    		return start.y;
+    	}
+    	else
+    	{
+    		return end.y;
+    	}
+    }
 }
