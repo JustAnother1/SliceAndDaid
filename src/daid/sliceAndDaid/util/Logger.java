@@ -148,7 +148,8 @@ public class Logger
 
     public static void error(String error)
     {
-        System.out.println(error);
+        System.out.println("ERROR: " + error);
+        System.err.println("ERROR: " + error);
         for (LoggingInterface li : loggers)
             li.error(error);
     }
