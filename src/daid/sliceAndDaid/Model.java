@@ -7,6 +7,7 @@ import java.io.RandomAccessFile;
 import java.util.Vector;
 
 import daid.sliceAndDaid.util.Logger;
+import daid.sliceAndDaid.util.Tool;
 import daid.sliceAndDaid.util.Triangle;
 import daid.sliceAndDaid.util.Vector3;
 
@@ -84,31 +85,40 @@ public class Model
     {
         Logger.message("Source File is in binary STL File Format.");
         RandomAccessFile raf = new RandomAccessFile(filename, "r");
-        byte[] header = new byte[80];
+        byte[] header = new byte[80];        
         raf.read(header);
+        Logger.debug("Header: " + Tool.fromByteBufferToHexString(header));
         int triangleCount = Integer.reverseBytes(raf.readInt());
         triangles = new Vector<Triangle>();
         for (int i = 0; i < triangleCount; i++)
         {
+            Logger.debug("*** Start of Triangle ***");
             Logger.setProgress(i, triangleCount);
             for (int j = 0; j < 3; j++)
-                raf.readFloat();
+            {
+                Logger.debug("skipping " +raf.readFloat());
+            }
 
             Triangle t = new Triangle();
             float x = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
             float y = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
             float z = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
             t.point[0] = new Vector3(x, y, z);
+            Logger.debug("Point 1: x=" + x + ", y=" + y + ", z=" + z + " !");
             x = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
             y = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
             z = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
             t.point[1] = new Vector3(x, y, z);
+            Logger.debug("Point 2: x=" + x + ", y=" + y + ", z=" + z + " !");
             x = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
             y = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
             z = Float.intBitsToFloat(Integer.reverseBytes(raf.readInt()));
+            Logger.debug("Point 3: x=" + x + ", y=" + y + ", z=" + z + " !");
             t.point[2] = new Vector3(x, y, z);
-            raf.readShort();// flags
+            
+            Logger.debug("flags: " + raf.readShort());// flags
             triangles.add(t);
+            Logger.debug("*** End of Triangle ***");
         }
         raf.close();
         Logger.message("min: " + getMin());
