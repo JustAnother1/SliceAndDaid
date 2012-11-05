@@ -24,7 +24,7 @@ public class Layer
     public LayerPart[] outlinePart;
     private AABBTree<Segment2D> modelSegmentTree = new AABBTree<Segment2D>();
 
-    public Layer(int layerNr, double minX, double minY, double maxX, double maxY)
+    public Layer(int layerNr)
     {
         this.layerNr = layerNr;
         this.outlinePart = new LayerPart[CraftConfig.perimeterCount];

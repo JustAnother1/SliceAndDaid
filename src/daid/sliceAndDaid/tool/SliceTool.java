@@ -29,7 +29,6 @@ public class SliceTool
         LayerStack layers = new LayerStack();
 
         double layerHeight = CraftConfig.layerHeight;
-        Vector3 modelMin = model.getMin();
         Vector3 modelMax = model.getMax();
         // first Layer is CraftConfig.firstLayerHeightPercent percent thicker than other layers
         double firstLayerHeight =  (layerHeight * (100 + CraftConfig.firstLayerHeightPercent) / 100.0) + extraLayerOffset;
@@ -47,7 +46,7 @@ public class SliceTool
         Logger.message("Slicing " + (lastLayer - firstLayer) + " layers");
         for (int i = firstLayer; i < lastLayer; i++)
         {
-            layers.add(new Layer(i, modelMin.x, modelMin.y, modelMax.x, modelMax.y));
+            layers.add(new Layer(i));
         }
 
         // with all Triangles do
