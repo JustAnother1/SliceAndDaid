@@ -22,31 +22,28 @@ public class SliceTool
         this.model = model;
     }
 
-    public LayerStack sliceModel(int startLayer, int endLayer, double extraLayerOffset)
+    public LayerStack sliceModel()
     {
-        Logger.debug("Low Layer Limit : {}", startLayer);
-        Logger.debug("High Layer Limit: {}", endLayer);
         LayerStack layers = new LayerStack();
 
         double layerHeight = CraftConfig.layerHeight;
         Vector3 modelMax = model.getMax();
         // first Layer is CraftConfig.firstLayerHeightPercent percent thicker than other layers
-        double firstLayerHeight =  (layerHeight * (100 + CraftConfig.firstLayerHeightPercent) / 100.0) + extraLayerOffset;
+        double firstLayerHeight =  (layerHeight * (100 + CraftConfig.firstLayerHeightPercent) / 100.0);
         // first Layer plus other Layers
         int layerCount = 1/*first layer*/ + (int) ((modelMax.z - firstLayerHeight) / layerHeight) + 1/*rounding error*/;
         Logger.debug("First Layer height : {}", firstLayerHeight);
         Logger.debug("Layer height : {}", layerHeight);
         Logger.debug("Models max z : {}", modelMax.z);
         Logger.debug("Layer count : {}", layerCount);
-        int firstLayer = startLayer;
-        int lastLayer = endLayer;
-        if (lastLayer > layerCount)
-            lastLayer = layerCount;
         Logger.updateStatus("Slicing layers");
-        Logger.message("Slicing " + (lastLayer - firstLayer) + " layers");
-        for (int i = firstLayer; i < lastLayer; i++)
+        Logger.message("Slicing " + layerCount + " layers");
+        
+        // First Layer
+        layers.add(new Layer(0, 0, firstLayerHeight));
+        for (int i = 1; i < layerCount; i++)
         {
-            layers.add(new Layer(i));
+            layers.add(new Layer(i, (i -1) * layerHeight + firstLayerHeight, layerHeight));
         }
 
         // with all Triangles do
@@ -55,26 +52,28 @@ public class SliceTool
         for (Triangle t : model.triangles)
         {
             Logger.setProgress(n++, model.triangles.size());
-
-            double zMin = t.point[0].z;
-            double zMax = t.point[0].z;
-            if (t.point[1].z < zMin)
-                zMin = t.point[1].z;
-            if (t.point[2].z < zMin)
-                zMin = t.point[2].z;
-            if (t.point[1].z > zMax)
-                zMax = t.point[1].z;
-            if (t.point[2].z > zMax)
-                zMax = t.point[2].z;
-            for (int i = (int) (zMin / layerHeight + firstLayerHeight); i <= (int) (zMax / layerHeight + firstLayerHeight); i++) // TODO check
+            
+            double triangleZmin = t.getZmin();
+            double triangleZmax = t.getZmax();
+            
+            for(int i = 0; i < layerCount; i++)
             {
-                if (i >= firstLayer && i < lastLayer)
+                Layer l = layers.get(i);
+                double LayersZ = l.getZ();
+                if(triangleZmin > LayersZ)
                 {
-                    double layerZ = (((double) i) + firstLayerHeight) * layerHeight;// TODO check
-                    Segment2D s = t.project2D(layerZ);
-                    if (s != null)
-                        layers.get(i - firstLayer).addModelSegment(s);
+                    // This layer is below the Triangle
+                    // Skip this Layer
+                    continue;
                 }
+                if(triangleZmax < LayersZ)
+                {
+                    // This Layer is above the Triangle
+                    // Skip this and all other Layer
+                    break;
+                }
+                Segment2D s = t.project2D(l.getZ());
+                l.addModelSegment(s);
             }
         }
 

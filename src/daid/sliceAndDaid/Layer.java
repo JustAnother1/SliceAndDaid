@@ -15,6 +15,7 @@ import daid.sliceAndDaid.util.Logger;
 public class Layer
 {
     public int layerNr;
+    
 
     public Vector<Segment2D> modelSegmentList = new Vector<Segment2D>();
 
@@ -23,15 +24,30 @@ public class Layer
     public LayerPart modelPart = new LayerPart(this);
     public LayerPart[] outlinePart;
     private AABBTree<Segment2D> modelSegmentTree = new AABBTree<Segment2D>();
-
-    public Layer(int layerNr)
+    
+    private final double zMin;
+    private final double layerHeight;
+    
+    
+    public Layer(int layerNr, double zMin, double layerHeight)
     {
+        this.zMin = zMin;
+        this.layerHeight = layerHeight;
         this.layerNr = layerNr;
         this.outlinePart = new LayerPart[CraftConfig.perimeterCount];
     }
-
+    
+    public double getZ()
+    {
+        return zMin + (0.5 * layerHeight);
+    }
+    
     public void addModelSegment(Segment2D segment)
     {
+        if(null == segment)
+        {
+            return;
+        }
         if (segment.start.asGoodAsEqual(segment.end))
             return;
         modelSegmentTree.insert(segment);

@@ -54,4 +54,32 @@ public class Triangle
     {
         return point[1].sub(point[0]).cross(point[2].sub(point[0])).normal();
     }
+    
+    public double getZmin()
+    {
+        double res = point[0].z;
+        if(point[1].z < res)
+        {
+            res = point[1].z;
+        }
+        if(point[2].z < res)
+        {
+            res = point[2].z;
+        }
+        return res;
+    }
+    
+    public double getZmax()
+    {
+        double res = point[0].z;
+        if(point[1].z > res)
+        {
+            res = point[1].z;
+        }
+        if(point[2].z > res)
+        {
+            res = point[2].z;
+        }
+        return res;
+    }
 }

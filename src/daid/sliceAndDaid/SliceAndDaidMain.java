@@ -118,9 +118,9 @@ public class SliceAndDaidMain
         m.center();
 
         SliceTool slicer = new SliceTool(m);
-        final LayerStack layers = slicer.sliceModel(CraftConfig.startLayerNr, CraftConfig.endLayerNr, 0.0);
+        final LayerStack layers = slicer.sliceModel();
         if (true == createLayerPictureFiles) layers.dumpStackToLayerFiles("Sliced");
-
+/*
         Logger.updateStatus("Creating skirt");
         if (CraftConfig.skirtDistance > 0)
         {
@@ -190,8 +190,8 @@ public class SliceAndDaidMain
         {
             e.printStackTrace();
         }
-
-        /* Post slicing */
+*/
+        // Post slicing 
         long sliceTime = System.currentTimeMillis() - startTime;
         reportTime("Slice time", sliceTime);
 
