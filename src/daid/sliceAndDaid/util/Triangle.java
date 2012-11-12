@@ -1,5 +1,6 @@
 package daid.sliceAndDaid.util;
 
+import daid.sliceAndDaid.Layer;
 import daid.sliceAndDaid.Segment2D;
 
 /**
@@ -9,6 +10,12 @@ public class Triangle
 {
     public Vector3[] point = new Vector3[3];
 
+    public void addTriangleToLayer(Layer l)
+    {
+        Segment2D s = project2D(l.getZ());
+        l.addModelSegment(s);
+    }
+    
     public Segment2D project2D(double layerZ)
     {
         Segment2D ret = null;

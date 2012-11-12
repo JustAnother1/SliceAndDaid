@@ -3,7 +3,6 @@ package daid.sliceAndDaid.tool;
 import daid.sliceAndDaid.Layer;
 import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.Model;
-import daid.sliceAndDaid.Segment2D;
 import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.util.Logger;
 import daid.sliceAndDaid.util.Triangle;
@@ -84,7 +83,7 @@ public class SliceTool
                     // Skip this and all other Layers
                     break;
                 }
-                addTriangleToLayer(t, l);
+                t.addTriangleToLayer(l);
             }
         }
     }
@@ -99,9 +98,4 @@ public class SliceTool
         }
     }
     
-    private void addTriangleToLayer(Triangle t, Layer l)
-    {
-        Segment2D s = t.project2D(l.getZ());
-        l.addModelSegment(s);
-    }
 }
