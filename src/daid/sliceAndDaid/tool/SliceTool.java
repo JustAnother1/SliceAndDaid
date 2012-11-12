@@ -16,6 +16,7 @@ import daid.sliceAndDaid.util.Vector3;
 public class SliceTool
 {
     private Model model;
+    private LayerStack layers = null;
 
     public SliceTool(Model model)
     {
@@ -24,8 +25,15 @@ public class SliceTool
 
     public LayerStack sliceModel()
     {
-        LayerStack layers = new LayerStack();
-
+        layers = new LayerStack();
+        buildLayerStack();        
+        sliceModelToLayers();        
+        optimiteLayers();
+        return layers;
+    }
+    
+    private void buildLayerStack()
+    {
         double layerHeight = CraftConfig.layerHeight;
         Vector3 modelMax = model.getMax();
         // first Layer is CraftConfig.firstLayerHeightPercent percent thicker than other layers
@@ -41,12 +49,16 @@ public class SliceTool
         
         // First Layer
         layers.add(new Layer(0, 0, firstLayerHeight));
+        // all other Layers
         for (int i = 1; i < layerCount; i++)
         {
             layers.add(new Layer(i, (i -1) * layerHeight + firstLayerHeight, layerHeight));
         }
-
-        // with all Triangles do
+    }
+    
+    private void sliceModelToLayers()
+    {
+        // with all Triangles of the Model do
         // project the triangle to all layers that are between the min and max Z values of the triangle
         int n = 0;
         for (Triangle t : model.triangles)
@@ -56,7 +68,7 @@ public class SliceTool
             double triangleZmin = t.getZmin();
             double triangleZmax = t.getZmax();
             
-            for(int i = 0; i < layerCount; i++)
+            for(int i = 0; i < layers.size(); i++)
             {
                 Layer l = layers.get(i);
                 double LayersZ = l.getZ();
@@ -69,20 +81,27 @@ public class SliceTool
                 if(triangleZmax < LayersZ)
                 {
                     // This Layer is above the Triangle
-                    // Skip this and all other Layer
+                    // Skip this and all other Layers
                     break;
                 }
-                Segment2D s = t.project2D(l.getZ());
-                l.addModelSegment(s);
+                addTriangleToLayer(t, l);
             }
         }
-
+    }
+    
+    private void optimiteLayers()
+    {
         Logger.updateStatus("Optimizing layers");
         for (int i = 0; i < layers.size(); i++)
         {
             Logger.setProgress(i, layers.size());
             layers.get(i).optimize();
         }
-        return layers;
+    }
+    
+    private void addTriangleToLayer(Triangle t, Layer l)
+    {
+        Segment2D s = t.project2D(l.getZ());
+        l.addModelSegment(s);
     }
 }
