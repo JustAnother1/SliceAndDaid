@@ -29,11 +29,11 @@ public class SliceAndDaidMain
     {
         Logger.setLevel(Logger.LOG_LEVEL_MESSAGE);
         printVersionInformation();
-
-        CraftConfigLoader.loadConfig(null);
+       
 
         if (args.length < 1)
         {
+            CraftConfigLoader.loadConfig(null);
             Logger.setLevel(Logger.LOG_LEVEL_PROGRESS);
             startGUI();
         }
@@ -45,6 +45,7 @@ public class SliceAndDaidMain
                                               // line mode
             boolean createLayerPictureFiles = false; // big performance penalty
                                                      // -> only for debugging
+            String configFileName = null; // Defaults to "user.home" + "/.SliceAndDaid.conf"
             for (int i = 0; i < args.length; i++)
             {
                 if (true == args[i].startsWith("-"))
@@ -66,6 +67,7 @@ public class SliceAndDaidMain
                         System.out.println("  -h           - print this help.");
                         System.out.println("  -p           - generate png-Files off all Layers in all steps.");
                         System.out.println("  -showResult  - show graphic Window with result data.");
+                        System.out.println("  -c cfgfile   - use the specified configuration.");
                         System.exit(0);
                     }
                     else if (true == "-showResult".equals(args[i]))
@@ -75,6 +77,11 @@ public class SliceAndDaidMain
                     else if (true == "-p".equals(args[i]))
                     {
                         createLayerPictureFiles = true;
+                    }
+                    else if (true == "-c".equals(args[i]))
+                    {
+                        i++;
+                        configFileName = args[i];
                     }
                     else
                     {
@@ -89,6 +96,9 @@ public class SliceAndDaidMain
             // Do it now !
             if (null != SourceFileName)
             {
+                CraftConfigLoader.loadConfig(configFileName);
+                CraftConfig.lastSlicedFile = SourceFileName;
+                CraftConfigLoader.saveConfig(null);
                 sliceModel(SourceFileName, showResultWindow, createLayerPictureFiles);
             }
             else
@@ -101,8 +111,6 @@ public class SliceAndDaidMain
     public static void sliceModel(String filename, boolean showResultWindow, boolean createLayerPictureFiles)
     {
         long startTime = System.currentTimeMillis();
-        CraftConfig.lastSlicedFile = filename;
-        CraftConfigLoader.saveConfig(null);
 
         Model m;
         try

@@ -133,6 +133,8 @@ public class ConfigWindow extends JFrame
                         {
                             try
                             {
+                                CraftConfig.lastSlicedFile = fc.getSelectedFile().toString();
+                                CraftConfigLoader.saveConfig(null);
                                 SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(), 
                                                             true, /* graphic result window after operation */
                                                             false /* no picture files of Layers */);
