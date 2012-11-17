@@ -120,6 +120,7 @@ public class LayerStack
                 e.printStackTrace();
                 Logger.error("Failed to save Layer to File !");
             }
+            Logger.debug("Layer: {}", i);
         }
     }
 
