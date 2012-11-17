@@ -78,7 +78,7 @@ public class SliceAndDaidMain
                     }
                     else
                     {
-                        System.err.println("Invalid Parameter : " + args[i]);
+                        System.err.println("Invalid Parameter : " + args[i] + " try -h for help");
                     }
                 }
                 else
