@@ -168,4 +168,9 @@ public class Logger
     {
         logLevel = level;
     }
+    
+    public static int getLevel()
+    {
+        return logLevel;
+    }
 }

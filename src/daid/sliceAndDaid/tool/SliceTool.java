@@ -25,9 +25,8 @@ public class SliceTool
     public LayerStack sliceModel()
     {
         layers = new LayerStack();
-        buildLayerStack();        
-        sliceModelToLayers();        
-        optimiteLayers();
+        buildLayerStack();
+        sliceModelToLayers();
         return layers;
     }
     
@@ -47,11 +46,11 @@ public class SliceTool
         Logger.message("Slicing " + layerCount + " layers");
         
         // First Layer
-        layers.add(new Layer(0, 0, firstLayerHeight));
+        layers.add(new Layer(layers, 0, firstLayerHeight));
         // all other Layers
         for (int i = 1; i < layerCount; i++)
         {
-            layers.add(new Layer(i, (i -1) * layerHeight + firstLayerHeight, layerHeight));
+            layers.add(new Layer(layers, (i -1) * layerHeight + firstLayerHeight, layerHeight));
         }
     }
     
@@ -70,6 +69,7 @@ public class SliceTool
             for(int i = 0; i < layers.size(); i++)
             {
                 Layer l = layers.get(i);
+                Logger.debug("Layer : {}", i);
                 double LayersZ = l.getZ();
                 if(triangleZmin > LayersZ)
                 {
@@ -87,15 +87,4 @@ public class SliceTool
             }
         }
     }
-    
-    private void optimiteLayers()
-    {
-        Logger.updateStatus("Optimizing layers");
-        for (int i = 0; i < layers.size(); i++)
-        {
-            Logger.setProgress(i, layers.size());
-            layers.get(i).optimize();
-        }
-    }
-    
 }

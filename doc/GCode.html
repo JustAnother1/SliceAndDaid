@@ -1,0 +1,1374 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" dir="ltr" lang="en"><script id="abine.stub.Google Adsense">var abPrm={};var abNoOp=function(i,a){return (a&&a.length?a[0]:null)||true;},abSC=function(n,v){document.cookie=n+'='+v+';path=/;expires='+(new Date((new Date()).getTime()+(30000*60*60*24))).toGMTString();},abGC=function(n){return document.cookie.indexOf(n+'=')!=-1;},abAddNoOpMethods=function(o,m){m=m.split(',');for(var i=0;i<m.length;i++){if(m[i].match(/^#/)){o['get'+m[i].substr(1)]=o['set'+m[i].substr(1)]=abNoOp;}else{o[m[i]]=abNoOp;}}};var abClickEvent=function(n){if(n.click){n.click();}else{var e=n.ownerDocument.createEvent('MouseEvents');e.initMouseEvent('click',true, true, n.ownerDocument.defaultView, 1,0,0,0,0,false,false,false,false,0,null);n.dispatchEvent(e);}};var GS_googleAddAdSenseService=GS_googleEnableAllServices=GS_googleResetAllServices=GS_googleGetIdsForAdSenseService=GS_googleFindService=GS_googleGetExpIdsForAdSense=GA_googleAddSlot=GA_googleFetchAds=GA_googleUseIframeRendering=GA_googleUseFriendlyIframeRendering=GA_googleUseFriendlyIframeSRARendering=GA_googleUseSyncSRARendering=GA_googleDomainResetUrl=GA_googleFillSlot=GA_googleFillSlotWithSize=GA_googleResetAll=GA_googleNoFetch=GA_googleDelayFetch=GA_googleAddAttr=GA_googleAddAdSensePageAttr=GA_googleAddAdSenseSlotAttr=GA_googleCreateDomIframe=GA_googleSetAdContentsBySlot=GA_googleSetAdContentsBySlotForSync=GA_googleSetAdContentsBySlotForAsync=GA_googleSyncAdSlotLoaded=GA_googleReallyFetchAds=abNoOp;</script><head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta name="generator" content="MediaWiki 1.15.1">
+		<meta name="keywords" content="G-code,GCODE buffer multiline proposal,M-codes for EEPROM config,M115 Keywords,Marlin,Protocol Feature Negotiation,R2C2 RepRap Electronics,Sprinter,Teacup,Teacup Firmware,G-code">
+		<link rel="canonical" href="http://reprap.org/wiki/G-code">
+		<link rel="shortcut icon" href="http://reprap.org/favicon.ico">
+		<link rel="search" type="application/opensearchdescription+xml" href="http://reprap.org/mediawiki/opensearch_desc.php" title="RepRapWiki (en)">
+		<link title="Creative Commons" type="application/rdf+xml" href="http://reprap.org/mediawiki/index.php?title=G-code&amp;action=creativecommons" rel="meta">
+		<link rel="copyright" href="http://www.gnu.org/copyleft/fdl.html">
+		<link rel="alternate" type="application/rss+xml" title="RepRapWiki RSS Feed" href="http://reprap.org/mediawiki/index.php?title=Special:RecentChanges&amp;feed=rss">
+		<link rel="alternate" type="application/atom+xml" title="RepRapWiki Atom Feed" href="http://reprap.org/mediawiki/index.php?title=Special:RecentChanges&amp;feed=atom">
+		<title>G-code - RepRapWiki</title>
+		<link rel="stylesheet" href="GCode-Dateien/shared.css" type="text/css" media="screen">
+		<link rel="stylesheet" href="GCode-Dateien/commonPrint.css" type="text/css" media="print">
+		<link rel="stylesheet" href="GCode-Dateien/main.css" type="text/css" media="screen">
+		<!--[if lt IE 5.5000]><link rel="stylesheet" href="/mediawiki/skins/monobook/IE50Fixes.css?207" type="text/css" media="screen" /><![endif]-->
+		<!--[if IE 5.5000]><link rel="stylesheet" href="/mediawiki/skins/monobook/IE55Fixes.css?207" type="text/css" media="screen" /><![endif]-->
+		<!--[if IE 6]><link rel="stylesheet" href="/mediawiki/skins/monobook/IE60Fixes.css?207" type="text/css" media="screen" /><![endif]-->
+		<!--[if IE 7]><link rel="stylesheet" href="/mediawiki/skins/monobook/IE70Fixes.css?207" type="text/css" media="screen" /><![endif]-->
+		<link rel="stylesheet" href="GCode-Dateien/index_003.css" type="text/css">
+		<link rel="stylesheet" href="GCode-Dateien/index_002.css" type="text/css" media="print">
+		<link rel="stylesheet" href="GCode-Dateien/index.css" type="text/css">
+		<link rel="stylesheet" href="GCode-Dateien/index_004.css" type="text/css">
+		<!--[if lt IE 7]><script type="text/javascript" src="/mediawiki/skins/common/IEFixes.js?207"></script>
+		<meta http-equiv="imagetoolbar" content="no" /><![endif]-->
+
+		<script type="text/javascript">/*<![CDATA[*/
+		var skin = "monobook";
+		var stylepath = "/mediawiki/skins";
+		var wgArticlePath = "/wiki/$1";
+		var wgScriptPath = "/mediawiki";
+		var wgScript = "/mediawiki/index.php";
+		var wgVariantArticlePath = false;
+		var wgActionPaths = {};
+		var wgServer = "http://reprap.org";
+		var wgCanonicalNamespace = "";
+		var wgCanonicalSpecialPageName = false;
+		var wgNamespaceNumber = 0;
+		var wgPageName = "G-code";
+		var wgTitle = "G-code";
+		var wgAction = "view";
+		var wgArticleId = "1620";
+		var wgIsArticle = true;
+		var wgUserName = null;
+		var wgUserGroups = null;
+		var wgUserLanguage = "en";
+		var wgContentLanguage = "en";
+		var wgBreakFrames = false;
+		var wgCurRevisionId = 69489;
+		var wgVersion = "1.15.1";
+		var wgEnableAPI = true;
+		var wgEnableWriteAPI = true;
+		var wgSeparatorTransformTable = ["", ""];
+		var wgDigitTransformTable = ["", ""];
+		var wgRestrictionEdit = [];
+		var wgRestrictionMove = [];
+		var wgRestrictionRead = [];
+		/*]]>*/</script>
+
+		<script type="text/javascript" src="GCode-Dateien/wikibits.js"><!-- wikibits js --></script>
+		<!-- Head Scripts -->
+		<script type="text/javascript" src="GCode-Dateien/ajax.js"></script>
+		<script type="text/javascript" src="GCode-Dateien/index.php"><!-- site js --></script>
+	<link href="GCode-Dateien/Content.css" type="text/css" rel="stylesheet"></head>
+<body class="mediawiki ltr ns-0 ns-subject page-G-code skin-monobook">
+	<div id="globalWrapper">
+		<div id="column-content">
+	<div id="content">
+		<a name="top" id="top"></a>
+				<h1 id="firstHeading" class="firstHeading">G-code</h1>
+		<div id="bodyContent">
+			<h3 id="siteSub">From RepRapWiki</h3>
+			<div id="contentSub">(Redirected from <a href="http://reprap.org/mediawiki/index.php?title=GCode&amp;redirect=no" title="GCode">GCode</a>)</div>
+									<div id="jump-to-nav">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>			<!-- start content -->
+			<table id="toc" class="toc" summary="Contents"><tbody><tr><td><div id="toctitle"><h2>Contents</h2> <span class="toctoggle">[<a href="javascript:toggleToc()" class="internal" id="togglelink">hide</a>]</span></div>
+<ul>
+<li class="toclevel-1"><a href="#Introduction"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a></li>
+<li class="toclevel-1"><a href="#RepRap_G_Code_Fields"><span class="tocnumber">2</span> <span class="toctext">RepRap G Code Fields</span></a></li>
+<li class="toclevel-1"><a href="#Comments"><span class="tocnumber">3</span> <span class="toctext">Comments</span></a></li>
+<li class="toclevel-1"><a href="#Individual_commands"><span class="tocnumber">4</span> <span class="toctext">Individual commands</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Checking"><span class="tocnumber">4.1</span> <span class="toctext">Checking</span></a>
+<ul>
+<li class="toclevel-3"><a href="#N_and_.2A"><span class="tocnumber">4.1.1</span> <span class="toctext">N and *</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#Buffered_G_Commands"><span class="tocnumber">4.2</span> <span class="toctext">Buffered G Commands</span></a>
+<ul>
+<li class="toclevel-3"><a href="#G0:_Rapid_move"><span class="tocnumber">4.2.1</span> <span class="toctext">G0: Rapid move</span></a></li>
+<li class="toclevel-3"><a href="#G1:_Controlled_move"><span class="tocnumber">4.2.2</span> <span class="toctext">G1: Controlled move</span></a></li>
+<li class="toclevel-3"><a href="#G28:_Move_to_Origin"><span class="tocnumber">4.2.3</span> <span class="toctext">G28: Move to Origin</span></a></li>
+<li class="toclevel-3"><a href="#G29-G32:_Bed_probing"><span class="tocnumber">4.2.4</span> <span class="toctext">G29-G32: Bed probing</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#Unbuffered_G_commands"><span class="tocnumber">4.3</span> <span class="toctext">Unbuffered G commands</span></a>
+<ul>
+<li class="toclevel-3"><a href="#G4:_Dwell"><span class="tocnumber">4.3.1</span> <span class="toctext">G4: Dwell</span></a></li>
+<li class="toclevel-3"><a href="#G10:_Head_Offset"><span class="tocnumber">4.3.2</span> <span class="toctext">G10: Head Offset</span></a></li>
+<li class="toclevel-3"><a href="#G20:_Set_Units_to_Inches"><span class="tocnumber">4.3.3</span> <span class="toctext">G20: Set Units to Inches</span></a></li>
+<li class="toclevel-3"><a href="#G21:_Set_Units_to_Millimeters"><span class="tocnumber">4.3.4</span> <span class="toctext">G21: Set Units to Millimeters</span></a></li>
+<li class="toclevel-3"><a href="#G90:_Set_to_Absolute_Positioning"><span class="tocnumber">4.3.5</span> <span class="toctext">G90: Set to Absolute Positioning</span></a></li>
+<li class="toclevel-3"><a href="#G91:_Set_to_Relative_Positioning"><span class="tocnumber">4.3.6</span> <span class="toctext">G91: Set to Relative Positioning</span></a></li>
+<li class="toclevel-3"><a href="#G92:_Set_Position"><span class="tocnumber">4.3.7</span> <span class="toctext">G92: Set Position</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="#Unbuffered_M_and_T_commands"><span class="tocnumber">4.4</span> <span class="toctext">Unbuffered M and T commands</span></a>
+<ul>
+<li class="toclevel-3"><a href="#M0:_Stop"><span class="tocnumber">4.4.1</span> <span class="toctext">M0: Stop</span></a></li>
+<li class="toclevel-3"><a href="#M1:_Sleep"><span class="tocnumber">4.4.2</span> <span class="toctext">M1: Sleep</span></a></li>
+<li class="toclevel-3"><a href="#M17:_Enable.2FPower_all_stepper_motors"><span class="tocnumber">4.4.3</span> <span class="toctext">M17: Enable/Power all stepper motors</span></a></li>
+<li class="toclevel-3"><a href="#M18:_Disable_all_stepper_motors"><span class="tocnumber">4.4.4</span> <span class="toctext">M18: Disable all stepper motors</span></a></li>
+<li class="toclevel-3"><a href="#M20:_List_SD_card"><span class="tocnumber">4.4.5</span> <span class="toctext">M20: List SD card</span></a></li>
+<li class="toclevel-3"><a href="#M21:_Initialize_SD_card"><span class="tocnumber">4.4.6</span> <span class="toctext">M21: Initialize SD card</span></a></li>
+<li class="toclevel-3"><a href="#M22:_Release_SD_card"><span class="tocnumber">4.4.7</span> <span class="toctext">M22: Release SD card</span></a></li>
+<li class="toclevel-3"><a href="#M23:_Select_SD_file"><span class="tocnumber">4.4.8</span> <span class="toctext">M23: Select SD file</span></a></li>
+<li class="toclevel-3"><a href="#M24:_Start.2Fresume_SD_print"><span class="tocnumber">4.4.9</span> <span class="toctext">M24: Start/resume SD print</span></a></li>
+<li class="toclevel-3"><a href="#M25:_Pause_SD_print"><span class="tocnumber">4.4.10</span> <span class="toctext">M25: Pause SD print</span></a></li>
+<li class="toclevel-3"><a href="#M26:_Set_SD_position"><span class="tocnumber">4.4.11</span> <span class="toctext">M26: Set SD position</span></a></li>
+<li class="toclevel-3"><a href="#M27:_Report_SD_print_status"><span class="tocnumber">4.4.12</span> <span class="toctext">M27: Report SD print status</span></a></li>
+<li class="toclevel-3"><a href="#M28:_Begin_write_to_SD_card"><span class="tocnumber">4.4.13</span> <span class="toctext">M28: Begin write to SD card</span></a></li>
+<li class="toclevel-3"><a href="#M29:_Stop_writing_to_SD_card"><span class="tocnumber">4.4.14</span> <span class="toctext">M29: Stop writing to SD card</span></a></li>
+<li class="toclevel-3"><a href="#M40:_Eject"><span class="tocnumber">4.4.15</span> <span class="toctext">M40: Eject</span></a></li>
+<li class="toclevel-3"><a href="#M41:_Loop"><span class="tocnumber">4.4.16</span> <span class="toctext">M41: Loop</span></a></li>
+<li class="toclevel-3"><a href="#M42:_Stop_on_material_exhausted_.2F_Switch_I.2FO_pin"><span class="tocnumber">4.4.17</span> <span class="toctext">M42: Stop on material exhausted / Switch I/O pin</span></a>
+<ul>
+<li class="toclevel-4"><a href="#M42_in_.3F.3F.3F"><span class="tocnumber">4.4.17.1</span> <span class="toctext">M42 in&nbsp;???</span></a></li>
+<li class="toclevel-4"><a href="#M42_in_Marlin.2FSprinter"><span class="tocnumber">4.4.17.2</span> <span class="toctext">M42 in Marlin/Sprinter</span></a></li>
+<li class="toclevel-4"><a href="#M42_in_Teacup"><span class="tocnumber">4.4.17.3</span> <span class="toctext">M42 in Teacup</span></a></li>
+</ul>
+</li>
+<li class="toclevel-3"><a href="#M43:_Stand_by_on_material_exhausted"><span class="tocnumber">4.4.18</span> <span class="toctext">M43: Stand by on material exhausted</span></a></li>
+<li class="toclevel-3"><a href="#M80:_ATX_Power_On"><span class="tocnumber">4.4.19</span> <span class="toctext">M80: ATX Power On</span></a></li>
+<li class="toclevel-3"><a href="#M81:_ATX_Power_Off"><span class="tocnumber">4.4.20</span> <span class="toctext">M81: ATX Power Off</span></a></li>
+<li class="toclevel-3"><a href="#M82:_set_extruder_to_absolute_mode"><span class="tocnumber">4.4.21</span> <span class="toctext">M82: set extruder to absolute mode</span></a></li>
+<li class="toclevel-3"><a href="#M83:_set_extruder_to_relative_mode"><span class="tocnumber">4.4.22</span> <span class="toctext">M83: set extruder to relative mode</span></a></li>
+<li class="toclevel-3"><a href="#M84:_Stop_idle_hold"><span class="tocnumber">4.4.23</span> <span class="toctext">M84: Stop idle hold</span></a></li>
+<li class="toclevel-3"><a href="#M92:_Set_axis_steps_per_unit"><span class="tocnumber">4.4.24</span> <span class="toctext">M92: Set axis_steps_per_unit</span></a></li>
+<li class="toclevel-3"><a href="#M98:_Get_axis_hysteresis_mm"><span class="tocnumber">4.4.25</span> <span class="toctext">M98: Get axis_hysteresis_mm</span></a></li>
+<li class="toclevel-3"><a href="#M99:_Set_axis_hysteresis_mm"><span class="tocnumber">4.4.26</span> <span class="toctext">M99: Set axis_hysteresis_mm</span></a></li>
+<li class="toclevel-3"><a href="#M101_Turn_extruder__1_on_Forward_.2F_Undo_Extruder_Retraction"><span class="tocnumber">4.4.27</span> <span class="toctext">M101 Turn extruder  1 on Forward / Undo Extruder Retraction</span></a>
+<ul>
+<li class="toclevel-4"><a href="#M101_in_Teacup_firmware"><span class="tocnumber">4.4.27.1</span> <span class="toctext">M101 in Teacup firmware</span></a></li>
+<li class="toclevel-4"><a href="#M101_in_other_firmwares"><span class="tocnumber">4.4.27.2</span> <span class="toctext">M101 in other firmwares</span></a></li>
+</ul>
+</li>
+<li class="toclevel-3"><a href="#M102_Turn_extruder_1_on_Reverse"><span class="tocnumber">4.4.28</span> <span class="toctext">M102 Turn extruder 1 on Reverse</span></a></li>
+<li class="toclevel-3"><a href="#M103_Turn_all_extruders_off_.2F_Extruder_Retraction"><span class="tocnumber">4.4.29</span> <span class="toctext">M103 Turn all extruders off / Extruder Retraction</span></a>
+<ul>
+<li class="toclevel-4"><a href="#M103_in_Teacup_firmware"><span class="tocnumber">4.4.29.1</span> <span class="toctext">M103 in Teacup firmware</span></a></li>
+<li class="toclevel-4"><a href="#M103_in_other_firmwares"><span class="tocnumber">4.4.29.2</span> <span class="toctext">M103 in other firmwares</span></a></li>
+</ul>
+</li>
+<li class="toclevel-3"><a href="#M104:_Set_Extruder_Temperature"><span class="tocnumber">4.4.30</span> <span class="toctext">M104: Set Extruder Temperature</span></a></li>
+<li class="toclevel-3"><a href="#M105:_Get_Extruder_Temperature"><span class="tocnumber">4.4.31</span> <span class="toctext">M105: Get Extruder Temperature</span></a></li>
+<li class="toclevel-3"><a href="#M106:_Fan_On"><span class="tocnumber">4.4.32</span> <span class="toctext">M106: Fan On</span></a></li>
+<li class="toclevel-3"><a href="#M107:_Fan_Off"><span class="tocnumber">4.4.33</span> <span class="toctext">M107: Fan Off</span></a></li>
+<li class="toclevel-3"><a href="#M108:_Set_Extruder_Speed"><span class="tocnumber">4.4.34</span> <span class="toctext">M108: Set Extruder Speed</span></a></li>
+<li class="toclevel-3"><a href="#M109:_Set_Extruder_Temperature_and_Wait"><span class="tocnumber">4.4.35</span> <span class="toctext">M109: Set Extruder Temperature and Wait</span></a></li>
+<li class="toclevel-3"><a href="#M110:_Set_Current_Line_Number"><span class="tocnumber">4.4.36</span> <span class="toctext">M110: Set Current Line Number</span></a></li>
+<li class="toclevel-3"><a href="#M111:_Set_Debug_Level"><span class="tocnumber">4.4.37</span> <span class="toctext">M111: Set Debug Level</span></a></li>
+<li class="toclevel-3"><a href="#M112:_Emergency_Stop"><span class="tocnumber">4.4.38</span> <span class="toctext">M112: Emergency Stop</span></a></li>
+<li class="toclevel-3"><a href="#M113:_Set_Extruder_PWM"><span class="tocnumber">4.4.39</span> <span class="toctext">M113: Set Extruder PWM</span></a></li>
+<li class="toclevel-3"><a href="#M114:_Get_Current_Position"><span class="tocnumber">4.4.40</span> <span class="toctext">M114: Get Current Position</span></a></li>
+<li class="toclevel-3"><a href="#M115:_Get_Firmware_Version_and_Capabilities"><span class="tocnumber">4.4.41</span> <span class="toctext">M115: Get Firmware Version and Capabilities</span></a></li>
+<li class="toclevel-3"><a href="#M116:_Wait"><span class="tocnumber">4.4.42</span> <span class="toctext">M116: Wait</span></a></li>
+<li class="toclevel-3"><a href="#M117:_Get_Zero_Position"><span class="tocnumber">4.4.43</span> <span class="toctext">M117: Get Zero Position</span></a></li>
+<li class="toclevel-3"><a href="#M118:_Negotiate_Features"><span class="tocnumber">4.4.44</span> <span class="toctext">M118: Negotiate Features</span></a></li>
+<li class="toclevel-3"><a href="#M119:_Get_Endstop_Status"><span class="tocnumber">4.4.45</span> <span class="toctext">M119: Get Endstop Status</span></a></li>
+<li class="toclevel-3"><a href="#M126:_Open_Valve"><span class="tocnumber">4.4.46</span> <span class="toctext">M126: Open Valve</span></a></li>
+<li class="toclevel-3"><a href="#M127:_Close_Valve"><span class="tocnumber">4.4.47</span> <span class="toctext">M127: Close Valve</span></a></li>
+<li class="toclevel-3"><a href="#M128:_Extruder_Pressure_PWM"><span class="tocnumber">4.4.48</span> <span class="toctext">M128: Extruder Pressure PWM</span></a></li>
+<li class="toclevel-3"><a href="#M129:_Extruder_pressure_off"><span class="tocnumber">4.4.49</span> <span class="toctext">M129: Extruder pressure off</span></a></li>
+<li class="toclevel-3"><a href="#M130:_Set_PID_P_value"><span class="tocnumber">4.4.50</span> <span class="toctext">M130: Set PID P value</span></a></li>
+<li class="toclevel-3"><a href="#M131:_Set_PID_I_value"><span class="tocnumber">4.4.51</span> <span class="toctext">M131: Set PID I value</span></a></li>
+<li class="toclevel-3"><a href="#M132:_Set_PID_D_value"><span class="tocnumber">4.4.52</span> <span class="toctext">M132: Set PID D value</span></a></li>
+<li class="toclevel-3"><a href="#M133:_Set_PID_I_limit_value"><span class="tocnumber">4.4.53</span> <span class="toctext">M133: Set PID I limit value</span></a></li>
+<li class="toclevel-3"><a href="#M134:_Write_PID_values_to_EEPROM"><span class="tocnumber">4.4.54</span> <span class="toctext">M134: Write PID values to EEPROM</span></a></li>
+<li class="toclevel-3"><a href="#M135:_Set_heater_output"><span class="tocnumber">4.4.55</span> <span class="toctext">M135: Set heater output</span></a></li>
+<li class="toclevel-3"><a href="#M136:_Print_PID_settings_to_host"><span class="tocnumber">4.4.56</span> <span class="toctext">M136: Print PID settings to host</span></a></li>
+<li class="toclevel-3"><a href="#M140:_Bed_Temperature_.28Fast.29"><span class="tocnumber">4.4.57</span> <span class="toctext">M140: Bed Temperature (Fast)</span></a></li>
+<li class="toclevel-3"><a href="#M141:_Chamber_Temperature_.28Fast.29"><span class="tocnumber">4.4.58</span> <span class="toctext">M141: Chamber Temperature (Fast)</span></a></li>
+<li class="toclevel-3"><a href="#M142:_Holding_Pressure"><span class="tocnumber">4.4.59</span> <span class="toctext">M142: Holding Pressure</span></a></li>
+<li class="toclevel-3"><a href="#M143:_Maximum_hot-end_temperature"><span class="tocnumber">4.4.60</span> <span class="toctext">M143: Maximum hot-end temperature</span></a></li>
+<li class="toclevel-3"><a href="#M160:_Number_of_mixed_materials"><span class="tocnumber">4.4.61</span> <span class="toctext">M160: Number of mixed materials</span></a></li>
+<li class="toclevel-3"><a href="#M190:_Wait_for_bed_temperature_to_reach_target_temp"><span class="tocnumber">4.4.62</span> <span class="toctext">M190: Wait for bed temperature to reach target temp</span></a></li>
+<li class="toclevel-3"><a href="#M200_-_Set_filament_diameter_.2F_Get_Endstop_Status"><span class="tocnumber">4.4.63</span> <span class="toctext">M200 - Set filament diameter / Get Endstop Status</span></a></li>
+<li class="toclevel-3"><a href="#M201_-_Set_max_printing_acceleration"><span class="tocnumber">4.4.64</span> <span class="toctext">M201 - Set max printing acceleration</span></a></li>
+<li class="toclevel-3"><a href="#M202_-_Set_max_travel_acceleration"><span class="tocnumber">4.4.65</span> <span class="toctext">M202 - Set max travel acceleration</span></a></li>
+<li class="toclevel-3"><a href="#M203_-_Set_maximum_feedrate"><span class="tocnumber">4.4.66</span> <span class="toctext">M203 - Set maximum feedrate</span></a></li>
+<li class="toclevel-3"><a href="#M204_-_Set_default_acceleration"><span class="tocnumber">4.4.67</span> <span class="toctext">M204 - Set default acceleration</span></a></li>
+<li class="toclevel-3"><a href="#M205_-__advanced_settings"><span class="tocnumber">4.4.68</span> <span class="toctext">M205 -  advanced settings</span></a></li>
+<li class="toclevel-3"><a href="#M206:_set_home_offset"><span class="tocnumber">4.4.69</span> <span class="toctext">M206: set home offset</span></a></li>
+<li class="toclevel-3"><a href="#M207:_calibrate_z_axis_by_detecting_z_max_length"><span class="tocnumber">4.4.70</span> <span class="toctext">M207: calibrate z axis by detecting z max length</span></a></li>
+<li class="toclevel-3"><a href="#M208:_set_axis_max_travel"><span class="tocnumber">4.4.71</span> <span class="toctext">M208: set axis max travel</span></a></li>
+<li class="toclevel-3"><a href="#M209:_enable_automatic_retract"><span class="tocnumber">4.4.72</span> <span class="toctext">M209: enable automatic retract</span></a></li>
+<li class="toclevel-3"><a href="#M220:set_speed_factor_override_percentage"><span class="tocnumber">4.4.73</span> <span class="toctext">M220:set speed factor override percentage</span></a></li>
+<li class="toclevel-3"><a href="#M221:_set_extrude_factor_override_percentage"><span class="tocnumber">4.4.74</span> <span class="toctext">M221: set extrude factor override percentage</span></a></li>
+<li class="toclevel-3"><a href="#M226:_Gcode_Initiated_Pause"><span class="tocnumber">4.4.75</span> <span class="toctext">M226: Gcode Initiated Pause</span></a></li>
+<li class="toclevel-3"><a href="#M227:_Enable_Automatic_Reverse_and_Prime"><span class="tocnumber">4.4.76</span> <span class="toctext">M227: Enable Automatic Reverse and Prime</span></a></li>
+<li class="toclevel-3"><a href="#M228:_Disable_Automatic_Reverse_and_Prime"><span class="tocnumber">4.4.77</span> <span class="toctext">M228: Disable Automatic Reverse and Prime</span></a></li>
+<li class="toclevel-3"><a href="#M229:_Enable_Automatic_Reverse_and_Prime"><span class="tocnumber">4.4.78</span> <span class="toctext">M229: Enable Automatic Reverse and Prime</span></a></li>
+<li class="toclevel-3"><a href="#M230:_Disable_.2F_Enable_Wait_for_Temperature_Change"><span class="tocnumber">4.4.79</span> <span class="toctext">M230: Disable / Enable Wait for Temperature Change</span></a></li>
+<li class="toclevel-3"><a href="#M240:_Start_conveyor_belt_motor_.2F_Echo_off"><span class="tocnumber">4.4.80</span> <span class="toctext">M240: Start conveyor belt motor / Echo off</span></a></li>
+<li class="toclevel-3"><a href="#M241:_Stop_conveyor_belt_motor_.2F_echo_on"><span class="tocnumber">4.4.81</span> <span class="toctext">M241: Stop conveyor belt motor / echo on</span></a></li>
+<li class="toclevel-3"><a href="#M245:_Start_cooler"><span class="tocnumber">4.4.82</span> <span class="toctext">M245: Start cooler</span></a></li>
+<li class="toclevel-3"><a href="#M246:_Stop_cooler"><span class="tocnumber">4.4.83</span> <span class="toctext">M246: Stop cooler</span></a></li>
+<li class="toclevel-3"><a href="#M300:_Play_beep_sound"><span class="tocnumber">4.4.84</span> <span class="toctext">M300: Play beep sound</span></a></li>
+<li class="toclevel-3"><a href="#T:_Select_Tool"><span class="tocnumber">4.4.85</span> <span class="toctext">T: Select Tool</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Proposed_EEPROM_configuration_codes"><span class="tocnumber">5</span> <span class="toctext">Proposed EEPROM configuration codes</span></a>
+<ul>
+<li class="toclevel-2"><a href="#M500:_stores_paramters_in_EEPROM"><span class="tocnumber">5.1</span> <span class="toctext">M500: stores paramters in EEPROM</span></a></li>
+<li class="toclevel-2"><a href="#M501:_reads_parameters_from_EEPROM"><span class="tocnumber">5.2</span> <span class="toctext">M501: reads parameters from EEPROM</span></a></li>
+<li class="toclevel-2"><a href="#M502:_reverts_to_the_default_.22factory_settings.22."><span class="tocnumber">5.3</span> <span class="toctext">M502: reverts to the default "factory settings".</span></a></li>
+<li class="toclevel-2"><a href="#M503:_Print_settings"><span class="tocnumber">5.4</span> <span class="toctext">M503: Print settings</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="#Replies_from_the_RepRap_machine_to_the_host_computer"><span class="tocnumber">6</span> <span class="toctext">Replies from the RepRap machine to the host computer</span></a></li>
+<li class="toclevel-1"><a href="#Proposal_for_sending_multiple_lines_of_G-code"><span class="tocnumber">7</span> <span class="toctext">Proposal for sending multiple lines of G-code</span></a>
+<ul>
+<li class="toclevel-2"><a href="#Problem_to_solve"><span class="tocnumber">7.1</span> <span class="toctext">Problem to solve</span></a></li>
+</ul>
+</li>
+</ul>
+</td></tr></tbody></table><script type="text/javascript"> if (window.showTocToggle) { var tocShowText = "show"; var tocHideText = "hide"; showTocToggle(); } </script>
+<a name="Introduction" id="Introduction"></a><h2> <span class="mw-headline"> Introduction </span></h2>
+<p>This page describes the G Codes that the RepRap firmware uses and how they work.
+</p><p>The list of what can be done is extensible.  But check this page first, and add your extension here first <b>before</b> you implement it.
+</p><p>A typical piece of GCode as sent to a RepRap machine might look like this:
+</p>
+<pre>N3 T0*57
+N4 G92 E0*67
+N5 G28*22
+N6 G1 F1500.0*82
+N7 G1 X2.0 Y2.0 F3000.0*85
+N8 G1 X3.0 Y3.0*33
+</pre>
+<p>The meaning of all those symbols and numbers (and more) is explained below.
+</p><p>To find out which specific gcode/s are implemented in any given 
+firmware, there are little tables attached to the command descriptions, 
+like this one:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                          yes          </td><td> automatic    </td><td> yes          </td><td> yes          </td><td> experimental
+</td></tr></tbody></table>
+<p>Here means:
+</p>
+<dl><dt> yes
+</dt><dd> Fully supported.
+</dd><dt> experimental
+</dt><dd> There is some support. Often it's required to check out a 
+source code branch other than the default or to flip certain 
+configuration switches.
+</dd><dt> automatic
+</dt><dd> The firmware handles this feature automatically, so there's no
+ need to send the command; you get the feature regardless. An example is
+ power supply on/off (M80/M81) in Teacup firmware.
+</dd><dt> no
+</dt><dd> The firmware doesn't support this feature.
+</dd></dl>
+<p>For the technically minded, the end of line is marked by a &lt;nl&gt;
+ and optionally a &lt;cr&gt;. So, Unix line endings work as well as 
+Windows ones.
+</p>
+<a name="RepRap_G_Code_Fields" id="RepRap_G_Code_Fields"></a><h2> <span class="mw-headline"> RepRap G Code Fields </span></h2>
+<p>This section explains the letter-preceded fields.  The numbers in the
+ fields are represented by nnn.  Numbers can be integers, or can contain
+ a decimal point, depending on context.  For example an X coordinate can
+ be integer (X175) or fractional (X17.62), whereas trying to select 
+extruder number 2.76 would make no sense.
+</p>
+<table class="wikitable">
+
+<tbody><tr>
+<th> Letter
+</th><th> Meaning
+</th></tr>
+<tr>
+<td> Gnnn
+</td><td> Standard GCode command, such as move to a point
+</td></tr>
+<tr>
+<td> Mnnn
+</td><td> RepRap-defined command, such as turn on a cooling fan
+</td></tr>
+<tr>
+<td> Tnnn
+</td><td> Select tool nnn.  In RepRap, tools are extruders
+</td></tr>
+<tr>
+<td> Snnn
+</td><td> Command parameter, such as the voltage to send to a motor
+</td></tr>
+<tr>
+<td> Pnnn
+</td><td> Command parameter, such as a time in milliseconds
+</td></tr>
+<tr>
+<td> Xnnn
+</td><td> An X coordinate, usually to move to
+</td></tr>
+<tr>
+<td> Ynnn
+</td><td> A Y coordinate, usually to move to
+</td></tr>
+<tr>
+<td> Znnn
+</td><td> A Z coordinate, usually to move to
+</td></tr>
+<tr>
+<td> Innn
+</td><td> Parameter - not currently used
+</td></tr>
+<tr>
+<td> Jnnn
+</td><td> Parameter - not currently used
+</td></tr>
+<tr>
+<td> Fnnn
+</td><td> Feedrate in mm per minute. (Speed of print head movement)
+</td></tr>
+<tr>
+<td> Rnnn
+</td><td> Parameter - used for temperatures
+</td></tr>
+<tr>
+<td> Qnnn
+</td><td> Parameter - not currently used
+</td></tr>
+<tr>
+<td> Ennn
+</td><td> Length of extrudate in mm.  This is exactly like X, Y and Z, but for the length of filament to extrude. <s>It is common for newer stepper based systems to interpret ...</s>
+ Better: Skeinforge 40 and up interprets this as the absolute length of 
+input filament to consume, rather than the length of the extruded 
+output.
+</td></tr>
+<tr>
+<td> Nnnn
+</td><td> Line number.  Used to request repeat transmission in the case of communications errors.
+</td></tr>
+<tr>
+<td> *nnn
+</td><td> Checksum.  Used to check for communications errors.
+</td></tr>
+</tbody></table>
+<a name="Comments" id="Comments"></a><h2> <span class="mw-headline"> Comments </span></h2>
+<p>G Code comments:
+</p>
+<pre>N3 T0*57&nbsp;;This is a comment
+N4 G92 E0*67
+; So is this
+N5 G28*22
+</pre>
+<p>Will be ignored by RepRap, as will blank lines.  But it's better to 
+strip these out in the host computer before the lines are sent.  This 
+saves bandwidth.
+</p>
+<a name="Individual_commands" id="Individual_commands"></a><h2> <span class="mw-headline"> Individual commands </span></h2>
+<a name="Checking" id="Checking"></a><h3> <span class="mw-headline"> Checking </span></h3>
+<a name="N_and_.2A" id="N_and_.2A"></a><h4> <span class="mw-headline"> N and * </span></h4>
+<p>Example: N123 [...G Code in here...] *71
+</p><p>These are the line number and the checksum.  The RepRap firmware 
+checks the checksum against a locally-computed value and, if they 
+differ, requests a repeat transmission of the line of the given number.
+</p><p>You can leave both of these out - RepRap will still work, but it won't do checking.  You have to have both or neither though.
+</p><p>The checksum "cs" for a GCode string "cmd" (including its line 
+number) is computed by exor-ing the bytes in the string up to and not 
+including the * character as follows:
+</p>
+<pre>int cs = 0;
+for(i = 0; cmd[i]&nbsp;!= '*' &amp;&amp; cmd[i]&nbsp;!= NULL; i++)
+   cs = cs ^ cmd[i];
+cs &amp;= 0xff;  // Defensive programming...
+</pre>
+<p>and the value is appended as a decimal integer to the command after the * character.
+</p><p>The RepRap firmware expects line numbers to increase by 1 each 
+line, and if that doesn't happen it is flagged as an error.  But you can
+ reset the count using M110 (see below).
+</p>
+<a name="Buffered_G_Commands" id="Buffered_G_Commands"></a><h3> <span class="mw-headline"> Buffered G Commands </span></h3>
+<p>The RepRap firmware stores these commands in a ring buffer internally
+ for execution.  This means that there is no (appreciable) delay while a
+ command is acknowledged and the next transmitted.  In turn, this means 
+that sequences of line segments can be plotted without a dwell between 
+one and the next.  As soon as one of these buffered commands is received
+ it is acknowledged and stored locally.  If the local buffer is full, 
+then the acknowledgment is delayed until space for storage in the buffer
+ is available.  This is how flow control is achieved.
+</p>
+<a name="G0:_Rapid_move" id="G0:_Rapid_move"></a><h4> <span class="mw-headline"> G0: Rapid move </span></h4>
+<table class="wikitable" align="right">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                         &nbsp;???          </td><td> yes          </td><td> yes          </td><td> yes          </td><td> yes
+</td></tr></tbody></table>
+<p>Example: G0 X12
+</p><p>In this case move rapidly to X = 12 mm.  In fact, the RepRap 
+firmware uses exactly the same code for rapid as it uses for controlled 
+moves (see G1 below), as - for the RepRap machine - this is just as 
+efficient as not doing so.  (The distinction comes from some old machine
+ tools that used to move faster if the axes were not driven in a 
+straight line.  For them G0 allowed any movement in space to get to the 
+destination as fast as possible.)
+</p>
+<a name="G1:_Controlled_move" id="G1:_Controlled_move"></a><h4> <span class="mw-headline"> G1: Controlled move </span></h4>
+<table class="wikitable" align="right">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                          yes          </td><td> yes          </td><td> yes          </td><td> yes          </td><td> yes
+</td></tr></tbody></table>
+<p>Example: G1 X90.6 Y13.8 E22.4
+</p><p>Go in a straight line from the current (X, Y) point to the point 
+(90.6, 13.8), extruding material as the move happens from the current 
+extruded length to a length of 22.4 mm.
+</p><p>RepRap does subtle things with feedrates.  Thus:
+</p>
+<pre>G1 F1500
+G1 X90.6 Y13.8 E22.4
+</pre>	
+<p>Will set a feedrate of 1500 mm/minute, then do the move described above at that feedrate.  But
+</p>
+<pre>G1 F1500
+G1 X90.6 Y13.8 E22.4 F3000
+</pre>
+<p>Will set a feedrate of 1500 mm/minute, then do the move described 
+above accelerating to a feedrate of 3000 mm/minute as it does so.  The 
+extrusion will accelerate along with the X, Y movement so everything 
+stays synchronized.
+</p><p>RepRap thus treats feedrate as simply another variable (like X, 
+Y, Z, and E) to be linearly interpolated. This gives complete control 
+over accelerations and decelerations in a way that ensures that 
+everything moves together and the right volume of material is extruded 
+at all points.
+</p><p><i>Note: not every firmware implements this, e.g. the current <a href="http://reprap.org/wiki/Marlin" title="Marlin">Marlin</a> will use the new feedrate from the beginning of the move and not change it.</i>
+</p><p>The first example shows how to get a constant-speed movement.  The second how to accelerate or decelerate.  Thus
+</p>
+<pre>G1 F1500
+G1 X90.6 Y13.8 E22.4 F3000
+G1 X80 Y20 E36 F1500
+</pre>
+<p>Will do the first movement accelerating as before, and the second decelerating from 3000 mm/minute back to 1500 mm/minute.
+</p><p>To reverse the extruder by a given amount (for example to reduce 
+its internal pressure while it does an in-air movement so that it 
+doesn't dribble) simply use G1 to send an E value that is less than the 
+currently extruded length.
+</p>
+<a name="G28:_Move_to_Origin" id="G28:_Move_to_Origin"></a><h4> <span class="mw-headline"> G28: Move to Origin </span></h4>
+<table class="wikitable" align="right">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                          yes          </td><td> yes          </td><td> yes          </td><td> yes          </td><td> yes
+</td></tr></tbody></table>
+<p>Example: G28
+</p><p>This causes the RepRap machine to move back to its X, Y and Z 
+zero endstops, a process known as "homing".  It does so accelerating, so
+ as to get there fast.  But when it arrives it backs off by 1 mm in each
+ direction slowly, then moves back slowly to the stop.  This ensures 
+more accurate positioning.  
+</p><p>If you add coordinates, then just the axes with coordinates specified will be zeroed.  Thus 
+</p>
+<pre>G28 X0 Y72.3
+</pre>
+<p>will zero the X and Y axes, but not Z.  The actual coordinate values are ignored.
+</p>
+<a name="G29-G32:_Bed_probing" id="G29-G32:_Bed_probing"></a><h4> <span class="mw-headline"> G29-G32: Bed probing </span></h4>
+<p>G29 Detailed Z-Probe
+</p><p>probes the bed at 3 points.
+</p><p>G30 Single Z Probe
+</p><p>probes bed at current XY location.
+</p><p>G31 Report Current Probe status
+</p><p>reports whether Z probe is triggered.
+</p><p>G32 Probe Z and calibrate with FPU
+</p><p>probes the bed at 3 points and updates transformation matrix for bed leveling compensation.
+</p>
+<a name="Unbuffered_G_commands" id="Unbuffered_G_commands"></a><h3> <span class="mw-headline"> Unbuffered G commands </span></h3>
+<p>The following commands are not buffered.  When one is received it is 
+stored, but it is not acknowledged to the host until the buffer is 
+exhausted and then the command has been executed.  Thus the host will 
+pause at one of these commands until it has been done.  Short pauses 
+between these commands and any that might follow them do not affect the 
+performance of the machine.
+</p><p><a href="http://reprap.org/wiki/Teacup_Firmware" title="Teacup Firmware">Teacup Firmware</a> buffers G20, G21, G90 and G91.
+</p>
+<a name="G4:_Dwell" id="G4:_Dwell"></a><h4> <span class="mw-headline"> G4: Dwell </span></h4>
+<p>Example: G4 P200
+</p><p>In this case sit still doing nothing for 200 milliseconds.  
+During delays the state of the machine (for example the temperatures of 
+its extruders) will still be preserved and controlled.
+</p>
+<a name="G10:_Head_Offset" id="G10:_Head_Offset"></a><h4> <span class="mw-headline"> G10: Head Offset </span></h4>
+<p>Example: G10 P3 X17.8 Y-19.3 Z0.0 R140 S205
+</p><p>This sets the offset for extrude head 3 (from the P3) to the X 
+and Y values specified.  You can put a non-zero Z value in as well, but 
+this is usually a bad idea unless the heads are loaded and unloaded by 
+some sort of head changer.  When all the heads are in the machine at 
+once they should all be set to the same Z height.
+</p><p>Remember that any parameter that you don't specify will 
+automatically be set to the last value for that parameter.  That usually
+ means that you want explicitly to set Z0.0.  
+</p><p>The R value is the standby temperature in <sup>o</sup>C that will
+ be used for the tool, and the S value is its operating temperature.  If
+ you don't want the head to be at a different temperature when not in 
+use, set both values the same.  See the T code (select tool) below.
+</p><p>The <a href="http://www.nist.gov/customcf/get_pdf.cfm?pub_id=823374" class="external text" title="http://www.nist.gov/customcf/get_pdf.cfm?pub_id=823374" rel="nofollow">NIST G-code standard</a> mentions an additional L parameter, which is ignored.
+</p><p>This command is <a href="http://reprap.org/wiki/Talk:G-code#M104_.26_M109_Deprecation.2C_G10_Introduction" title="Talk:G-code"> subject to discussion</a>.
+</p>
+<a name="G20:_Set_Units_to_Inches" id="G20:_Set_Units_to_Inches"></a><h4> <span class="mw-headline"> G20: Set Units to Inches </span></h4>
+<p>Example: G20
+</p><p>Units from now on are in inches.
+</p>
+<a name="G21:_Set_Units_to_Millimeters" id="G21:_Set_Units_to_Millimeters"></a><h4> <span class="mw-headline"> G21: Set Units to Millimeters </span></h4>
+<p>Example: G21
+</p><p>Units from now on are in millimeters.  (This is the RepRap default.)
+</p>
+<a name="G90:_Set_to_Absolute_Positioning" id="G90:_Set_to_Absolute_Positioning"></a><h4> <span class="mw-headline"> G90: Set to Absolute Positioning </span></h4>
+<p>Example: G90
+</p><p>All coordinates from now on are absolute relative to the origin of the machine.  (This is the RepRap default.)
+</p>
+<a name="G91:_Set_to_Relative_Positioning" id="G91:_Set_to_Relative_Positioning"></a><h4> <span class="mw-headline"> G91: Set to Relative Positioning </span></h4>
+<p>Example: G91
+</p><p>All coordinates from now on are relative to the last position.
+</p>
+<a name="G92:_Set_Position" id="G92:_Set_Position"></a><h4> <span class="mw-headline"> G92: Set Position </span></h4>
+<p>Example: G92 X10 E90
+</p><p>Allows programming of absolute zero point, by reseting the 
+current position to the values specified.  This would set the machine's X
+ coordinate to 10, and the extrude coordinate to 90. No physical motion 
+will occur.
+</p><p>A G92 without coordinates will reset all axes to zero.
+</p>
+<a name="Unbuffered_M_and_T_commands" id="Unbuffered_M_and_T_commands"></a><h3> <span class="mw-headline"> Unbuffered M and T commands </span></h3>
+<a name="M0:_Stop" id="M0:_Stop"></a><h4> <span class="mw-headline"> M0: Stop </span></h4>
+<p>Example: M0
+</p><p>The RepRap machine finishes any moves left in its buffer, then 
+shuts down.  All motors and heaters are turned off.  It can be started 
+again by pressing the reset button on the master microcontroller.  See 
+also M1, M112.
+</p>
+<a name="M1:_Sleep" id="M1:_Sleep"></a><h4> <span class="mw-headline"> M1: Sleep </span></h4>
+<p>Example: M1
+</p><p>The RepRap machine finishes any moves left in its buffer, then 
+shuts down.  All motors and heaters are turned off.  It can still be 
+sent G and M codes, the first of which will wake it up again.  See also 
+M0, M112.
+</p>
+<a name="M17:_Enable.2FPower_all_stepper_motors" id="M17:_Enable.2FPower_all_stepper_motors"></a><h4> <span class="mw-headline"> M17: Enable/Power all stepper motors</span></h4>
+<p>Example: M17
+</p>
+<a name="M18:_Disable_all_stepper_motors" id="M18:_Disable_all_stepper_motors"></a><h4> <span class="mw-headline"> M18: Disable all stepper motors</span></h4>
+<p>Example: M18
+</p><p>Disables stepper motors and allows axis to move 'freely.'
+</p><p>- Is this not the same as <a href="#M84:_Stop_idle_hold" title="">M84</a>? --  <a href="http://reprap.org/wiki/User:MrAlvin" title="User:MrAlvin">MrAlvin</a> 05:53, 20 September 2012 (UTC)
+</p>
+<a name="M20:_List_SD_card" id="M20:_List_SD_card"></a><h4> <span class="mw-headline"> M20: List SD card </span></h4>
+<p>Example: M20
+</p><p>All files in the root folder of the SD card are listed to the serial port.  This results in a line like:
+</p><p>ok Files: {SQUARE.G,SQCOM.G,}
+</p><p>The trailing comma is optional.  Note that file names are 
+returned in upper case, but - when sent to the M23 command (below) they 
+must be in lower case.  This seems to be a function of the SD software. 
+ Go figure...
+</p>
+<a name="M21:_Initialize_SD_card" id="M21:_Initialize_SD_card"></a><h4> <span class="mw-headline"> M21: Initialize SD card </span></h4>
+<p>Example: M21
+</p><p>The SD card is initialized. If an SD card is loaded when the 
+machine is switched on, this will happen by default. SD card must be 
+initialized for the other SD functions to work.
+</p>
+<a name="M22:_Release_SD_card" id="M22:_Release_SD_card"></a><h4> <span class="mw-headline"> M22: Release SD card </span></h4>
+<p>Example: M22
+</p><p>SD card is released and can be physically removed.
+</p>
+<a name="M23:_Select_SD_file" id="M23:_Select_SD_file"></a><h4> <span class="mw-headline"> M23: Select SD file </span></h4>
+<p>Example: M23 filename.gco
+</p><p>The file specified as filename.gco (8.3 naming convention is supported) is selected ready for printing.
+</p>
+<a name="M24:_Start.2Fresume_SD_print" id="M24:_Start.2Fresume_SD_print"></a><h4> <span class="mw-headline"> M24: Start/resume SD print </span></h4>
+<p>Example: M24
+</p><p>The machine prints from the file selected with the M23 command.
+</p>
+<a name="M25:_Pause_SD_print" id="M25:_Pause_SD_print"></a><h4> <span class="mw-headline"> M25: Pause SD print </span></h4>
+<p>Example: M25
+</p><p>The machine pause printing at the current position within the file selected with the M23 command.
+</p>
+<a name="M26:_Set_SD_position" id="M26:_Set_SD_position"></a><h4> <span class="mw-headline"> M26: Set SD position </span></h4>
+<p>Example: M26
+</p><p>Set SD position in bytes (M26 S12345).
+</p>
+<a name="M27:_Report_SD_print_status" id="M27:_Report_SD_print_status"></a><h4> <span class="mw-headline"> M27: Report SD print status </span></h4>
+<p>Example: M27
+</p><p>Report SD print status.
+</p>
+<a name="M28:_Begin_write_to_SD_card" id="M28:_Begin_write_to_SD_card"></a><h4> <span class="mw-headline"> M28: Begin write to SD card </span></h4>
+<p>Example: M28 filename.gco
+</p><p>File specified by filename.gco is created (or overwritten if it 
+exists) on the SD card and all subsequent commands sent to the machine 
+are written to that file.
+</p>
+<a name="M29:_Stop_writing_to_SD_card" id="M29:_Stop_writing_to_SD_card"></a><h4> <span class="mw-headline"> M29: Stop writing to SD card </span></h4>
+<p>Example: M29 filename.gco
+</p><p>File opened by M28 command is closed, and all subsequent commands sent to the machine are executed as normal.
+</p>
+<a name="M40:_Eject" id="M40:_Eject"></a><h4> <span class="mw-headline"> M40: Eject </span></h4>
+<p>If your RepRap machine can eject the parts it has built off the bed, 
+this command executes the eject cycle.  This usually involves cooling 
+the bed and then performing a sequence of movements that remove the 
+printed parts from it.  The X, Y and Z position of the machine at the 
+end of this cycle are undefined (though they can be found out using the 
+M114 command, q.v.).
+</p><p>See also M240 and M241 below.
+</p>
+<a name="M41:_Loop" id="M41:_Loop"></a><h4> <span class="mw-headline"> M41: Loop </span></h4>
+<p>Example: M41
+</p><p>If the RepRap machine was building a file from its own memory 
+such as a local SD card (as opposed to a file being transmitted to it 
+from a host computer) this goes back to the beginning of the file and 
+runs it again.  So, for example, if your RepRap is capable of ejecting 
+parts from its build bed then you can set it printing in a loop and it 
+will run and run.  Use with caution - the only things that will stop it 
+are:
+</p>
+<ol><li> When you press the reset button,
+</li><li> When the build material runs out (if your RepRap is set up to detect this), and
+</li><li> When there's an error (such as a heater failure).
+</li></ol>
+<a name="M42:_Stop_on_material_exhausted_.2F_Switch_I.2FO_pin" id="M42:_Stop_on_material_exhausted_.2F_Switch_I.2FO_pin"></a><h4> <span class="mw-headline"> M42: Stop on material exhausted / Switch I/O pin </span></h4>
+<a name="M42_in_.3F.3F.3F" id="M42_in_.3F.3F.3F"></a><h5> <span class="mw-headline"> M42 in&nbsp;??? </span></h5>
+<p>Example: M42
+</p><p>If your RepRap can detect when its material runs out, this 
+decides the behaviour when that happens.  The X and Y axes are zeroed 
+(but not Z), and then the machine shuts all motors and heaters off.  You
+ have to press reset to reactivate the machine.  In other words, it 
+parks itself and then executes an M0 command (q.v.).
+</p>
+<a name="M42_in_Marlin.2FSprinter" id="M42_in_Marlin.2FSprinter"></a><h5> <span class="mw-headline"> M42 in Marlin/Sprinter </span></h5>
+<p>Example: M42 P7 S255
+</p><p>M42 switches a general purpose I/O pin.
+</p>
+<a name="M42_in_Teacup" id="M42_in_Teacup"></a><h5> <span class="mw-headline"> M42 in Teacup </span></h5>
+<p>Teacup firmware doesn't implement M42 and switches general purpose devices like a heater, with M104.
+</p>
+<a name="M43:_Stand_by_on_material_exhausted" id="M43:_Stand_by_on_material_exhausted"></a><h4> <span class="mw-headline"> M43: Stand by on material exhausted </span></h4>
+<p>Example: M43
+</p><p>If your RepRap can detect when its material runs out, this 
+decides the behaviour when that happens.  The X and Y axes are zeroed 
+(but not Z), and then the machine shuts all motors and heaters off 
+except the heated bed, the temperature of which is maintained.  The 
+machine will still respond to G and M code commands in this state.
+</p>
+<a name="M80:_ATX_Power_On" id="M80:_ATX_Power_On"></a><h4> <span class="mw-headline"> M80: ATX Power On </span></h4>
+<p>Example: M80
+</p><p>Turns on the ATX power supply from standby mode to fully operational mode. No-op on electronics without standby mode.
+</p><p><b>Note</b>: some firmwares, like <a href="http://reprap.org/wiki/Teacup_Firmware" title="Teacup Firmware"> Teacup</a>, handle power on/off automatically, so this is redundant there.
+</p>
+<a name="M81:_ATX_Power_Off" id="M81:_ATX_Power_Off"></a><h4> <span class="mw-headline"> M81: ATX Power Off </span></h4>
+<p>Example: M81
+</p><p>Turns off the ATX power supply. Counterpart to M80.
+</p>
+<a name="M82:_set_extruder_to_absolute_mode" id="M82:_set_extruder_to_absolute_mode"></a><h4> <span class="mw-headline"> M82: set extruder to absolute mode </span></h4>
+<p>Example: M82
+</p><p>makes the extruder interpret extrusion as absolute positions.
+</p><p>This is the default in repetier.
+</p>
+<a name="M83:_set_extruder_to_relative_mode" id="M83:_set_extruder_to_relative_mode"></a><h4> <span class="mw-headline"> M83: set extruder to relative mode </span></h4>
+<p>Example: M83
+</p><p>makes the extruder interpret extrusion values as relative positions.
+</p>
+<a name="M84:_Stop_idle_hold" id="M84:_Stop_idle_hold"></a><h4> <span class="mw-headline"> M84: Stop idle hold </span></h4>
+<p>Example: M84
+</p><p>Stop the idle hold on all axis and extruder. In some cases the 
+idle hold causes annoying noises, which can be stopped by disabling the 
+hold. Be aware that by disabling idle hold during printing, you will get
+ quality issues. This is recommended only in between or after printjobs.
+</p>
+<a name="M92:_Set_axis_steps_per_unit" id="M92:_Set_axis_steps_per_unit"></a><h4> <span class="mw-headline"> M92: Set axis_steps_per_unit </span></h4>
+<p>Example: M92 X&lt;newsteps&gt;   Sprinter and Marlin
+</p><p>Allows programming of steps per unit of axis till the electronics are reset for the specified axis. Very useful for calibration.
+</p>
+<a name="M98:_Get_axis_hysteresis_mm" id="M98:_Get_axis_hysteresis_mm"></a><h4> <span class="mw-headline"> M98: Get axis_hysteresis_mm </span></h4>
+<p>Example: M98                       
+</p><p>Report the current hysteresis values in mm for all of the axis.
+</p><p>Proposed for Marlin
+</p>
+<a name="M99:_Set_axis_hysteresis_mm" id="M99:_Set_axis_hysteresis_mm"></a><h4> <span class="mw-headline"> M99: Set axis_hysteresis_mm </span></h4>
+<p>Example: M99 X&lt;mm&gt; Y&lt;mm&gt; Z&lt;mm&gt; E&lt;mm&gt;   
+</p><p>Allows programming of axis hysteresis. Mechanical pulleys, gears 
+and threads can have hysteresis when they change direction. That is, a 
+certain number of steps occur before movement occurs. You can measure 
+how many mm are lost to hysteresis and set their values with this 
+command. Every time an axis changes direction, these extra mm will be 
+added to compensate for the hysteresis.
+</p><p>Proposed for Marlin
+</p>
+<a name="M101_Turn_extruder__1_on_Forward_.2F_Undo_Extruder_Retraction" id="M101_Turn_extruder__1_on_Forward_.2F_Undo_Extruder_Retraction"></a><h4> <span class="mw-headline"> M101 Turn extruder  1 on Forward / Undo Extruder Retraction </span></h4>
+<a name="M101_in_Teacup_firmware" id="M101_in_Teacup_firmware"></a><h5> <span class="mw-headline"> M101 in Teacup firmware </span></h5>
+<p>If a DC extruder is present, turn that on. Else, undo filament 
+retraction, which means, make the extruder ready for extrusion. 
+Complement to M103.
+</p>
+<a name="M101_in_other_firmwares" id="M101_in_other_firmwares"></a><h5> <span class="mw-headline"> M101 in other firmwares </span></h5>
+<p>Deprecated. Regarding filament retraction, see M227, M228, M229.
+</p>
+<a name="M102_Turn_extruder_1_on_Reverse" id="M102_Turn_extruder_1_on_Reverse"></a><h4> <span class="mw-headline"> M102 Turn extruder 1 on Reverse </span></h4>
+<p>Deprecated.
+</p>
+<a name="M103_Turn_all_extruders_off_.2F_Extruder_Retraction" id="M103_Turn_all_extruders_off_.2F_Extruder_Retraction"></a><h4> <span class="mw-headline"> M103 Turn all extruders off / Extruder Retraction </span></h4>
+<a name="M103_in_Teacup_firmware" id="M103_in_Teacup_firmware"></a><h5> <span class="mw-headline"> M103 in Teacup firmware </span></h5>
+<p>If a DC extruder is present, turn that off. Else, retract the 
+filament in the hope to prevent nozzle drooling. Complement to M101.
+</p>
+<a name="M103_in_other_firmwares" id="M103_in_other_firmwares"></a><h5> <span class="mw-headline"> M103 in other firmwares </span></h5>
+<p>Deprecated. Regarding extruder retraction, see M227, M228, M229.
+</p>
+<a name="M104:_Set_Extruder_Temperature" id="M104:_Set_Extruder_Temperature"></a><h4> <span class="mw-headline"> M104: Set Extruder Temperature </span></h4>
+<p>Example: M104 S190
+</p><p>Set the temperature of the current extruder to 190<sup>o</sup>C and return control to the host immediately (<i>i.e.</i> before that temperature has been reached by the extruder).  See also M109.
+</p><p>This is deprecated because temperatures should be set using the G10 and T commands (q.v.).
+</p><p>Deprecation is <a href="http://reprap.org/wiki/Talk:G-code#M104_.26_M109_Deprecation.2C_G10_Introduction" title="Talk:G-code"> subject to discussion</a>. --<a href="http://reprap.org/wiki/User:Traumflug" title="User:Traumflug">Traumflug</a> 11:33, 19 July 2012 (UTC)
+</p>
+<a name="M105:_Get_Extruder_Temperature" id="M105:_Get_Extruder_Temperature"></a><h4> <span class="mw-headline"> M105: Get Extruder Temperature </span></h4>
+<p>Example: M105
+</p><p>Request the temperature of the current extruder and the build 
+base in degrees Celsius.  The temperatures are returned to the host 
+computer.  For example, the line sent to the host in response to this 
+command looks like
+</p><p><tt>ok T:201 B:117</tt>
+</p>
+<a name="M106:_Fan_On" id="M106:_Fan_On"></a><h4> <span class="mw-headline"> M106: Fan On </span></h4>
+<p>Example: M106 S127
+</p><p>Turn on the cooling fan at half speed.
+Mandatory parameter 'S' declares the PWM value (0-255). M106 S0 turns the fan off.
+</p>
+<a name="M107:_Fan_Off" id="M107:_Fan_Off"></a><h4> <span class="mw-headline"> M107: Fan Off </span></h4>
+<p>Deprecated. Use M106 S0 instead.
+</p>
+<a name="M108:_Set_Extruder_Speed" id="M108:_Set_Extruder_Speed"></a><h4> <span class="mw-headline"> M108: Set Extruder Speed </span></h4>
+<p>Sets speed of extruder motor.
+(Deprecated in current firmware, see M113)
+</p>
+<a name="M109:_Set_Extruder_Temperature_and_Wait" id="M109:_Set_Extruder_Temperature_and_Wait"></a><h4> <span class="mw-headline"> M109: Set Extruder Temperature and Wait </span></h4>
+<p>Deprecated. Use <a href="#M104:_Set_Extruder_Temperature" title=""> M104</a>, followed by an <a href="#M116:_Wait" title=""> M116</a>, instead.
+</p><p>Another way to do this is to use <a href="#G10:_Head_Offset" title=""> G10</a>.
+</p>
+<a name="M110:_Set_Current_Line_Number" id="M110:_Set_Current_Line_Number"></a><h4> <span class="mw-headline"> M110: Set Current Line Number </span></h4>
+<p>Example: M110 N123
+</p><p>Set the current line number to 123.  Thus the expected next line after this command will be 124.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup        </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> no-op         </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M111:_Set_Debug_Level" id="M111:_Set_Debug_Level"></a><h4> <span class="mw-headline"> M111: Set Debug Level </span></h4>
+<p>Example: M111 S6
+</p><p>Set the level of debugging information transmitted back to the host to level 6.  The level is the OR of three bits:
+</p>
+<pre>#define DEBUG_ECHO (1&lt;&lt;0)
+#define DEBUG_INFO (1&lt;&lt;1)
+#define DEBUG_ERRORS (1&lt;&lt;2)
+</pre>
+<p>Thus 6 means send information and errors, but don't echo commands.  (This is the RepRap default.)
+</p><p><br>
+Example: M253 
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup        </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> Debug         </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M112:_Emergency_Stop" id="M112:_Emergency_Stop"></a><h4> <span class="mw-headline"> M112: Emergency Stop </span></h4>
+<p>Example: M112
+</p><p>Any moves in progress are immediately terminated, then RepRap 
+shuts down.  All motors and heaters are turned off.  It can be started 
+again by pressing the reset button on the master microcontroller.  See 
+also M0 and M1.
+</p>
+<a name="M113:_Set_Extruder_PWM" id="M113:_Set_Extruder_PWM"></a><h4> <span class="mw-headline"> M113: Set Extruder PWM </span></h4>
+<p>Example: M113
+</p><p>Set the PWM for the currently-selected extruder.  On its own this
+ command 
+sets RepRap to use the on-board potentiometer on the extruder controller
+ board to set the PWM for the currently-selected extruder's stepper 
+power.  With an S field:
+</p><p>M113 S0.7
+</p><p>it causes the PWM to be set to the S value (70% in this 
+instance).  M113 S0 turns the extruder off, until an M113 command other 
+than M113 S0 is sent.
+</p>
+<a name="M114:_Get_Current_Position" id="M114:_Get_Current_Position"></a><h4> <span class="mw-headline"> M114: Get Current Position </span></h4>
+<p>Example: M114
+</p><p>This causes the RepRap machine to report its current X, Y, Z and E coordinates to the host.
+</p><p>For example, the machine returns a string such as:
+</p><p><tt>ok C: X:0.00 Y:0.00 Z:0.00 E:0.00</tt>
+</p>
+<a name="M115:_Get_Firmware_Version_and_Capabilities" id="M115:_Get_Firmware_Version_and_Capabilities"></a><h4> <span class="mw-headline"> M115: Get Firmware Version and Capabilities </span></h4>
+<p>Example: M115
+</p><p>Request the Firmware Version and Capabilities of the current microcontroller 
+The details are returned to the host computer as key:value pairs separated by spaces and terminated with a linefeed.
+</p><p>sample data from firmware:
+</p>
+<pre>ok PROTOCOL_VERSION:0.1 FIRMWARE_NAME:FiveD FIRMWARE_URL:http%3A//reprap.org MACHINE_TYPE:Mendel EXTRUDER_COUNT:1
+</pre>
+<p>This M115 code is inconsistently implemented, and should not be 
+relied upon to exist, or output correctly in all cases. An initial 
+implementation was committed to svn for the FiveD Reprap firmware on 11 
+Oct 2010.  Work to more formally define protocol versions is currently 
+(October 2010) being discussed.  See <a href="http://reprap.org/wiki/M115_Keywords" title="M115 Keywords">M115_Keywords</a> for one draft set of keywords and their meanings.
+</p>
+<a name="M116:_Wait" id="M116:_Wait"></a><h4> <span class="mw-headline"> M116: Wait </span></h4>
+<p>Example: M116
+</p><p>Wait for <i>all</i> temperatures and other slowly-changing variables to arrive at their set values.  See also M109.
+</p>
+<a name="M117:_Get_Zero_Position" id="M117:_Get_Zero_Position"></a><h4> <span class="mw-headline"> M117: Get Zero Position </span></h4>
+<p>Example: M117
+</p><p>This causes the RepRap machine to report the X, Y, Z and E coordinates <i>in steps not mm</i> to the host that it found when it last hit the zero stops for those axes.  That is to say, when you zero X, the <i>x</i>
+ coordinate of the machine when it hits the X endstop is recorded.  This
+ value should be 0, of course.  But if the machine has drifted (for 
+example by dropping steps) then it won't be.  This command allows you to
+ measure and to diagnose such problems.  (E is included for 
+completeness.  It doesn't normally have an endstop.)
+</p>
+<a name="M118:_Negotiate_Features" id="M118:_Negotiate_Features"></a><h4> <span class="mw-headline"> M118: Negotiate Features </span></h4>
+<p>Example: M118 P42
+</p><p>This M-code is for future proofing. NO firmware or hostware 
+supports this at the moment. It is used in conjunction with M115's 
+FEATURES keyword.
+</p><p>See <a href="http://reprap.org/wiki/Protocol_Feature_Negotiation" title="Protocol Feature Negotiation">Protocol_Feature_Negotiation</a> for more info.
+</p>
+<a name="M119:_Get_Endstop_Status" id="M119:_Get_Endstop_Status"></a><h4> <span class="mw-headline"> M119: Get Endstop Status </span></h4>
+<table class="wikitable" align="right">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> M200 instead </td><td>              </td><td> yes          </td><td>
+</td></tr></tbody></table>
+<p><br>
+Example: M119
+</p><p>Returns the current state of the configured X,Y,Z endstops. 
+Should take into account any 'inverted endstop' settings, so one can 
+confirm that the machine is interpreting the endstops correctly.
+</p>
+<a name="M126:_Open_Valve" id="M126:_Open_Valve"></a><h4> <span class="mw-headline"> M126: Open Valve </span></h4>
+<p>Example: M126 P500
+</p><p>Open the extruder's valve (if it has one) and wait 500 milliseconds for it to do so.
+</p>
+<a name="M127:_Close_Valve" id="M127:_Close_Valve"></a><h4> <span class="mw-headline"> M127: Close Valve </span></h4>
+<p>Example: M127 P400
+</p><p>Close the extruder's valve (if it has one) and wait 400 milliseconds for it to do so.
+</p>
+<a name="M128:_Extruder_Pressure_PWM" id="M128:_Extruder_Pressure_PWM"></a><h4> <span class="mw-headline"> M128: Extruder Pressure PWM </span></h4>
+<p>Example: M128 S255
+</p><p>PWM value to control internal extruder pressure. S255 is full pressure.
+</p>
+<a name="M129:_Extruder_pressure_off" id="M129:_Extruder_pressure_off"></a><h4> <span class="mw-headline"> M129: Extruder pressure off </span></h4>
+<p>Example: M129 P100
+</p><p>In addition to setting Extruder pressure to 0, you can turn the pressure off entirely. P400 will wait 100ms to do so.
+</p>
+<a name="M130:_Set_PID_P_value" id="M130:_Set_PID_P_value"></a><h4> <span class="mw-headline"> M130: Set PID P value </span></h4>
+<p>Example: M130 P 0 S 8.0  #  Sets heater 0 P factor to 8.0
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> yes          </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M131:_Set_PID_I_value" id="M131:_Set_PID_I_value"></a><h4> <span class="mw-headline"> M131: Set PID I value </span></h4>
+<p>Example: M130 P 1 S 0.5  #  Sets heater 1 I factor to 0.5
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> yes          </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M132:_Set_PID_D_value" id="M132:_Set_PID_D_value"></a><h4> <span class="mw-headline"> M132: Set PID D value </span></h4>
+<p>Example: M130 P 0 S 24  #  Sets heater 0 D factor to 24.0
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> yes          </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M133:_Set_PID_I_limit_value" id="M133:_Set_PID_I_limit_value"></a><h4> <span class="mw-headline"> M133: Set PID I limit value </span></h4>
+<p>Example: M130 P 1 S 264  #  Sets heater 0 I limit value to 264
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> yes          </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<a name="M134:_Write_PID_values_to_EEPROM" id="M134:_Write_PID_values_to_EEPROM"></a><h4> <span class="mw-headline"> M134: Write PID values to EEPROM </span></h4>
+<p>Example: M134 
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> yes          </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<a name="M135:_Set_heater_output" id="M135:_Set_heater_output"></a><h4> <span class="mw-headline"> M135: Set heater output </span></h4>
+<p>Example: M135 P 0 S128  # sets Heater 0 to a PWM output of 128
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> yes          </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M136:_Print_PID_settings_to_host" id="M136:_Print_PID_settings_to_host"></a><h4> <span class="mw-headline"> M136: Print PID settings to host </span></h4>
+<p>Example: M136 P1  # print heater 0 PID parameters to host
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> Debug        </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M140:_Bed_Temperature_.28Fast.29" id="M140:_Bed_Temperature_.28Fast.29"></a><h4> <span class="mw-headline"> M140: Bed Temperature (Fast) </span></h4>
+<p>Example: M140 S55
+</p><p>Set the temperature of the build bed to 55<sup>o</sup>C and return control to the host immediately (<i>i.e.</i> before that temperature has been reached by the bed).
+</p>
+<a name="M141:_Chamber_Temperature_.28Fast.29" id="M141:_Chamber_Temperature_.28Fast.29"></a><h4> <span class="mw-headline"> M141: Chamber Temperature (Fast) </span></h4>
+<p>Example: M141 S30
+</p><p>Set the temperature of the chamber to 30<sup>o</sup>C and return control to the host immediately (<i>i.e.</i> before that temperature has been reached by the chamber).
+</p>
+<a name="M142:_Holding_Pressure" id="M142:_Holding_Pressure"></a><h4> <span class="mw-headline"> M142: Holding Pressure </span></h4>
+<p>Example: M142 S1
+</p><p>Set the holding pressure of the bed to 1 bar.
+</p><p>The holding pressure is in bar.  For hardware which only has 
+on/off holding, when the holding pressure is zero, turn off holding, 
+when the holding pressure is greater than zero, turn on holding.
+</p>
+<a name="M143:_Maximum_hot-end_temperature" id="M143:_Maximum_hot-end_temperature"></a><h4> <span class="mw-headline">  M143: Maximum hot-end temperature </span></h4>
+<p>Example: M143 S275
+</p><p>Set the maximum temperature of the hot-end to 275C
+</p><p>When temperature of the hot-end exceeds this value, take 
+countermeasures, for instance an emergency stop. This is to prevent 
+hot-end damage.
+</p>
+<a name="M160:_Number_of_mixed_materials" id="M160:_Number_of_mixed_materials"></a><h4> <span class="mw-headline">  M160: Number of mixed materials </span></h4>
+<p>Example: M160 S4
+</p><p>Set the number of materials, N, that the current extruder can handle to the number specified.  The default is 1.
+</p><p>When N &gt;= 2, then the E field that controls extrusion requires N+1 values separated by spaces after it like this: 
+</p>
+<pre>M160 S4
+G1 X90.6 Y13.8 E22.4 0.1 0.1 0.1 0.7
+G1 X70.6 E42.4 0.0 0.0 0.0 1.0
+G1 E42.4 1.0 0.0 0.0 0.0
+</pre>
+<p>The second line moves straight to the point (90.6, 13.8) extruding 22.4mm of filament.  The mix ratio at the <b>end</b> of the move is 0.1:0.1:0.1:0.7.
+</p><p>The third line moves back 20mm in X extruding 20mm of filament.  
+The mix varies linearly from 0.1:0.1:0.1:0.7 to 0:0:0:1 as the move is 
+made.
+</p><p>The fourth line has no physical effect, but sets the mix proportions for the start of the next move to 1:0:0:0.
+</p>
+<a name="M190:_Wait_for_bed_temperature_to_reach_target_temp" id="M190:_Wait_for_bed_temperature_to_reach_target_temp"></a><h4> <span class="mw-headline"> M190: Wait for bed temperature to reach target temp </span></h4>
+<p>Example: M190 S60
+</p><p>This will wait until the bed temperature reaches 60 degrees, 
+printing out the temperature of the hot end and the bed every second.
+</p>
+<a name="M200_-_Set_filament_diameter_.2F_Get_Endstop_Status" id="M200_-_Set_filament_diameter_.2F_Get_Endstop_Status"></a><h4> <span class="mw-headline"> M200 - Set filament diameter / Get Endstop Status </span></h4>
+<table class="wikitable" align="right">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup       </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> endstop status</td><td>             </td><td> dia          </td><td>
+</td></tr></tbody></table>
+<p>M200 reports the endstop status on Teacup firmware.
+</p><p>M200 sets the filament diameter on other firmware.
+</p><p>Question: what does a firmware do with filament diameter? Has 
+this an effect on how much an E command moves the extruder motor? --<a href="http://reprap.org/wiki/User:Traumflug" title="User:Traumflug">Traumflug</a> 11:34, 14 October 2012 (UTC)
+</p>
+<a name="M201_-_Set_max_printing_acceleration" id="M201_-_Set_max_printing_acceleration"></a><h4> <span class="mw-headline"> M201 - Set max printing acceleration </span></h4>
+<p>in units/s^2 for print moves (M201 X1000 Y1000)
+</p>
+<a name="M202_-_Set_max_travel_acceleration" id="M202_-_Set_max_travel_acceleration"></a><h4> <span class="mw-headline"> M202 - Set max travel acceleration </span></h4>
+<p>in units/s^2 for travel moves (M202 X1000 Y1000) Unused in Marlin!!
+</p>
+<a name="M203_-_Set_maximum_feedrate" id="M203_-_Set_maximum_feedrate"></a><h4> <span class="mw-headline"> M203 - Set maximum feedrate </span></h4>
+<p>that your machine can sustain (M203 X200 Y200 Z300 E10000) in mm/sec
+</p><p>Note: this should be in units/minute, just like the F code.
+</p>
+<a name="M204_-_Set_default_acceleration" id="M204_-_Set_default_acceleration"></a><h4> <span class="mw-headline"> M204 - Set default acceleration </span></h4>
+<p>S normal moves T filament only moves (M204 S3000 T7000) im mm/sec^2  
+also sets minimum segment time in ms (B20000) to prevent buffer 
+underruns and M20 minimum feedrate
+</p>
+<a name="M205_-__advanced_settings" id="M205_-__advanced_settings"></a><h4> <span class="mw-headline"> M205 -  advanced settings </span></h4>
+<p>minimum travel speed S=while printing T=travel only,  B=minimum 
+segment time X= maximum xy jerk, Z=maximum Z jerk, E=maximum E jerk
+</p>
+<a name="M206:_set_home_offset" id="M206:_set_home_offset"></a><h4> <span class="mw-headline"> M206: set home offset </span></h4>
+<p>Example: M206 X10.0 Y10.0 Z-0.4
+</p><p>The values specified are added to the endstop position when the 
+axes are referenced. The same can be achieved with a G92 right after 
+homing (G28, G161).
+</p><p>With Marlin firmware, this value can be saved to EEPROM using the M500 command.
+</p><p>A similar command is G10, aligning these two is <a href="http://reprap.org/wiki/Talk:G-code#M104_.26_M109_Deprecation.2C_G10_Introduction" title="Talk:G-code"> subject to discussion</a>.
+</p>
+<a name="M207:_calibrate_z_axis_by_detecting_z_max_length" id="M207:_calibrate_z_axis_by_detecting_z_max_length"></a><h4> <span class="mw-headline"> M207: calibrate z axis by detecting z max length </span></h4>
+<p>Example: M207
+</p><p>After placing the tip of the nozzle in the position you expect to
+ be considered Z=0, issue this command to calibrate the Z axis. It will 
+perform a z axis homing routine and calculate the distance traveled in 
+this process. The result is stored in EEPROM as z_max_length. For using 
+this calibration method the machine must be using a Z MAX endstop.
+</p><p>This procedure is usually more reliable than mechanical adjustments of a Z MIN endstop.
+</p>
+<a name="M208:_set_axis_max_travel" id="M208:_set_axis_max_travel"></a><h4> <span class="mw-headline"> M208: set axis max travel </span></h4>
+<p>Example: M208 X250 Y210 Z180
+</p><p>The values specified set the software limits for axis travel in the positive direction.
+</p><p>With Marlin firmware, this value can be saved to EEPROM using the M500 command.
+</p><p><br>
+</p>
+<a name="M209:_enable_automatic_retract" id="M209:_enable_automatic_retract"></a><h4> <span class="mw-headline"> M209: enable automatic retract </span></h4>
+<p>Example: M209 S1
+</p><p>This boolean value S 1=true or 0=false enables automatic retract 
+detect if the slicer did not support G10/11: every normal extrude-only 
+move will be classified as retract depending on the direction.
+</p>
+<a name="M220:set_speed_factor_override_percentage" id="M220:set_speed_factor_override_percentage"></a><h4> <span class="mw-headline"> M220:set speed factor override percentage </span></h4>
+<p>Example: M220 S80
+</p><p>S&lt;factor in percent&gt;- set speed factor override percentage
+</p>
+<a name="M221:_set_extrude_factor_override_percentage" id="M221:_set_extrude_factor_override_percentage"></a><h4> <span class="mw-headline"> M221: set extrude factor override percentage </span></h4>
+<p>Example: M221 S70
+</p>
+<pre>S&lt;factor in percent&gt;- set extrude factor override percentage
+</pre>
+<a name="M226:_Gcode_Initiated_Pause" id="M226:_Gcode_Initiated_Pause"></a><h4> <span class="mw-headline"> M226: Gcode Initiated Pause </span></h4>
+<p>Example: M226
+</p><p>Initiates a pause in the same way as if the pause button is 
+pressed. That is, program execution is stopped and the printer waits for
+ user interaction. This matches the behaviour of M1 in the <a href="http://www.nist.gov/manuscript-publication-search.cfm?pub_id=823374" class="external text" title="http://www.nist.gov/manuscript-publication-search.cfm?pub_id=823374" rel="nofollow">NIST RS274NGC G-code standard</a> and M0 in Marlin firmware.
+</p>
+<a name="M227:_Enable_Automatic_Reverse_and_Prime" id="M227:_Enable_Automatic_Reverse_and_Prime"></a><h4> <span class="mw-headline"> M227: Enable Automatic Reverse and Prime </span></h4>
+<p>Example: M227 P1600 S1600
+</p><p>P and S are steps.
+</p><p>"Reverse and Prime" means, the extruder filament is retracted 
+some distance when not in use and pushed forward the same amount before 
+going into use again. This shall help to prevent drooling of the 
+extruder nozzle. Teacup firmware implements this with M101/M103.
+</p>
+<a name="M228:_Disable_Automatic_Reverse_and_Prime" id="M228:_Disable_Automatic_Reverse_and_Prime"></a><h4> <span class="mw-headline"> M228: Disable Automatic Reverse and Prime </span></h4>
+<p>Example: M228
+</p><p>See also M227.
+</p>
+<a name="M229:_Enable_Automatic_Reverse_and_Prime" id="M229:_Enable_Automatic_Reverse_and_Prime"></a><h4> <span class="mw-headline"> M229: Enable Automatic Reverse and Prime </span></h4>
+<p>Example: M229 P1.0 S1.0
+</p><p>P and S are extruder screw rotations. See also M227.
+</p>
+<a name="M230:_Disable_.2F_Enable_Wait_for_Temperature_Change" id="M230:_Disable_.2F_Enable_Wait_for_Temperature_Change"></a><h4> <span class="mw-headline"> M230: Disable / Enable Wait for Temperature Change </span></h4>
+<p>Example: M230 S1
+</p><p>S1 Disable wait for temperature change
+S0 Enable wait for temperature change
+</p><p><br>
+</p>
+<a name="M240:_Start_conveyor_belt_motor_.2F_Echo_off" id="M240:_Start_conveyor_belt_motor_.2F_Echo_off"></a><h4> <span class="mw-headline"> M240: Start conveyor belt motor / Echo off </span></h4>
+<p>Example: M240
+</p><p>The conveyor belt allows to start mass production of a part with a reprap.  
+</p><p>Echoing may be controlled in some firmwares with M111
+</p><p>Example: M240 
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup        </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> Debug: Echo off</td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M241:_Stop_conveyor_belt_motor_.2F_echo_on" id="M241:_Stop_conveyor_belt_motor_.2F_echo_on"></a><h4> <span class="mw-headline"> M241: Stop conveyor belt motor / echo on </span></h4>
+<p>Example: M241
+</p><p>Echoing may be controlled in some firmwares with M111
+</p><p>Example: M240 
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2"> Support </th><th> FiveD        </th><th> Teacup        </th><th> Sprinter     </th><th> Marlin       </th><th> Repetier
+</th></tr>
+<tr>
+<td>                                       </td><td> Debug: Echo on </td><td>              </td><td>              </td><td>
+</td></tr></tbody></table>
+<p><br>
+</p>
+<a name="M245:_Start_cooler" id="M245:_Start_cooler"></a><h4> <span class="mw-headline"> M245: Start cooler </span></h4>
+<p>Example: M245
+</p><p>used to cool parts/heated-bed down after printing for easy remove of the parts after print
+</p>
+<a name="M246:_Stop_cooler" id="M246:_Stop_cooler"></a><h4> <span class="mw-headline"> M246: Stop cooler </span></h4>
+<p>Example: M246
+</p>
+<a name="M300:_Play_beep_sound" id="M300:_Play_beep_sound"></a><h4> <span class="mw-headline"> M300: Play beep sound </span></h4>
+<p>Usage: M300 S&lt;frequency Hz&gt; P&lt;duration ms&gt;
+</p><p>Example: M300 S300 P1000
+</p><p>Play beep sound, use to notify important events like the end of printing. <a href="http://www.3dprinting-r2c2.com/?q=content/seasons-greetings" class="external text" title="http://www.3dprinting-r2c2.com/?q=content/seasons-greetings" rel="nofollow">See working example on</a> <a href="http://reprap.org/wiki/R2C2_RepRap_Electronics" title="R2C2 RepRap Electronics">R2C2 electronics</a>.
+</p>
+<a name="T:_Select_Tool" id="T:_Select_Tool"></a><h4> <span class="mw-headline"> T: Select Tool </span></h4>
+<p>Example: T1
+</p><p>Select extruder number 1 to build with.  
+</p><p>The sequence followed is:
+</p>
+<ol><li> Set the current extruder to its standby temperature specified by G10 (see above),
+</li><li> Apply any offset for the new extruder specified by G10,
+</li><li> Set the new tool to its operating temperature specified by G10 and wait till it gets there,
+</li><li> Use the new extruder.
+</li></ol>
+<p>Selecting a non-existent tool (100, say) just does Step 1. above.  
+That is to say it leaves all tools in their standby state.  You can, of 
+course, use the G10 command beforehand to set that standby temperature 
+to anything you like.
+</p><p>Note that you may wish to move to a parking position <i>before</i> executing a T command  in order to allow the new extruder to reach temperature while not in contact with the print.
+</p><p>If the Z value changes in the offsets and the head moves up, then
+ the Z move is made before the X and Y moves.  If Z moves down, X and Y 
+are done first.
+</p><p>After a reset extruders will not start heating until they are 
+selected.  You can either put them all at their standby temperature by 
+selecting them in turn, or leave them off so they only come on if/when 
+you first use them.  The M0, M1 and M112 commands turn them all off.  
+You can, of course, turn them all off with the M1 command, then turn 
+some back on again.  Don't forget also to turn on the heated bed (if 
+any) if you use that trick.
+</p><p>Extruder numbering starts at 0.
+</p>
+<a name="Proposed_EEPROM_configuration_codes" id="Proposed_EEPROM_configuration_codes"></a><h2> <span class="mw-headline"> Proposed EEPROM configuration codes </span></h2>
+<p>BRIEFLY:  each RepRap has a number of physical parameters that should
+ be persistent, but easily configurable, such as extrusion steps/mm, 
+various max values, etc. Those parameters are  currently hardcoded in 
+the firmware, so that a user has to modify, recompile and re-flash the 
+firmware for any adjustments.  These configs can be stored in MCU's 
+EEPROM and modified via some M-codes.  Please see the detailed proposal 
+at <a href="http://reprap.org/wiki/M-codes_for_EEPROM_config" title="M-codes for EEPROM config">M-codes for EEPROM config</a>. (<i>This is proposed by --<a href="http://reprap.org/wiki/User:AlexRa" title="User:AlexRa">AlexRa</a> on 11-March-2011. There is currently no working implementation of the proposed commands</i>).
+</p><p><a href="http://reprap.org/wiki/Marlin" title="Marlin">Marlin</a> uses these codes to manipulate EEPROM values.
+</p><p><a href="http://reprap.org/wiki/Sprinter" title="Sprinter">Sprinter</a> has implemented the following commands to manipulate EEPROM <a href="https://github.com/kliment/Sprinter/commit/4b1b0f1d96d2be2ed3941095f40a5c2d2bbb943d" class="external text" title="https://github.com/kliment/Sprinter/commit/4b1b0f1d96d2be2ed3941095f40a5c2d2bbb943d" rel="nofollow">Commit message</a>.
+</p><p><a href="http://reprap.org/wiki/Teacup" title="Teacup" class="mw-redirect">Teacup</a> uses codes M130-M136 to set, read, and save some parameters.
+</p>
+<a name="M500:_stores_paramters_in_EEPROM" id="M500:_stores_paramters_in_EEPROM"></a><h3> <span class="mw-headline"> M500: stores paramters in EEPROM </span></h3>
+<a name="M501:_reads_parameters_from_EEPROM" id="M501:_reads_parameters_from_EEPROM"></a><h3> <span class="mw-headline"> M501: reads parameters from EEPROM </span></h3>
+<p>If you need to reset them after you changed them temporarily
+</p>
+<a name="M502:_reverts_to_the_default_.22factory_settings.22." id="M502:_reverts_to_the_default_.22factory_settings.22."></a><h3> <span class="mw-headline"> M502: reverts to the default "factory settings". </span></h3>
+<p>You still need to store them in EEPROM afterwards if you want to.
+</p>
+<a name="M503:_Print_settings" id="M503:_Print_settings"></a><h3> <span class="mw-headline"> M503: Print settings </span></h3>
+<a name="Replies_from_the_RepRap_machine_to_the_host_computer" id="Replies_from_the_RepRap_machine_to_the_host_computer"></a><h2> <span class="mw-headline"> Replies from the RepRap machine to the host computer </span></h2>
+<p>All communication is in printable ASCII characters.  Messages sent back
+to the host computer are terminated by a newline and look like this:
+</p><p><b>xx [line number to resend] [T:93.2 B:22.9] [C: X:9.2 Y:125.4 Z:3.7 E:1902.5] [Some debugging or other information may be here]</b>
+</p><p><b>xx</b> can be one of:
+</p><p><b>ok</b>
+</p><p><b>rs</b>
+</p><p><b>!!</b>
+</p><p><b>ok</b> means that no error has been detected.
+</p><p><b>rs</b> means resend, and is followed by the line number to resend.
+</p><p><b>!!</b> means that a hardware fault has been detected.  The RepRap machine will
+shut down immediately after it has sent this message.
+</p><p>The <b>T:</b> and <b>B:</b> values are the temperature of the 
+currently-selected extruder 
+and the bed respectively, and are only sent in response to M105.  If 
+such temperatures don't exist (for example for an extruder that works at
+ room temperature and doesn't have a sensor) then a value below absolute
+ zero (-273<sup>o</sup>C) is returned.
+</p><p><b>C:</b> means that coordinates follow.  Those are the <b>X: Y:</b> etc values.  These are only 
+sent in response to M114 and M117.
+</p><p>The RepRap machine may also send lines that look like this:
+</p><p><b>// This is some debugging or other information on a line on its own.  It may be sent at any time. </b>
+</p><p>Such lines will always be preceded by <b>//</b>.
+</p><p>The most common response is simply:
+</p><p><b>ok</b>  
+</p><p>When the machine boots up it sends the string
+</p><p><b>start</b>
+</p><p>once to the host before sending anything else.  This should not be replaced or augmented
+by version numbers and the like.  M115 (see above) requests those.
+</p><p>All this means that every line sent by RepRap to the host computer except the start line has a two-character prefix (one of <b>ok</b>, <b>rs</b>, <b>!!</b> or <b>//</b>).  The machine should never send a line without such a prefix.
+</p>
+<a name="Proposal_for_sending_multiple_lines_of_G-code" id="Proposal_for_sending_multiple_lines_of_G-code"></a><h2> <span class="mw-headline"> Proposal for sending multiple lines of G-code </span></h2>
+<p>So far, this is a proposal, open for discussion.
+</p>
+<a name="Problem_to_solve" id="Problem_to_solve"></a><h4> <span class="mw-headline"> Problem to solve </span></h4>
+<p>Each line of G-code sent from the host to the controller is answered with an <b>ok</b>
+ before the next line can be sent without locking communcations up. This
+ makes operations very slow, as the usual USB-TTL converters and 
+probably also the host's operating system drivers come with substantial 
+latency, often 10&nbsp;milliseconds. 
+</p><p>For more details on this proposal, and some suggested solutions, and comments please see <a href="http://reprap.org/wiki/GCODE_buffer_multiline_proposal" title="GCODE buffer multiline proposal">GCODE_buffer_multiline_proposal</a>
+</p>
+<!-- 
+NewPP limit report
+Preprocessor node count: 151/1000000
+Post-expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Expensive parser function count: 0/100
+-->
+<div class="printfooter">
+Retrieved from "<a href="http://reprap.org/wiki/G-code">http://reprap.org/wiki/G-code</a>"</div>
+			<div id="catlinks" class="catlinks"><div id="mw-normal-catlinks"><a href="http://reprap.org/wiki/Special:Categories" title="Special:Categories">Category</a>: <span dir="ltr"><a href="http://reprap.org/wiki/Category:Model_manufacturing_software" title="Category:Model manufacturing software">Model manufacturing software</a></span></div></div>			<!-- end content -->
+						<div class="visualClear"></div>
+		</div>
+	</div>
+		</div>
+		<div id="column-one">
+	<div id="p-cactions" class="portlet">
+		<h5>Views</h5>
+		<div class="pBody">
+			<ul>
+	
+				 <li id="ca-nstab-main" class="selected"><a href="http://reprap.org/wiki/G-code" title="View the content page [alt-c]" accesskey="c">Page</a></li>
+				 <li id="ca-talk"><a href="http://reprap.org/wiki/Talk:G-code" title="Discussion about the content page [alt-t]" accesskey="t">Discussion</a></li>
+				 <li id="ca-viewsource"><a href="http://reprap.org/mediawiki/index.php?title=G-code&amp;action=edit" title="This page is protected.
+You can view its source [alt-e]" accesskey="e">View source</a></li>
+				 <li id="ca-history"><a href="http://reprap.org/mediawiki/index.php?title=G-code&amp;action=history" title="Past revisions of this page [alt-h]" accesskey="h">History</a></li>			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-personal">
+		<h5>Personal tools</h5>
+		<div class="pBody">
+			<ul>
+				<li id="pt-login"><a href="http://reprap.org/mediawiki/index.php?title=Special:UserLogin&amp;returnto=G-code" title="You are encouraged to log in; however, it is not mandatory [alt-o]" accesskey="o">Log in / create account</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-logo">
+		<a style="background-image: url(/mediawiki/reprap_logo.png);" href="http://reprap.org/wiki/Main_Page" title="Visit the main page [alt-z]" accesskey="z"></a>
+	</div>
+	<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
+	<div class="generated-sidebar portlet" id="p-navigation">
+		<h5>Navigation</h5>
+		<div class="pBody">
+			<ul>
+				<li id="n-Main-Page"><a href="http://reprap.org/wiki/Main_Page">Main Page</a></li>
+				<li id="n-Recent-Changes"><a href="http://reprap.org/wiki/Special:RecentChanges">Recent Changes</a></li>
+				<li id="n-Help"><a href="http://reprap.org/wiki/RepRapWiki:Help">Help</a></li>
+				<li id="n-Glossary"><a href="http://reprap.org/wiki/Glossary">Glossary</a></li>
+				<li id="n-Reference"><a href="http://reprap.org/wiki/Reference">Reference</a></li>
+				<li id="n-Translations"><a href="http://reprap.org/wiki/RepRapWiki:Translations">Translations</a></li>
+				<li id="n-Random-Page"><a href="http://reprap.org/wiki/Special:Random">Random Page</a></li>
+				<li id="n-All-Pages"><a href="http://reprap.org/wiki/Special:AllPages">All Pages</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="generated-sidebar portlet" id="p-Build_a_machine:">
+		<h5>Build a machine:</h5>
+		<div class="pBody">
+			<ul>
+				<li id="n-build-a-RepRap"><a href="http://reprap.org/wiki/RepRap_Options">build a RepRap</a></li>
+				<li id="n-build-a-RepStrap"><a href="http://reprap.org/wiki/Category:RepStrap">build a RepStrap</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="p-search" class="portlet">
+		<h5><label for="searchInput">Search</label></h5>
+		<div id="searchBody" class="pBody">
+			<form action="/mediawiki/index.php" id="searchform"><div>
+				<input name="title" value="Special:Search" type="hidden">
+				<input id="searchInput" name="search" title="Search RepRapWiki [alt-f]" accesskey="f" type="text">
+				<input name="go" class="searchButton" id="searchGoButton" value="Go" title="Go to a page with this exact name if exists" type="submit">&nbsp;
+				<input name="fulltext" class="searchButton" id="mw-searchButton" value="Search" title="Search the pages for this text" type="submit">
+			</div></form>
+		</div>
+	</div>
+	<div class="generated-sidebar portlet" id="p-community">
+		<h5>community</h5>
+		<div class="pBody">
+			<ul>
+				<li id="n-Development-Index"><a href="http://reprap.org/wiki/Development">Development Index</a></li>
+				<li id="n-Planet-RepRap"><a href="http://planet.arcol.hu/">Planet RepRap</a></li>
+				<li id="n-Blog-of-Blogs"><a href="http://pipes.yahoo.com/davidbuzz/reprap_aggregation_pipe">Blog of Blogs</a></li>
+				<li id="n-IRC"><a href="http://reprap.org/wiki/IRC">IRC</a></li>
+				<li id="n-Forums"><a href="http://forums.reprap.org/">Forums</a></li>
+				<li id="n-RepRap-Groups"><a href="http://forums.reprap.org/index.php?19">RepRap Groups</a></li>
+				<li id="n-Community-Portal"><a href="http://reprap.org/wiki/RepRapWiki:Community">Community Portal</a></li>
+				<li id="n-Licence"><a href="http://reprap.org/wiki/RepRapGPLLicence">Licence</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="generated-sidebar portlet" id="p-donate">
+		<h5>donate</h5>
+		<div class="pBody">
+			<ul>
+				<li id="n-Donation-Page"><a href="http://sourceforge.net/donate/index.php?group_id=159590">Donation Page</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-tb">
+		<h5>Toolbox</h5>
+		<div class="pBody">
+			<ul>
+				<li id="t-whatlinkshere"><a href="http://reprap.org/wiki/Special:WhatLinksHere/G-code" title="List of all wiki pages that link here [alt-j]" accesskey="j">What links here</a></li>
+				<li id="t-recentchangeslinked"><a href="http://reprap.org/wiki/Special:RecentChangesLinked/G-code" title="Recent changes in pages linked from this page [alt-k]" accesskey="k">Related changes</a></li>
+<li id="t-specialpages"><a href="http://reprap.org/wiki/Special:SpecialPages" title="List of all special pages [alt-q]" accesskey="q">Special pages</a></li>
+				<li id="t-print"><a href="http://reprap.org/mediawiki/index.php?title=G-code&amp;printable=yes" rel="alternate" title="Printable version of this page [alt-p]" accesskey="p">Printable version</a></li>				<li id="t-permalink"><a href="http://reprap.org/mediawiki/index.php?title=G-code&amp;oldid=69489" title="Permanent link to this revision of the page">Permanent link</a></li>			</ul>
+		</div>
+	</div>
+<!-- addsense extra  -->
+<script type="text/javascript">
+<!--
+google_ad_client = "pub-7619640428450381";
+google_ad_host = "pub-1556223355139109";
+google_ad_host_channel="00000";
+google_ad_width = 120;
+google_ad_height = 600;
+google_ad_format = "120x600_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+//-->
+</script>
+<script type="text/javascript" src="GCode-Dateien/show_ads.js">
+</script>
+
+		</div><!-- end of the left (by default at least) column -->
+			<div class="visualClear"></div>
+			<div id="footer">
+				<div id="f-poweredbyico"><a href="http://www.mediawiki.org/"><img src="GCode-Dateien/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki"></a></div>
+				<div id="f-copyrightico"><a href="http://www.gnu.org/copyleft/fdl.html"><img src="GCode-Dateien/gnu-fdl.png" alt="GNU Free Documentation License 1.2"></a></div>
+			<ul id="f-list">
+					<li id="lastmod"> This page was last modified on 28 October 2012, at 13:32.</li>
+					<li id="viewcount">This page has been accessed 111,446 times.</li>
+					<li id="copyright">Content is available under <a href="http://www.gnu.org/copyleft/fdl.html" class="external " title="http://www.gnu.org/copyleft/fdl.html">GNU Free Documentation License 1.2</a>.</li>
+					<li id="privacy"><a href="http://reprap.org/wiki/RepRapWiki:Privacy_policy" title="RepRapWiki:Privacy policy">Privacy policy</a></li>
+					<li id="about"><a href="http://reprap.org/wiki/RepRapWiki:About" title="RepRapWiki:About">About RepRapWiki</a></li>
+					<li id="disclaimer"><a href="http://reprap.org/wiki/RepRapWiki:General_disclaimer" title="RepRapWiki:General disclaimer">Disclaimers</a></li>
+			</ul>
+		</div>
+</div>
+
+		<script type="text/javascript">if (window.runOnloadHook) runOnloadHook();</script>
+<!-- Served in 0.572 secs. -->
+</body></html>

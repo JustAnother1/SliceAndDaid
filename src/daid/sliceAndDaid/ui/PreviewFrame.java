@@ -1,7 +1,6 @@
 package daid.sliceAndDaid.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -16,8 +15,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import daid.sliceAndDaid.LayerStack;
-import daid.sliceAndDaid.Segment2D;
-import daid.sliceAndDaid.util.Vector2;
 
 public class PreviewFrame extends JFrame
 {
@@ -42,55 +39,7 @@ public class PreviewFrame extends JFrame
         public void paint(Graphics g)
         {
             super.paint(g);
-            for (Segment2D s : layers.get(showLayer).modelSegmentList)
-            {
-                drawSegment(g, s);
-            }
-            for (Segment2D s = layers.get(showLayer).pathStart; s != null; s = s.getNext())
-            {
-                drawSegment(g, s);
-            }
-        }
-
-        private void drawSegment(Graphics g, Segment2D s)
-        {
-            switch (s.getType())
-            {
-            case Segment2D.TYPE_MODEL_SLICE:
-                g.setColor(Color.GREEN);
-                break;
-            case Segment2D.TYPE_PERIMETER:
-                g.setColor(Color.BLACK);
-                break;
-            case Segment2D.TYPE_FILL:
-                g.setColor(Color.YELLOW);
-                break;
-            case Segment2D.TYPE_MOVE:
-                g.setColor(Color.BLUE);
-                break;
-            default:
-                g.setColor(Color.RED);
-                break;
-            }
-            drawModelLine(g, s.start, s.end);
-            Vector2 center = s.start.add(s.end).div(2);
-            Vector2 normal = center.add(s.getNormal().div(drawScale / 5));
-            drawModelLine(g, center, normal);
-            drawModelLine(g, s.start, normal);
-            if (s.getPrev() == null)
-                drawModelCircle(g, s.start, 10);
-            if (s.getNext() == null)
-                drawModelCircle(g, s.end, 10);
-        }
-
-        private void drawModelLine(Graphics g, Vector2 start, Vector2 end)
-        {
-            g.drawLine((int) ((start.x + viewOffsetX) * drawScale) + this.getWidth() / 2, (int) ((start.y + viewOffsetY) * drawScale) + this.getHeight() / 2, (int) ((end.x + viewOffsetX) * drawScale) + this.getWidth() / 2, (int) ((end.y + viewOffsetY) * drawScale) + this.getHeight() / 2);
-        }
-
-        private void drawModelCircle(Graphics g, Vector2 center, int radius)
-        {
-            g.drawOval((int) ((center.x + viewOffsetX) * drawScale) + this.getWidth() / 2 - radius / 2, (int) ((center.y + viewOffsetY) * drawScale) + this.getHeight() / 2 - radius / 2, radius, radius);
+            layers.get(showLayer).drawAllSegmentsTo(g);
         }
 
         public void mouseDragged(MouseEvent e)

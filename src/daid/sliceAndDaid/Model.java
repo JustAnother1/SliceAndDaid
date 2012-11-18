@@ -122,6 +122,7 @@ public class Model
         }
         raf.close();
         Logger.message("min: " + getMin());
+        Logger.message("max: " + getMax());
     }
 
     private void readAsciiSTL(String filename) throws IOException
@@ -165,18 +166,22 @@ public class Model
     public void center()
     {
         Vector3 min = getMin();
-        Vector3 max = getMax();
-        Vector3 translate = new Vector3();
-        translate.z = -min.z;
-        translate.x = -(max.x + min.x) / 2;
-        translate.y = -(max.y + min.y) / 2;
-
-        move(translate);
+        if(0 != min.z)
+        {
+            // Model is above or below Platform -> We need to move the Model
+            Vector3 translate = new Vector3();        
+            translate.z = -min.z;
+            // The Slicer shall not move the Model in x or y direction. See RQ4 and RQ5
+            translate.x = 0;
+            translate.y = 0;
+            move(translate);
+        }
+        // else the Model is already on the Platform somewhere -> nothing to do
     }
 
     private void move(Vector3 translate)
     {
-        Logger.debug("Moving all triangles by {}", translate);
+        Logger.debug("Moving all triangles by {} to center Model on Build Platform", translate);
         for (Triangle t : triangles)
         {
             for (int i = 0; i < 3; i++)

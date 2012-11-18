@@ -1,8 +1,8 @@
 package daid.sliceAndDaid.tool;
 
 import daid.sliceAndDaid.Layer;
-import daid.sliceAndDaid.Segment2D;
 import daid.sliceAndDaid.config.CraftConfig;
+import daid.sliceAndDaid.util.Segment2D;
 
 public class SpeedTool
 {
@@ -15,6 +15,7 @@ public class SpeedTool
 
     public void updateSpeed()
     {
+        /*
         double layerTime = 0;
         for (Segment2D s = layer.pathStart; s != null; s = s.getNext())
         {
@@ -38,5 +39,6 @@ public class SpeedTool
                 s.feedRate *= multiply;
             }
         }
+        */
     }
 }

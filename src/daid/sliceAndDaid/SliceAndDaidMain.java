@@ -14,7 +14,6 @@ import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.config.CraftConfigLoader;
 import daid.sliceAndDaid.tool.GCodeTool;
 import daid.sliceAndDaid.tool.PathTool;
-import daid.sliceAndDaid.tool.PerimeterTool;
 import daid.sliceAndDaid.tool.SliceTool;
 import daid.sliceAndDaid.tool.SpeedTool;
 import daid.sliceAndDaid.ui.ConfigWindow;
@@ -127,6 +126,7 @@ public class SliceAndDaidMain
 
         SliceTool slicer = new SliceTool(m);
         final LayerStack layers = slicer.sliceModel();
+        layers.dumpStackToText();
         if (true == createLayerPictureFiles) layers.dumpStackToLayerFiles("Sliced");
 /*
         Logger.updateStatus("Creating skirt");

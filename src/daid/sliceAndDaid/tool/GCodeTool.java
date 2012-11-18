@@ -3,9 +3,9 @@ package daid.sliceAndDaid.tool;
 import java.io.IOException;
 
 import daid.sliceAndDaid.Layer;
-import daid.sliceAndDaid.Segment2D;
 import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.util.GCodeFile;
+import daid.sliceAndDaid.util.Segment2D;
 
 public class GCodeTool
 {
@@ -20,6 +20,7 @@ public class GCodeTool
 
     public void generateGCode() throws IOException
     {
+        /*
         double filamentMM3PerMM = Math.PI * (CraftConfig.filamentDiameter / 2) * (CraftConfig.filamentDiameter / 2);
 
         file.writeComment("LAYER:" + layer.layerNr);
@@ -42,5 +43,6 @@ public class GCodeTool
                 file.writeMoveXYE(s.end.x, s.end.y, filamentAmount, s.feedRate, "");
             }
         }
+        */
     }
 }

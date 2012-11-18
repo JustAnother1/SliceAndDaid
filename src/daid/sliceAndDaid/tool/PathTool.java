@@ -3,8 +3,7 @@ package daid.sliceAndDaid.tool;
 import java.util.Vector;
 
 import daid.sliceAndDaid.Layer;
-import daid.sliceAndDaid.Polygon;
-import daid.sliceAndDaid.Segment2D;
+import daid.sliceAndDaid.util.Segment2D;
 import daid.sliceAndDaid.util.Vector2;
 
 /**
@@ -23,6 +22,7 @@ public class PathTool
 
     public void generatePath(Vector2 bestStartPoint)
     {
+        /*
         Segment2D prev = null;
         if (layer.skirt != null)
         {
@@ -72,5 +72,6 @@ public class PathTool
                 }
             }
         }
+        */
     }
 }
