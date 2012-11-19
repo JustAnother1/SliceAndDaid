@@ -5,3 +5,5 @@
 .project
 /logOfTest.txt
 /*.png
+/*.sh
+/*.txt
