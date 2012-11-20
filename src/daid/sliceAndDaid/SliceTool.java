@@ -1,8 +1,5 @@
-package daid.sliceAndDaid.tool;
+package daid.sliceAndDaid;
 
-import daid.sliceAndDaid.Layer;
-import daid.sliceAndDaid.LayerStack;
-import daid.sliceAndDaid.Model;
 import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.util.Logger;
 import daid.sliceAndDaid.util.Triangle;

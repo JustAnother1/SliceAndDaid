@@ -6,11 +6,15 @@ import daid.sliceAndDaid.util.Logger;
 
 public class LayerStack
 {
-    private long Xoffset = 0;
-    private long Yoffset = 0;
-    private long width;
-    private long height;
-    public final static int PIXEL_PER_MM = 100;
+    double maxX = Double.MIN_VALUE;
+    double maxY = Double.MIN_VALUE;
+    double minX = Double.MAX_VALUE;
+    double minY = Double.MAX_VALUE;
+    private int Xoffset = 0;
+    private int Yoffset = 0;
+    private int width;
+    private int height;
+    private int pixelPerMm = 100;
     public final static double BORDER_MM = 5;
     Vector<Layer> layers = new Vector<Layer>();
 
@@ -54,13 +58,13 @@ public class LayerStack
         }
         // else we don't log this
     }
-
-    public void dumpStackToLayerFiles(String filePrefix)
+    
+    private void detectStackVolume(double extraBorderMm) throws InvalidValueException
     {
-        double maxX = Double.MIN_VALUE;
-        double maxY = Double.MIN_VALUE;
-        double minX = Double.MAX_VALUE;
-        double minY = Double.MAX_VALUE;
+        maxX = Double.MIN_VALUE;
+        maxY = Double.MIN_VALUE;
+        minX = Double.MAX_VALUE;
+        minY = Double.MAX_VALUE;
 
         for (int i = 0; i < size(); i++)
         {
@@ -91,18 +95,31 @@ public class LayerStack
         Logger.debug("Min Y  : {}", minY);
         Logger.debug("Max X  : {}", maxX);
         Logger.debug("Max Y  : {}", maxY);
-
-        Xoffset = Math.round(PIXEL_PER_MM * (Math.abs(minX) + BORDER_MM));
-        Yoffset = Math.round(PIXEL_PER_MM * (Math.abs(minY) + BORDER_MM));
-        width = Math.round(PIXEL_PER_MM * (Math.abs(maxX - minX) + (2 * BORDER_MM)));
-        height = Math.round(PIXEL_PER_MM * (Math.abs(maxY - minY) + (2 * BORDER_MM)));
+        long lXoffset = Math.round(pixelPerMm * (Math.abs(minX) + BORDER_MM + extraBorderMm));
+        long lYoffset = Math.round(pixelPerMm * (Math.abs(minY) + BORDER_MM + extraBorderMm));
+        long lwidth = Math.round(pixelPerMm * (Math.abs(maxX - minX) + (2 * BORDER_MM + extraBorderMm)));
+        long lheight = Math.round(pixelPerMm * (Math.abs(maxY - minY) + (2 * BORDER_MM + extraBorderMm)));
+        if(   (lXoffset > Integer.MAX_VALUE) || (lXoffset < Integer.MIN_VALUE)
+           || (lYoffset > Integer.MAX_VALUE) || (lYoffset < Integer.MIN_VALUE)
+           || (lwidth > Integer.MAX_VALUE) || (lwidth < Integer.MIN_VALUE)
+           || (lheight > Integer.MAX_VALUE) || (lheight < Integer.MIN_VALUE) )
+        {
+            throw new InvalidValueException("Volume of LayerStack is too big !");
+        }
+        else
+        {
+            Xoffset = (int)lXoffset;
+            Yoffset = (int)lYoffset;
+            width = (int)lwidth;
+            height = (int)lheight;
+        }
         Logger.debug("width  : {}", width);
         Logger.debug("height : {}", height);
-        if ((width > Integer.MAX_VALUE) || (height > Integer.MAX_VALUE))
-        {
-            Logger.error("Volume is too big !");
-            return;
-        }
+    }
+
+    public void dumpStackToLayerFiles(String filePrefix) throws InvalidValueException
+    {
+        detectStackVolume(0);
 
         for (int i = 0; i < size(); i++)
         {
@@ -125,17 +142,28 @@ public class LayerStack
 
     public double getPixelPerMm()
     {
-        return PIXEL_PER_MM;
+        return pixelPerMm;
     }
 
-    public double getXoffset()
+    public long getPixelXoffset()
     {
         return Xoffset;
     }
 
-    public double getYoffset()
+    public long getPixelYoffset()
     {
         return Yoffset;
+    }
+
+    public void createLayerBitmaps(double extraBorderMm) throws InvalidValueException
+    {
+        detectStackVolume(extraBorderMm);
+        for (int i = 0; i < size(); i++)
+        {
+            // With all the Layers...
+            Layer l = get(i);
+            l.createBitmap(width, height, Xoffset, Yoffset);
+        }
     }
 
 }

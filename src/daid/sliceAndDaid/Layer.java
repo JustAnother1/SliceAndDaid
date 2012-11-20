@@ -23,7 +23,9 @@ public class Layer
     private LayerStack myStack;
 
     private Vector<Segment2D> modelSegmentList = new Vector<Segment2D>();
-    
+    private byte[] bitmap =null;
+    private long pixelXoffset;
+    private long pixelYoffset;
     private final double zMin;
     private final double layerHeight;
     
@@ -175,7 +177,8 @@ public class Layer
     
     public void saveToPng(String fileName)
     {
-        if((myStack.getPixelWidth() > Integer.MAX_VALUE) | (myStack.getPixelHeight() > Integer.MAX_VALUE))
+        if(  (myStack.getPixelWidth() > Integer.MAX_VALUE)
+           | (myStack.getPixelHeight() > Integer.MAX_VALUE) )
         {
             Logger.error("Layer Stack width/height to big for saving to File !");
             return;
@@ -221,10 +224,10 @@ public class Layer
     private void drawModelLine(Graphics g, Vector2 start, Vector2 end)
     {
         
-        g.drawLine((int) ((start.x * myStack.getPixelPerMm()) + myStack.getXoffset()), 
-                   (int) ((start.y * myStack.getPixelPerMm()) + myStack.getYoffset()),
-                   (int) ((  end.x * myStack.getPixelPerMm()) + myStack.getXoffset()), 
-                   (int) ((  end.y * myStack.getPixelPerMm()) + myStack.getYoffset()));
+        g.drawLine((int) ((start.x * myStack.getPixelPerMm()) + myStack.getPixelXoffset()), 
+                   (int) ((start.y * myStack.getPixelPerMm()) + myStack.getPixelYoffset()),
+                   (int) ((  end.x * myStack.getPixelPerMm()) + myStack.getPixelXoffset()), 
+                   (int) ((  end.y * myStack.getPixelPerMm()) + myStack.getPixelYoffset()));
     }
 
     public void logState()
@@ -234,6 +237,13 @@ public class Layer
             Segment2D s = modelSegmentList.get(i);
             Logger.debug(s.toString());
         }
+    }
+
+    public void createBitmap(int width, int height, int xoffset, int yoffset)
+    {
+        this.pixelXoffset = xoffset;
+        this.pixelYoffset = yoffset;
+        bitmap = new byte[width * height];
     }
     
 }

@@ -13,7 +13,7 @@ RQ6 The Slicer must be able to create G-Code as described http://reprap.org/wiki
 
 Overview of Slicing Process
 ===========================
-The Slicing Process consists of these steps:
+The Slicing Process consists of these steps: ( see SliceAndDaidMain:sliceModel)
 
 1. Reading Triangles from File
     This is implemented in the Model.
@@ -24,11 +24,11 @@ The Slicing Process consists of these steps:
 3. project triangles on Layers
     This is implemented SliceTool(functionality) and  LayerStack(Data) and Layer(Data)
 
-4. create Layer pixmap
+4. create Layer bitmap
 
-5. optimize Layer Pixmaps (Infill, Skirt,...)
+5. optimize Layer bitmaps (Infill, Skirt,...)
 
-6. generate G-Code from Pixmap
+6. generate G-Code from bitmap
 
 7. optimize GCode (Speed,..)
 

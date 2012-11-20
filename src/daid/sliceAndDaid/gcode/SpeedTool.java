@@ -1,4 +1,4 @@
-package daid.sliceAndDaid.tool;
+package daid.sliceAndDaid.gcode;
 
 import daid.sliceAndDaid.Layer;
 import daid.sliceAndDaid.config.CraftConfig;

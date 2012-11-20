@@ -1,27 +1,91 @@
-package daid.sliceAndDaid.util;
+package daid.sliceAndDaid.gcode;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormat;
+import java.io.Writer;
 
-import daid.sliceAndDaid.config.CraftConfig;
+import daid.sliceAndDaid.InvalidValueException;
+import daid.sliceAndDaid.Layer;
+import daid.sliceAndDaid.LayerStack;
 
-public class GCodeFile
+public class GCodeTool
 {
-    private FileWriter fileWriter;
+    private Writer wr = null;
+    private GCodeOptimizer[] optimizers = GCodeOptimizerFactory.getAllActiveOptimizers();
+    
+    public GCodeTool()
+    {
+        
+    }
+
+    public void generateGCode(LayerStack layers, Writer wr) throws IOException
+    {
+        this.wr = wr;
+        // Machine setup TODO
+        // Model
+        for(int i = 0; i < layers.size(); i++)
+        {
+            Layer l = layers.get(i);
+            // gcode for Layer TODO
+            // gcode to move to next Layer TODO            
+        }
+        // Optimizer results
+        for(int i = 0; i < optimizers.length; i++)
+        {
+            optimizers[i].writeResultsTo(wr);
+        }
+        // Machine cooldown TODO
+        wr.close();
+        return;
+        
+        /*
+        double filamentMM3PerMM = Math.PI * (CraftConfig.filamentDiameter / 2) * (CraftConfig.filamentDiameter / 2);
+
+        file.writeComment("LAYER:" + layer.layerNr);
+        file.writeMoveZ((double) (layer.layerNr + 1) * CraftConfig.layerHeight, CraftConfig.travelSpeed, "Move to layer: " + layer.layerNr);
+        if (layer.pathStart == null)
+            return;
+        file.writeMoveXY(layer.pathStart.start.x, layer.pathStart.start.y, CraftConfig.travelSpeed, "");
+        for (Segment2D s = layer.pathStart; s != null; s = s.getNext())
+        {
+            if (s.lineWidth < 0)
+            {
+                file.writeMoveXY(s.end.x, s.end.y, s.feedRate, "");
+            } else
+            {
+                // First calculate the amount of filament we need in mm3
+                double filamentAmount = s.end.sub(s.start).vSize() * s.lineWidth * CraftConfig.layerHeight;
+                // Then divide this by the amount of mm3 we have per mm filament, so we get the
+                // amount of mm of filament we need to extrude.
+                filamentAmount = filamentAmount / filamentMM3PerMM;
+                file.writeMoveXYE(s.end.x, s.end.y, filamentAmount, s.feedRate, "");
+            }
+        }
+        */
+    }
+    
+    private void writeGCodeLineToFile(LineOfGCode line) throws IOException, InvalidValueException
+    {
+        for(int i = 0; i < optimizers.length; i++)
+        {
+            line = optimizers[i].optimize(line);
+        }
+        wr.write(line.toString());
+    }
+    
+    
+    /*
+    
     private double totalExtruderValue = 0;
-    private double buildTime = 0;
-    private double lastFeedrate = -1;
-    private Vector3 oldPos = new Vector3();
+    private double lastFeedrate = -1;    
     private DecimalFormat xyzFormat, eFormat, fFormat;
 
-    public GCodeFile(FileWriter fileWriter)
+    private void bla()
     {
-        this.fileWriter = fileWriter;
         xyzFormat = new DecimalFormat("#.##");
         eFormat = new DecimalFormat("#.###");
         fFormat = new DecimalFormat("#.#");
     }
+
 
     public void writeMoveZ(double z, double feedRate, String comment) throws IOException
     {
@@ -95,40 +159,6 @@ public class GCodeFile
 
         doMove(x, y, oldPos.z, feedRate);
     }
+    */
 
-    public void writeComment(String string) throws IOException
-    {
-        switch (CraftConfig.gcodeType)
-        {
-        case CraftConfig.GCODE_FULL:
-            fileWriter.write("; " + string + "\n");
-            break;
-        case CraftConfig.GCODE_COMPACT:
-            break;
-        case CraftConfig.GCODE_TINY_COMPACT:
-            break;
-        }
-    }
-
-    public void write(String string) throws IOException
-    {
-        fileWriter.write(string + "\n");
-    }
-
-    public void close() throws IOException
-    {
-        fileWriter.close();
-    }
-
-    private void doMove(double x, double y, double z, double feedRate)
-    {
-        double dist = oldPos.sub(new Vector3(x, y, z)).vSize();
-        buildTime += dist / feedRate;
-        lastFeedrate = feedRate;
-    }
-
-    public double getBuildTime()
-    {
-        return buildTime;
-    }
 }
