@@ -35,14 +35,15 @@ public class Logger
     /** debug statements describing details that happened.
      *
      * @param message whatever happened and needs to be traced.
+     * @param obj the additional Information
      */
-    public static void trace(String message, Object obj)
+    public static void trace(String message, final Object obj)
     {
         if(LOG_LEVEL_TRACE <= logLevel)
         {
             message = message.replace("{}", obj.toString());
             System.out.println(message);
-            for (LoggingInterface li : loggers)
+            for (final LoggingInterface li : loggers)
                 li.message(message);
         }
     }
@@ -52,12 +53,12 @@ public class Logger
      *
      * @param message whatever happened and needs to be traced.
      */
-    public static void trace(String message)
+    public static void trace(final String message)
     {
         if(LOG_LEVEL_TRACE <= logLevel)
         {
             System.out.println(message);
-            for (LoggingInterface li : loggers)
+            for (final LoggingInterface li : loggers)
                 li.message(message);
         }
     }
@@ -69,55 +70,74 @@ public class Logger
      * @param value current value.
      * @param max 100% /finish line
      */
-    public static void setProgress(int value, int max)
+    public static void setProgress(final int value, final int max)
     {
         if(LOG_LEVEL_PROGRESS <= logLevel)
         {
             System.out.println(value + "/" + max);
-            for (LoggingInterface li : loggers)
+            for (final LoggingInterface li : loggers)
                 li.setProgress(value, max);
         }
     }
+
     /** debug statements describing details that happened.
+     *
+     * @param message whatever happened and needs to be traced.
+     * @param obj the additional Information
+     */
+    public static void debug(String message, final Object obj)
+    {
+        if(LOG_LEVEL_DEBUG <= logLevel)
+        {
+            message = message.replace("{}", obj.toString());
+            System.out.println(message);
+            for (final LoggingInterface li : loggers)
+                li.message(message);
+        }
+    }
+
+
+    /** debug statements.
+     *
+     * @param message whatever happened.
+     */
+    public static void debug(final String message)
+    {
+        if(LOG_LEVEL_DEBUG <= logLevel)
+        {
+            System.out.println(message);
+            for (final LoggingInterface li : loggers)
+                li.message(message);
+        }
+    }
+
+
+    /** general informational statements describing details that happened.
     *
     * @param message whatever happened and needs to be traced.
+    * @param obj the additional Information
     */
-   public static void debug(String message, Object obj)
-   {
-       if(LOG_LEVEL_DEBUG <= logLevel)
-       {
-           message = message.replace("{}", obj.toString());
-           System.out.println(message);
-           for (LoggingInterface li : loggers)
-               li.message(message);
-       }
-   }
-
-
-   /** debug statements.
-    *
-    * @param message whatever happened.
-    */
-   public static void debug(String message)
-   {
-       if(LOG_LEVEL_DEBUG <= logLevel)
-       {
-           System.out.println(message);
-           for (LoggingInterface li : loggers)
-               li.message(message);
-       }
-   }
+    public static void message(String message, final Object obj)
+      {
+          if(LOG_LEVEL_MESSAGE <= logLevel)
+          {
+              message = message.replace("{}", obj.toString());
+              System.out.println(message);
+              for (final LoggingInterface li : loggers)
+                  li.message(message);
+          }
+      }
 
     /** general informational statements.
      *
      * @param message the new information to report.
      */
-    public static void message(String message)
+    public static void message(final String message)
     {
         if(LOG_LEVEL_MESSAGE <= logLevel)
         {
             System.out.println(message);
-            for (LoggingInterface li : loggers)
+            for (final LoggingInterface li : loggers)
                 li.message(message);
         }
     }
@@ -126,49 +146,49 @@ public class Logger
     *
     * @param status Message describing current phase.
     */
-    public static void updateStatus(String status)
+    public static void updateStatus(final String status)
     {
         if(LOG_LEVEL_STATUS_UPDATE <= logLevel)
         {
             System.out.println(status);
-            for (LoggingInterface li : loggers)
+            for (final LoggingInterface li : loggers)
                 li.updateStatus(status);
         }
     }
 
-    public static void warning(String warning)
+    public static void warning(final String warning)
     {
         if(LOG_LEVEL_WARNING <= logLevel)
         {
             System.out.println(warning);
-            for (LoggingInterface li : loggers)
+            for (final LoggingInterface li : loggers)
                 li.warning(warning);
         }
     }
 
-    public static void error(String error)
+    public static void error(final String error)
     {
         System.out.println("ERROR: " + error);
         System.err.println("ERROR: " + error);
-        for (LoggingInterface li : loggers)
+        for (final LoggingInterface li : loggers)
             li.error(error);
     }
 
-    public static void register(LoggingInterface obj)
+    public static void register(final LoggingInterface obj)
     {
         loggers.add(obj);
     }
 
-    public static void unRegister(LoggingInterface obj)
+    public static void unRegister(final LoggingInterface obj)
     {
         loggers.remove(obj);
     }
 
-    public static void setLevel(int level)
+    public static void setLevel(final int level)
     {
         logLevel = level;
     }
-    
+
     public static int getLevel()
     {
         return logLevel;

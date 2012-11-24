@@ -6,7 +6,6 @@ package daid.sliceAndDaid.gcode;
 import java.io.IOException;
 import java.io.Writer;
 
-import daid.sliceAndDaid.InvalidValueException;
 import daid.sliceAndDaid.util.Vector3;
 
 /**
@@ -24,7 +23,7 @@ public class BuildTime extends GCodeOptimizer
     }
 
     @Override
-    public LineOfGCode optimize(LineOfGCode line) throws InvalidValueException
+    public LineOfGCode optimize(LineOfGCode line)
     {
         Gcode cmd = line.getCommand();
         if(Gcode.CONTROLLED_MOVE == cmd)
@@ -67,7 +66,7 @@ public class BuildTime extends GCodeOptimizer
             }
             if(-1 == feedrate)
             {
-                throw new InvalidValueException("No Feedrate Specified");
+                throw new IllegalArgumentException("No Feedrate Specified");
             }
             double dist = oldPos.sub(new Vector3(x, y, z)).vSize();
             buildTime += dist / feedrate;

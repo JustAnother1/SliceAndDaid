@@ -3,7 +3,6 @@ package daid.sliceAndDaid.gcode;
 import java.io.IOException;
 import java.io.Writer;
 
-import daid.sliceAndDaid.InvalidValueException;
 import daid.sliceAndDaid.Layer;
 import daid.sliceAndDaid.LayerStack;
 
@@ -63,7 +62,7 @@ public class GCodeTool
         */
     }
     
-    private void writeGCodeLineToFile(LineOfGCode line) throws IOException, InvalidValueException
+    private void writeGCodeLineToFile(LineOfGCode line) throws IOException
     {
         for(int i = 0; i < optimizers.length; i++)
         {

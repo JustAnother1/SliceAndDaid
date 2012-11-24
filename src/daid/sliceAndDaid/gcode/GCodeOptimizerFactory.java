@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package daid.sliceAndDaid.gcode;
 
@@ -15,17 +15,16 @@ public class GCodeOptimizerFactory
 
     public static GCodeOptimizer[] getAllActiveOptimizers()
     {
-        Vector<GCodeOptimizer> vres = new Vector<GCodeOptimizer>();
-        
+        final Vector<GCodeOptimizer> vres = new Vector<GCodeOptimizer>();
+
         // TODO
-        
         // here go new Optimizers
-        
+
         // last Optimizer shall be Build Time
         // if configured to have build time TODO
-        GCodeOptimizer bt = new BuildTime();
+        final GCodeOptimizer bt = new BuildTime();
         vres.add(bt);
-        
+
         return vres.toArray(new GCodeOptimizer[0]);
     }
 

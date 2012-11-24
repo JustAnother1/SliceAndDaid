@@ -22,12 +22,12 @@ import daid.sliceAndDaid.util.Logger;
 public class SliceAndDaidMain
 {
     public final static String GCODEFILEEXTENSION = ".g";
-    
-    public static void main(String[] args) throws IOException
+
+    public static void main(final String[] args) throws IOException
     {
         Logger.setLevel(Logger.LOG_LEVEL_MESSAGE);
         printVersionInformation();
-       
+
 
         if (args.length < 1)
         {
@@ -106,58 +106,56 @@ public class SliceAndDaidMain
         }
     }
 
-    public static void sliceModel(String filename, boolean showResultWindow, boolean createLayerPictureFiles)
+    public static void sliceModel(final String filename, final boolean showResultWindow, final boolean createLayerPictureFiles)
     {
-        // The Slicing Process consists of these steps:           
-        long startTime = System.currentTimeMillis();
+        // The Slicing Process consists of these steps:
+        final long startTime = System.currentTimeMillis();
         //     1. Reading Triangles from File
-        //         This is implemented in the Model               
+        //         This is implemented in the Model
         Model m;
         try
         {
             m = new Model(filename);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             e.printStackTrace();
             Logger.error("Failed to load model");
             return;
         }
         m.center();
+        Logger.message("Read the Model");
         //     2. Creating Layers in Layerstack
-        //         This is implemented SliceTool(functionality) and  LayerStack(Data) and Layer(Data)                
+        //         This is implemented SliceTool(functionality) and  LayerStack(Data) and Layer(Data)
         //     3. project triangles on Layers
         //         This is implemented SliceTool(functionality) and  LayerStack(Data) and Layer(Data)
-        SliceTool slicer = new SliceTool(m);
+        final SliceTool slicer = new SliceTool(m);
         final LayerStack layers = slicer.sliceModel();
         layers.dumpStackToText();
+        Logger.message("Created the Layers");
+        // if (true == createLayerPictureFiles) layers.dumpStackToLayerFiles("Sliced");
         //     4. create Layer bitmaps
-        BitmapOptimizer[] bitOptis = BitmapOptimizerFactory.getAllActiveOptimizers();
+        final BitmapOptimizer[] bitOptis = BitmapOptimizerFactory.getAllActiveOptimizers();
         double extraBorderMm = 0;
         for(int i = 0; i < bitOptis.length; i++)
         {
             extraBorderMm = extraBorderMm + bitOptis[i].getSizeIncreasementMm();
         }
-        try
-        {
-            if (true == createLayerPictureFiles) layers.dumpStackToLayerFiles("Sliced");        
-            layers.createLayerBitmaps(extraBorderMm);
-        }
-        catch (InvalidValueException e)
-        {
-            e.printStackTrace();
-            Logger.error("Failed to create bitmap");
-            return;
-        }
+        layers.createLayerBitmaps(extraBorderMm);
+        layers.projectVectorsToBitmap();
+        if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("created");
         //     5. optimize Layer bitmaps (Infill, Skirt,...)
         for(int i = 0; i < bitOptis.length; i++)
         {
             bitOptis[i].optimize(layers);
         }
-        //     6. generate G-Code from bitmap        
+        if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("optimized");
+        Logger.message("Optimized the Layers");
+        // if (true == createLayerPictureFiles) layers.dumpStackToLayerFiles("optimized");
+        //     6. generate G-Code from bitmap
         //     7. optimize GCode (Speed,..)
         //     8. save G-Code to File
-        String gGcodeFileName = null; 
+        String gGcodeFileName = null;
         if(true == filename.toLowerCase().endsWith(".stl"))
         {
             gGcodeFileName = filename.substring(0, filename.length() -4) + GCODEFILEEXTENSION;
@@ -171,24 +169,26 @@ public class SliceAndDaidMain
         try
         {
             wr = new FileWriter(gGcodeFileName);
-            GCodeTool gt = new GCodeTool();
+            final GCodeTool gt = new GCodeTool();
             gt.generateGCode(layers, wr);
+            Logger.message("Created the GCode");
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             e.printStackTrace();
             Logger.error("Failed to write G-Code File");
             return;
         }
 
-        // Post slicing 
-        long sliceTime = System.currentTimeMillis() - startTime;
+        // Post slicing
+        final long sliceTime = System.currentTimeMillis() - startTime;
         reportTime("Slice time", sliceTime);
 
         if (true == showResultWindow)
         {
             SwingUtilities.invokeLater(new Runnable()
             {
+                @Override
                 public void run()
                 {
                     new PreviewFrame(layers);
@@ -197,12 +197,12 @@ public class SliceAndDaidMain
         }
     }
 
-    private static void reportTime(String timesName, long time)
+    private static void reportTime(final String timesName, final long time)
     {
 
         long minutes = 0;
         long hours = 0;
-        int milis = (int) time % 1000;
+        final int milis = (int) time % 1000;
         long seconds = time / 1000;
         if (seconds > 59)
         {
@@ -233,12 +233,12 @@ public class SliceAndDaidMain
     {
         final ProtectionDomain domain = SliceAndDaidMain.class.getProtectionDomain();
         final CodeSource source = domain.getCodeSource();
-        URL url = source.getLocation();
+        final URL url = source.getLocation();
         if (url.toExternalForm().endsWith(".jar"))
         {
-            JarInputStream jarStream = new JarInputStream(url.openStream(), false);
-            Attributes attr = jarStream.getManifest().getMainAttributes();
-            String res = attr.getValue("Built-Date");
+            final JarInputStream jarStream = new JarInputStream(url.openStream(), false);
+            final Attributes attr = jarStream.getManifest().getMainAttributes();
+            final String res = attr.getValue("Built-Date");
             System.out.println("SliceAndDaid " + res);
             jarStream.close();
         }
@@ -248,13 +248,14 @@ public class SliceAndDaidMain
     {
         SwingUtilities.invokeLater(new Runnable()
         {
+            @Override
             public void run()
             {
                 try
                 {
                     new ConfigWindow();
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
                     e.printStackTrace();
                     // We sometimes get a "Cannot write XdndAware property"
