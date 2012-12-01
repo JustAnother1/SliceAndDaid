@@ -6,38 +6,42 @@ public class Vector3
 
     public Vector3()
     {
+        x = 0;
+        y = 0;
+        z = 0;
     }
 
-    public Vector3(double x, double y, double z)
+    public Vector3(final double x, final double y, final double z)
     {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
+    @Override
     public String toString()
     {
         return "x=" + x + ",y=" + y + ",z=" + z;
     }
 
-    public void addToSelf(Vector3 v)
+    public void addToSelf(final Vector3 v)
     {
         x += v.x;
         y += v.y;
         z += v.z;
     }
 
-    public Vector3 sub(Vector3 v)
+    public Vector3 sub(final Vector3 v)
     {
         return new Vector3(x - v.x, y - v.y, z - v.z);
     }
 
-    public Vector3 cross(Vector3 v)
+    public Vector3 cross(final Vector3 v)
     {
         return new Vector3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
     }
 
-    public double dot(Vector3 v)
+    public double dot(final Vector3 v)
     {
         return x * v.x + y * v.y + z * v.z;
     }
@@ -47,7 +51,7 @@ public class Vector3
         return div(vSize());
     }
 
-    public Vector3 div(double f)
+    public Vector3 div(final double f)
     {
         return new Vector3(x / f, y / f, z / f);
     }

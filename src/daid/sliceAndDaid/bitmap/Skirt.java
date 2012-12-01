@@ -31,7 +31,8 @@ public class Skirt extends BitmapOptimizer
                         bitmap.getMinY() - SkirtDistancePix,
                         bitmap.getMaxX() + SkirtDistancePix,
                         bitmap.getMaxY() + SkirtDistancePix,
-                        BitmapOptimizerFactory.SKIRT_CODE);
+                        PixelCode.SKIRT_CODE,
+                        PixelCode.EMPTY_CODE);
     }
 
     @Override

@@ -1,44 +1,58 @@
 package daid.sliceAndDaid.gcode;
 
-import daid.sliceAndDaid.Layer;
+import java.io.IOException;
+
 import daid.sliceAndDaid.config.CraftConfig;
-import daid.sliceAndDaid.util.Segment2D;
+import daid.sliceAndDaid.gcode.LineOfGCode.LineTypes;
 
-public class SpeedTool
+
+public class SpeedTool extends GCodeOptimizer
 {
-    private Layer layer;
+    // Feedrate is in mm per minute
+    private boolean lastLineWasMove = false;
+    private boolean lastLineWasExtrude = false;
 
-    public SpeedTool(Layer layer)
+    public SpeedTool(final GCodeOptimizer next)
     {
-        this.layer = layer;
+        super(next);
     }
 
-    public void updateSpeed()
+    @Override
+    public void optimize(final LineOfGCode line) throws IOException
     {
-        /*
-        double layerTime = 0;
-        for (Segment2D s = layer.pathStart; s != null; s = s.getNext())
+        // TODO add support for Layer time -> CraftConfig.minLayerTime
+        // TODO add support for CraftConfig.layerPrintSpeedIncrease
+        // TODO add support for CraftConfig.layerZeroPrintSpeed
+        if(LineTypes.GCODE == line.getType())
         {
-            if (s.lineWidth < 0)
+            final Gcode cmd = line.getCommand();
+            if(Gcode.EXTRUDE_TO_POSITION == cmd)
             {
-                s.feedRate = CraftConfig.travelSpeed;
-            } else
-            {
-                s.feedRate = CraftConfig.layerZeroPrintSpeed + CraftConfig.layerPrintSpeedIncrease * layer.layerNr;
-                if (s.feedRate > CraftConfig.printSpeed)
-                    s.feedRate = CraftConfig.printSpeed;
+                if(false == lastLineWasExtrude)
+                {
+                    final LineOfGCode addedLine = new LineOfGCode(Gcode.EXTRUDE_TO_POSITION);
+                    addedLine.setFeedrate(CraftConfig.printSpeed);
+                    next.optimize(addedLine);
+                    lastLineWasMove = false;
+                    lastLineWasExtrude = true;
+                }
+                // else nothing to do with the extrude
             }
-            layerTime += s.start.sub(s.end).vSize() / s.feedRate;
-        }
-
-        if (layerTime < CraftConfig.minLayerTime)
-        {
-            double multiply = layerTime / CraftConfig.minLayerTime;
-            for (Segment2D s = layer.pathStart; s != null; s = s.getNext())
+            else if(Gcode.MOVE_TO_POSITION == cmd)
             {
-                s.feedRate *= multiply;
+                if(false == lastLineWasMove)
+                {
+                    final LineOfGCode addedLine = new LineOfGCode(Gcode.MOVE_TO_POSITION);
+                    addedLine.setFeedrate(CraftConfig.travelSpeed);
+                    next.optimize(addedLine);
+                    lastLineWasMove = true;
+                    lastLineWasExtrude = false;
+                }
+                // else nothing to do with the move
             }
+            // else -> no move, no Filament consumption
         }
-        */
+        // else we do nothing with this Line
+        next.optimize(line);
     }
 }

@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
-import daid.sliceAndDaid.bitmap.BitmapOptimizerFactory;
+import daid.sliceAndDaid.bitmap.PixelCode;
 import daid.sliceAndDaid.util.Logger;
 import daid.sliceAndDaid.util.Segment2D;
 import daid.sliceAndDaid.util.Vector2;
@@ -265,7 +265,7 @@ public class Layer
             final int starty = (int)Math.round(s.getStart().y* myStack.getPixelPerMm());
             final int endx = (int)Math.round(s.getEnd().x* myStack.getPixelPerMm());
             final int endy = (int)Math.round(s.getEnd().y* myStack.getPixelPerMm());
-            bitmap.drawLine(startx, starty, endx, endy, BitmapOptimizerFactory.VECTOR_CODE);
+            bitmap.drawLine(startx, starty, endx, endy, PixelCode.VECTOR_CODE, PixelCode.EMPTY_CODE);
         }
         // Marking the inside area
         for (final Segment2D s : modelSegmentList)
@@ -297,11 +297,6 @@ public class Layer
             bitmap.markInsideStartingAt(x, y);
         }
         return true;
-    }
-
-    public void saveBitmapToPng(final String fileName)
-    {
-        bitmap.toPng(fileName);
     }
 
     public void saveBitmapToTxt(final String fileName)

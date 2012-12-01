@@ -11,13 +11,6 @@ import java.util.Vector;
  */
 public class BitmapOptimizerFactory
 {
-    public final static byte INVALID_CODE = -1;
-    public final static byte EMPTY_CODE   = 0;
-    public final static byte VECTOR_CODE  = 1;
-    public final static byte OUTLINE_CODE = 2;
-    public final static byte FILLIN_CODE  = 3;
-    public final static byte SKIRT_CODE   = 4;
-
 
     public static BitmapOptimizer[] getAllActiveOptimizers()
     {
@@ -31,8 +24,6 @@ public class BitmapOptimizerFactory
 
         bo = new Infill();
         vres.add(bo);
-
-        // TODO
 
         // here go new Optimizers
 

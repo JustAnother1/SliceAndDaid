@@ -3,7 +3,8 @@
  */
 package daid.sliceAndDaid.gcode;
 
-import java.util.Vector;
+import java.io.Writer;
+
 
 
 /**
@@ -13,19 +14,18 @@ import java.util.Vector;
 public class GCodeOptimizerFactory
 {
 
-    public static GCodeOptimizer[] getAllActiveOptimizers()
+    public static GCodeOptimizer getAllActiveOptimizers(final Writer wr)
     {
-        final Vector<GCodeOptimizer> vres = new Vector<GCodeOptimizer>();
-
-        // TODO
-        // here go new Optimizers
-
+        GCodeOptimizer opti = new GCodeFileWriter(wr);
         // last Optimizer shall be Build Time
         // if configured to have build time TODO
-        final GCodeOptimizer bt = new BuildTime();
-        vres.add(bt);
-
-        return vres.toArray(new GCodeOptimizer[0]);
+        opti = new BuildTime(opti);
+        // Extrude
+        opti = new Extrude(opti);
+        // Speed
+        opti = new SpeedTool(opti);
+        // here go new Optimizers
+        return opti;
     }
 
 }

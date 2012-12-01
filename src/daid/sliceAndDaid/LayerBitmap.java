@@ -3,14 +3,11 @@
  */
 package daid.sliceAndDaid;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
-import daid.sliceAndDaid.bitmap.BitmapOptimizerFactory;
+import daid.sliceAndDaid.bitmap.Pixel;
+import daid.sliceAndDaid.bitmap.PixelCode;
 import daid.sliceAndDaid.util.Logger;
 
 /**
@@ -19,16 +16,25 @@ import daid.sliceAndDaid.util.Logger;
  */
 public class LayerBitmap
 {
-    private final byte[] bitmap;
+    // (x/y)Raw are Coordinates with no negative values for direct access into bitmap
+    // (x/y) are coordinates with 0.0 in the center
+    // The raw Coordinates are used only inside this class and may not leak !
+
+    private final PixelCode[] bitmap;
     private final int xoffset;
     private final int yoffset;
     private final int width;
     private final int height;
     // This are the dimensions of the used Area:
-    private int minX;
-    private int minY;
-    private int maxY;
-    private int maxX;
+    private int minXraw;
+    private int minYraw;
+    private int maxYraw;
+    private int maxXraw;
+    // for Pixel get
+    private PixelCode curPixelType = PixelCode.INVALID_CODE;
+    private int nextXRaw;
+    private int nextYRaw;
+
 
     /**
      *
@@ -39,42 +45,42 @@ public class LayerBitmap
         this.yoffset = yoffset;
         this.width = width;
         this.height = height;
-        bitmap = new byte[width * height];
-        minX = width;
-        maxX = 0;
-        minY = height;
-        maxY = 0;
+        bitmap = new PixelCode[width * height];
+        minXraw = width;
+        maxXraw = 0;
+        minYraw = height;
+        maxYraw = 0;
     }
 
     public int getMinX()
     {
-        return minX - xoffset;
+        return minXraw - xoffset;
     }
 
     public int getMinY()
     {
-        return minY  - yoffset;
+        return minYraw  - yoffset;
     }
 
     public int getMaxX()
     {
-        return maxX  - xoffset;
+        return maxXraw  - xoffset;
     }
 
     public int getMaxY()
     {
-        return maxY  - yoffset;
+        return maxYraw  - yoffset;
     }
 
-    public void drawRect(final int x1, final int y1, final int x2, final int y2, final byte code)
+    public void drawRect(final int x1, final int y1, final int x2, final int y2, final PixelCode code, final PixelCode oldCode)
     {
-        drawLine(x1, y1, x1, y2, code);
-        drawLine(x1, y1, x2, y1, code);
-        drawLine(x2, y1, x2, y2, code);
-        drawLine(x2, y2, x1, y2, code);
+        drawLine(x1, y1, x1, y2, code, oldCode);
+        drawLine(x1, y1, x2, y1, code, oldCode);
+        drawLine(x2, y1, x2, y2, code, oldCode);
+        drawLine(x2, y2, x1, y2, code, oldCode);
     }
 
-    public void drawLine(int x0, int y0, final int x1, final int y1, final byte code)
+    public void drawLine(int x0, int y0, final int x1, final int y1, final PixelCode code, final PixelCode oldCode)
     {
         // Algorithm see https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
         final int dx = Math.abs(x1 - x0);
@@ -99,45 +105,96 @@ public class LayerBitmap
                 err = err + dx;
                 y0 = y0 + sy;
             }
-            setPixel(x0, y0, code);
+            setPixel(x0, y0, code, oldCode);
         }
     }
 
-    public void setPixel(int x, int y, final byte code)
+    private boolean setPixel(final int x, final int y, final PixelCode code, final PixelCode oldCode, final boolean careForOldCode)
     {
-        x = x + xoffset;
-        y = y + yoffset;
-        if((x > width) || (y > height))
+        // convert to raw pixel address
+        final int xRaw = x + xoffset;
+        final int yRaw = y + yoffset;
+        // check if in Range
+        if((xRaw >= width) || (yRaw >= height))
         {
             throw new IllegalArgumentException("Addressed Pixel is out of Bitmap");
         }
-        bitmap[x + (y * width)] = code;
-        if(BitmapOptimizerFactory.EMPTY_CODE != code)
+        // update max/min Values
+        if(PixelCode.EMPTY_CODE != code)
         {
-            if(x > maxX)
+            if(xRaw > maxXraw)
             {
-                maxX = x;
+                maxXraw = xRaw;
             }
-            if(x < minX)
+            if(xRaw < minXraw)
             {
-                minX = x;
+                minXraw = xRaw;
             }
-            if(y > maxY)
+            if(yRaw > maxYraw)
             {
-                maxY = y;
+                maxYraw = yRaw;
             }
-            if(y < minY)
+            if(yRaw < minYraw)
             {
-                minY = y;
+                minYraw = yRaw;
             }
+        }
+        // make the change
+        if(true == careForOldCode)
+        {
+            if(bitmap[xRaw + (yRaw * width)] == oldCode)
+            {
+                bitmap[xRaw + (yRaw * width)] = code;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            bitmap[xRaw + (yRaw * width)] = code;
+            return true;
         }
     }
 
-    public byte getPixel(int x, int y)
+    /** to be used to project Vectors only !
+     *
+     * @param x
+     * @param y
+     * @param code
+     */
+    public void setPixel(final int x, final int y, final PixelCode code)
     {
-        x = x + xoffset;
-        y = y + yoffset;
-        return bitmap[x + (y * width)];
+        setPixel(x, y ,code, PixelCode.EMPTY_CODE, false);
+    }
+
+    /** set the Pixel to code if it had the value of oldCode.
+     *
+     * @param x Pixels x coordinate.
+     * @param y Pixels y coordinate.
+     * @param code code to write.
+     * @param oldCode code the pixel has to have.
+     * @return true if change was made; false = Pixel does not have the value oldCode.
+     */
+    public boolean setPixel(final int x, final int y, final PixelCode code, final PixelCode oldCode)
+    {
+        return setPixel(x, y, code, oldCode, true);
+    }
+
+    public PixelCode getPixel(final int x, final int y)
+    {
+        final int xRaw = x + xoffset;
+        final int yRaw = y + yoffset;
+        if((xRaw > width) || (yRaw > height))
+        {
+            return PixelCode.INVALID_CODE;
+        }
+        else
+        {
+            return bitmap[xRaw + (yRaw * width)];
+        }
     }
 
     public void toTxt(final String fileName)
@@ -170,63 +227,26 @@ public class LayerBitmap
         }
     }
 
-    public void toPng(final String fileName)
-    {
-        // TYPE_INT_ARGB specifies the image format: 8-bit RGBA packed
-        // into integer pixels
-        final BufferedImage bi = new BufferedImage(width,
-                                                    height,
-                                                    BufferedImage.TYPE_INT_ARGB);
-        /*
-        final Graphics2D g2 = bi.createGraphics();
-        g2.setColor(Color.WHITE);
-        g2.fillRect(0, 0, width, height);
-         */
-        //final WritableRaster wr = bi.getRaster();
-
-        for(int x = 0; x < width; x++)
-        {
-            for(int y = 0; y < height; y++)
-            {
-                final int b = (0xff &bitmap[x + (y * width)]);
-                final int rgb = b<<16 + b<<8 + b;
-                bi.setRGB(x, y, rgb);
-                //wr.setSample(x, y, 0, bitmap[x + (y * width)]);
-            }
-        }
-
-        //bi.setData(wr);
-        try
-        {
-            ImageIO.write(bi, "PNG", new File(fileName));
-        }
-        catch (final IOException e)
-        {
-            e.printStackTrace();
-            Logger.error("Failed to save Layer to File !");
-        }
-    }
-
     public void clear()
     {
-        for(int y = 0; y < height; y++)
+        for(int yRaw = 0; yRaw < height; yRaw++)
         {
-            for(int x = 0; x < width; x++)
+            for(int xRaw = 0; xRaw < width; xRaw++)
             {
-                bitmap[x + (y * width)] = BitmapOptimizerFactory.EMPTY_CODE;
+                bitmap[xRaw + (yRaw * width)] = PixelCode.EMPTY_CODE;
             }
         }
     }
 
-    private byte getRawPixel(final int x, final int y)
+    private PixelCode getRawPixel(final int xRaw, final int yRaw)
     {
-        if((x < width) && (y < height))
+        if((xRaw < width) && (yRaw < height))
         {
-            return bitmap[x + (y * width)];
+            return bitmap[xRaw + (yRaw * width)];
         }
         else
         {
-            return BitmapOptimizerFactory.INVALID_CODE;
+            return PixelCode.INVALID_CODE;
         }
     }
 
@@ -234,29 +254,31 @@ public class LayerBitmap
      *
      *  see https://de.wikipedia.org/wiki/Floodfill
      *
-     * @param x start X coordinate.
-     * @param y start Y coordinate.
+     * @param xRaw start X coordinate.
+     * @param yRaw start Y coordinate.
      * @param oldColor The Value that will be filled.
      * @param newColor the value that the fields will be filled with.
      */
-    private void fill4(final int x, final int y, final byte oldColor, final byte newColor)
+    private void fill4(final int xRaw, final int yRaw, final PixelCode oldColor, final PixelCode newColor)
     {
-        if (getRawPixel(x,y) == oldColor)
+        // If we get Stack Problems due to recursion
+        // then replace with a Queue based Algorithm.
+        if (getRawPixel(xRaw,yRaw) == oldColor)
         {
-            bitmap[x + (y * width)] = newColor;
-           fill4(x, y + 1, oldColor, newColor); // down
-           fill4(x - 1, y, oldColor, newColor); // left
-           fill4(x, y - 1, oldColor, newColor); // up
-           fill4(x + 1, y, oldColor, newColor); // right
+            bitmap[xRaw + (yRaw * width)] = newColor;
+            fill4(xRaw, yRaw + 1, oldColor, newColor); // down
+            fill4(xRaw - 1, yRaw, oldColor, newColor); // left
+            fill4(xRaw, yRaw - 1, oldColor, newColor); // up
+            fill4(xRaw + 1, yRaw, oldColor, newColor); // right
         }
         return;
       }
 
-    public void markInsideStartingAt(int x, int y)
+    public void markInsideStartingAt(final int x, final int y)
     {
-        x = x + xoffset;
-        y = y + yoffset;
-        if(bitmap[x + (y * width)] != BitmapOptimizerFactory.EMPTY_CODE)
+        final int xRaw = x + xoffset;
+        final int yRaw = y + yoffset;
+        if(bitmap[xRaw + (yRaw * width)] != PixelCode.EMPTY_CODE)
         {
             // still in the Line -> might be a triangle that is in the Layer
             // therefore Normal is x=0, y=0, z=1 !
@@ -278,23 +300,143 @@ public class LayerBitmap
         // | x -1 | x    | x +1 |
         // | y -1 | y -1 | y -1 |
         // +------+------+------+
-        if(   (getRawPixel((x-1), (y+1)) == BitmapOptimizerFactory.VECTOR_CODE) // 1
-           || (getRawPixel((x),   (y+1)) == BitmapOptimizerFactory.VECTOR_CODE) // 2
-           || (getRawPixel((x+1), (y+1)) == BitmapOptimizerFactory.VECTOR_CODE) // 3
-           || (getRawPixel((x-1), (y))   == BitmapOptimizerFactory.VECTOR_CODE) // 4
-           || (getRawPixel((x),   (y))   == BitmapOptimizerFactory.VECTOR_CODE) // 5
-           || (getRawPixel((x+1), (y))   == BitmapOptimizerFactory.VECTOR_CODE) // 6
-           || (getRawPixel((x-1), (y-1)) == BitmapOptimizerFactory.VECTOR_CODE) // 7
-           || (getRawPixel((x),   (y-1)) == BitmapOptimizerFactory.VECTOR_CODE) // 8
-           || (getRawPixel((x+1), (y-1)) == BitmapOptimizerFactory.VECTOR_CODE) ) // 9
+        if(   (getRawPixel((xRaw-1), (yRaw+1)) == PixelCode.VECTOR_CODE) // 1
+           || (getRawPixel((xRaw),   (yRaw+1)) == PixelCode.VECTOR_CODE) // 2
+           || (getRawPixel((xRaw+1), (yRaw+1)) == PixelCode.VECTOR_CODE) // 3
+           || (getRawPixel((xRaw-1), (yRaw))   == PixelCode.VECTOR_CODE) // 4
+           || (getRawPixel((xRaw),   (yRaw))   == PixelCode.VECTOR_CODE) // 5
+           || (getRawPixel((xRaw+1), (yRaw))   == PixelCode.VECTOR_CODE) // 6
+           || (getRawPixel((xRaw-1), (yRaw-1)) == PixelCode.VECTOR_CODE) // 7
+           || (getRawPixel((xRaw),   (yRaw-1)) == PixelCode.VECTOR_CODE) // 8
+           || (getRawPixel((xRaw+1), (yRaw-1)) == PixelCode.VECTOR_CODE) ) // 9
         {
             // we are close to a wall
-            fill4(x, y, BitmapOptimizerFactory.EMPTY_CODE, BitmapOptimizerFactory.FILLIN_CODE);
+            fill4(xRaw, yRaw, PixelCode.EMPTY_CODE, PixelCode.INSIDE_CODE);
         }
         else
         {
-            Logger.error("I'm lost !");
+            Logger.error("Caculation of Normal lead me to the middle of nowhere - I'm lost !");
         }
+    }
+
+    public void replace(final PixelCode oldCode, final PixelCode newCode)
+    {
+        for(int i = 0; i < bitmap.length; i++)
+        {
+            if(oldCode == bitmap[i])
+            {
+                bitmap[i] = newCode;
+            }
+        }
+    }
+
+    public void selectPixelType(final PixelCode searchCode)
+    {
+        curPixelType = searchCode;
+        nextXRaw = 0;
+        nextYRaw = 0;
+    }
+
+    private void moveToNextPixel()
+    {
+        nextXRaw = nextXRaw +1;
+        if(nextXRaw == width)
+        {
+            // next Row
+            nextYRaw = nextYRaw + 1;
+            nextXRaw = 0;
+        }
+    }
+
+    public boolean hasMorePixels()
+    {
+        do
+        {
+            if(getRawPixel(nextXRaw, nextYRaw) == curPixelType)
+            {
+                return true;
+            }
+            else
+            {
+                moveToNextPixel();
+            }
+        }while(nextYRaw < height);
+        return false;
+    }
+
+    public Pixel getNextPixel()
+    {
+        if(true == hasMorePixels())
+        {
+            final Pixel res = new Pixel(nextXRaw - xoffset, nextYRaw - yoffset);
+            moveToNextPixel();
+            return res;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public Pixel getPixelWithCodeClosestTo(final PixelCode pixelCode, final Pixel position)
+    {
+        // Easy solution
+        if(pixelCode == getPixel(position.getX(), position.getY()))
+        {
+            return position;
+        }
+        // else Now we have to search
+        // TO IMPROVE: This is not the best algorithm but good enough for now.
+        // Algorithm inspired by : http://stackoverflow.com/questions/307445/finding-closest-non-black-pixel-in-an-image-fast
+        int maxDistance = width;
+        if(height > width)
+        {
+            maxDistance = height;
+        }
+        final int startX = position.getX();
+        final int startY = position.getY();
+        for(int distance = 1; distance < maxDistance; distance ++) // distance 0 is the pixel so we already did that
+        {
+            for(int i = 0; i < distance +1; i++)
+            {
+                if(pixelCode == getPixel(startX + i, startY + distance))
+                {
+                    return new Pixel(startX, startY + distance);
+                }
+                if(pixelCode == getPixel(startX - i, startY + distance))
+                {
+                    return new Pixel(startX, startY + distance);
+                }
+                if(pixelCode == getPixel(startX + i, startY - distance))
+                {
+                    return new Pixel(startX, startY + distance);
+                }
+                if(pixelCode == getPixel(startX - i, startY - distance))
+                {
+                    return new Pixel(startX, startY + distance);
+                }
+            }
+            for(int i = 0; i < distance; i++) // corners already searched
+            {
+                if(pixelCode == getPixel(startX + distance, startY + i))
+                {
+                    return new Pixel(startX, startY + distance);
+                }
+                if(pixelCode == getPixel(startX + distance, startY - i))
+                {
+                    return new Pixel(startX, startY + distance);
+                }
+                if(pixelCode == getPixel(startX - distance, startY + i))
+                {
+                    return new Pixel(startX, startY + distance);
+                }
+                if(pixelCode == getPixel(startX - distance, startY - i))
+                {
+                    return new Pixel(startX, startY + distance);
+                }
+            }
+        }
+        return null;
     }
 
 }

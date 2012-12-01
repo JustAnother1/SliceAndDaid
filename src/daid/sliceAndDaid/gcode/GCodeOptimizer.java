@@ -1,10 +1,10 @@
 /**
- * 
+ *
  */
 package daid.sliceAndDaid.gcode;
 
 import java.io.IOException;
-import java.io.Writer;
+
 
 /**
  * @author lars
@@ -12,11 +12,25 @@ import java.io.Writer;
  */
 public abstract class GCodeOptimizer
 {
-    public abstract LineOfGCode optimize(LineOfGCode line);
+    protected GCodeOptimizer next;
 
-    public void writeResultsTo(Writer wr) throws IOException
+    public GCodeOptimizer(final GCodeOptimizer next)
     {
-        // Default -> no Result
+        this.next = next;
     }
 
+    public abstract void optimize(LineOfGCode line) throws IOException;
+
+    /** last words.
+     *
+     * If the optimizer want to say some last words at the end of the file
+     * than that can be done before calling next.close()
+     * -> Override this Function.
+     *
+     * @throws IOException
+     */
+    public void close()throws IOException
+    {
+        next.close();
+    }
 }

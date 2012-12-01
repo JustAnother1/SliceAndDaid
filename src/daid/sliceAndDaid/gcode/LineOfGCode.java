@@ -1,7 +1,9 @@
 /**
- * 
+ *
  */
 package daid.sliceAndDaid.gcode;
+
+import java.text.DecimalFormat;
 
 import daid.sliceAndDaid.config.CraftConfig;
 
@@ -12,8 +14,13 @@ import daid.sliceAndDaid.config.CraftConfig;
 public class LineOfGCode
 {
 
+    // Line Types
+    public enum LineTypes{GCODE, EVENT, RAW }
+
+    private final LineTypes lineType;
+    private PrintSteps nextStep;
+    private String raw;
     private Gcode command = Gcode.NO_COMMAND;
-    private int lineNumber = 0;
     private double x;
     private boolean hasX = false;
     private double y;
@@ -22,33 +29,66 @@ public class LineOfGCode
     private boolean hasZ = false;
     private double feedrate;
     private boolean hasFeedrate = false;
-    
-    public LineOfGCode()
+    private double extrudate;
+    private boolean hasExtrodate = false;
+    private String comment;
+    private boolean hasComment = false;
+
+
+    public LineOfGCode(final String rawLine)
     {
+        lineType = LineTypes.RAW;
+        raw = rawLine;
     }
 
-    public LineOfGCode(int LineNumber)
+    public LineOfGCode(final PrintSteps nextStep, final int parameter)
     {
-        this.lineNumber = LineNumber;
+        lineType = LineTypes.EVENT;
+        hasComment = true;
+        this.nextStep = nextStep;
+        switch(nextStep)
+        {
+        case PREPARE_PRINTER:
+            comment = "prepare print";
+            break;
+
+        case SHUTDOWN_PRINTER:
+            comment = "shutdown print";
+            break;
+
+        case NEW_LAYER:
+            comment = "Layer " + parameter;
+            break;
+
+        case SKIRT:
+            comment = "Skirt";
+            break;
+
+        case WALL:
+            comment = "wall ";
+            break;
+
+        case FILL:
+            comment = "Fill ";
+            break;
+
+        default:
+            comment ="ERROR: Something went wrong !";
+            break;
+        }
     }
 
-
-    public LineOfGCode(int LineNumber, Gcode cmd)
+    public LineOfGCode(final Gcode cmd)
     {
-        this.lineNumber = LineNumber;
+        lineType = LineTypes.GCODE;
         this.command = cmd;
     }
-    
-    public void setLineNumber(int num)
+
+    public PrintSteps getNextStep()
     {
-        lineNumber = num;
+        return nextStep;
     }
-    
-    public void setCommand(Gcode cmd)
-    {
-        command = cmd;
-    }
-    
+
     public Gcode getCommand()
     {
         return command;
@@ -57,36 +97,89 @@ public class LineOfGCode
     @Override
     public String toString()
     {
-        String res = null;
-        // test if we are valid
-        if(   (0 != lineNumber)
-           && (Gcode.NO_COMMAND != command) )
+        final StringBuffer res = new StringBuffer();
+        if(LineTypes.GCODE == lineType)
         {
-            res = "";
+            final DecimalFormat xyzFormat = new DecimalFormat("#.##");
+            final DecimalFormat eFormat = new DecimalFormat("#.###");
+            final DecimalFormat fFormat = new DecimalFormat("#.#");
+            // GCode Command
+            res.append(command.toString());
+            // X
+            if(true == hasX)
+            {
+                if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
+                   || (CraftConfig.GCODE_COMPACT == CraftConfig.gcodeType) )
+                {
+                    res.append(" ");
+                }
+                res.append("X");
+                res.append(xyzFormat.format(x));
+            }
+            // Y
+            if(true == hasY)
+            {
+                if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
+                   || (CraftConfig.GCODE_COMPACT == CraftConfig.gcodeType) )
+                {
+                    res.append(" ");
+                }
+                res.append("Y");
+                res.append(xyzFormat.format(y));
+            }
+            // Z
+            if(true == hasZ)
+            {
+                if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
+                   || (CraftConfig.GCODE_COMPACT == CraftConfig.gcodeType) )
+                {
+                    res.append(" ");
+                }
+                res.append("Z");
+                res.append(xyzFormat.format(z));
+            }
+            // Feedrate F
+            if(true == hasFeedrate)
+            {
+                if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
+                   || (CraftConfig.GCODE_COMPACT == CraftConfig.gcodeType) )
+                {
+                    res.append(" ");
+                }
+                res.append("F");
+                res.append(fFormat.format(feedrate));
+            }
+            // Extrudate E
+            if(true == hasExtrodate)
+            {
+                if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
+                   || (CraftConfig.GCODE_COMPACT == CraftConfig.gcodeType) )
+                {
+                    res.append(" ");
+                }
+                res.append("E");
+                res.append(eFormat.format(extrudate));
+            }
+            if(CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
+            {
+                if(true == hasComment)
+                {
+                    res.append(" ; ");
+                    res.append(comment);
+                }
+            }
+        }
+        else if(LineTypes.EVENT == lineType)
+        {
+            res.append("; ");
+            res.append(comment);
         }
         else
         {
-            // Data is invalid -> create a comment
-            res = "; ";
+            // RAW == lineType
+            res.append(raw);
         }
-        switch (CraftConfig.gcodeType)
-        {
-        case CraftConfig.GCODE_FULL:
-            // with spaces and comment
-            res = res + "N" + lineNumber + " "
-                    + command.toString(); 
-            break;
-        case CraftConfig.GCODE_COMPACT:
-            // with spaces without comment
-            res = res + "N" + lineNumber + " "
-                    + command.toString(); 
-            break;
-        case CraftConfig.GCODE_TINY_COMPACT:
-            // without spaces without comments
-            res = res + "N" + lineNumber + command.toString(); 
-            break;
-        }
-        return res;
+        return res.toString();
     }
 
     public boolean hasX()
@@ -98,10 +191,11 @@ public class LineOfGCode
     {
         return x;
     }
-    
-    public void setX(double x)
+
+    public void setX(final double x)
     {
         this.x = x;
+        hasX = true;
     }
 
     public boolean hasY()
@@ -113,10 +207,11 @@ public class LineOfGCode
     {
         return y;
     }
-    
-    public void setY(double y)
+
+    public void setY(final double y)
     {
         this.y = y;
+        hasY = true;
     }
 
     public boolean hasZ()
@@ -128,10 +223,11 @@ public class LineOfGCode
     {
         return z;
     }
-    
-    public void setZ(double z)
+
+    public void setZ(final double z)
     {
         this.z = z;
+        hasZ = true;
     }
 
     public boolean hasFeedrate()
@@ -143,11 +239,32 @@ public class LineOfGCode
     {
         return feedrate;
     }
-    
-    public void setFeedrate(double feedrate)
+
+    public void setFeedrate(final double feedrate)
     {
         this.feedrate = feedrate;
         hasFeedrate = true;
     }
 
+    public void setExtrudate(final double ex)
+    {
+        extrudate = ex;
+        hasExtrodate = true;
+    }
+
+    public double getExtrudate()
+    {
+        return extrudate;
+    }
+
+    public LineTypes getType()
+    {
+        return lineType;
+    }
+
+    public void setComment(final String comment)
+    {
+        this.comment = comment;
+        hasComment = true;
+    }
 }

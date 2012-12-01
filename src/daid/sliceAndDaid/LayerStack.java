@@ -204,5 +204,4 @@ public class LayerStack
             Logger.debug("Layer: {}", i);
         }
     }
-
 }
