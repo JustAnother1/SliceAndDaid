@@ -214,7 +214,7 @@ public class LayerBitmap
                 fw.write("[");
                 for(int x = 0; x < width; x++)
                 {
-                    fw.write(String.format("%2X", bitmap[x + (y*width)]));
+                    fw.write(bitmap[x + (y*width)].toString());
                 }
                 fw.write("]\n");
             }
