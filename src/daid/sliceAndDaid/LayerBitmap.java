@@ -117,7 +117,7 @@ public class LayerBitmap
         // check if in Range
         if((xRaw >= width) || (yRaw >= height))
         {
-            throw new IllegalArgumentException("Addressed Pixel is out of Bitmap");
+            throw new IllegalArgumentException("Addressed Pixel(" + xRaw + ", " + yRaw + ") is out of Bitmap");
         }
         // update max/min Values
         if(PixelCode.EMPTY_CODE != code)
@@ -187,7 +187,7 @@ public class LayerBitmap
     {
         final int xRaw = x + xoffset;
         final int yRaw = y + yoffset;
-        if((xRaw > width) || (yRaw > height))
+        if((xRaw >= width) || (yRaw >= height) || (xRaw < 0) || (yRaw< 0))
         {
             return PixelCode.INVALID_CODE;
         }
@@ -203,14 +203,26 @@ public class LayerBitmap
         {
             final FileWriter fw = new FileWriter(fileName);
             fw.write("Textual Dump of Layer Bitmap\n");
-            fw.write("-");
+            // Normal Pixel
+            fw.write("    -");
+            for(int x = 0; x < width; x++)
+            {
+                fw.write(String.format("%2d", x - xoffset));
+            }
+            fw.write("-\n");
+            // Raw Pixel
+            fw.write("    -");
             for(int x = 0; x < width; x++)
             {
                 fw.write(String.format("%2X", x));
             }
             fw.write("-\n");
+
             for(int y = 0; y < height; y++)
             {
+                fw.write(String.format("%2d", y -yoffset));
+                fw.write("|");
+                fw.write(String.format("%2X", y));
                 fw.write("[");
                 for(int x = 0; x < width; x++)
                 {
@@ -401,38 +413,38 @@ public class LayerBitmap
             {
                 if(pixelCode == getPixel(startX + i, startY + distance))
                 {
-                    return new Pixel(startX, startY + distance);
+                    return new Pixel(startX + i, startY + distance);
                 }
                 if(pixelCode == getPixel(startX - i, startY + distance))
                 {
-                    return new Pixel(startX, startY + distance);
+                    return new Pixel(startX - i, startY + distance);
                 }
                 if(pixelCode == getPixel(startX + i, startY - distance))
                 {
-                    return new Pixel(startX, startY + distance);
+                    return new Pixel(startX + i, startY - distance);
                 }
                 if(pixelCode == getPixel(startX - i, startY - distance))
                 {
-                    return new Pixel(startX, startY + distance);
+                    return new Pixel(startX - i, startY - distance);
                 }
             }
             for(int i = 0; i < distance; i++) // corners already searched
             {
                 if(pixelCode == getPixel(startX + distance, startY + i))
                 {
-                    return new Pixel(startX, startY + distance);
+                    return new Pixel(startX + distance, startY + i);
                 }
                 if(pixelCode == getPixel(startX + distance, startY - i))
                 {
-                    return new Pixel(startX, startY + distance);
+                    return new Pixel(startX + distance, startY - i);
                 }
                 if(pixelCode == getPixel(startX - distance, startY + i))
                 {
-                    return new Pixel(startX, startY + distance);
+                    return new Pixel(startX - distance, startY + i);
                 }
                 if(pixelCode == getPixel(startX - distance, startY - i))
                 {
-                    return new Pixel(startX, startY + distance);
+                    return new Pixel(startX - distance, startY - i);
                 }
             }
         }

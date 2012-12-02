@@ -30,9 +30,9 @@ public class VectorChecker
 
     public void addVector(final int x, final int y)
     {
-        if((x > 1) || (x < -1) ||(y >1) || (y < -1))
+        if((x > 1) || (x < -1) || (y >1) || (y < -1))
         {
-            throw new IllegalArgumentException("Invalid Vector !");
+            throw new IllegalArgumentException("Invalid Vector (" + x + ", " + y + ")!");
         }
         if(NOT_USED == mainX)
         {

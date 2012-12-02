@@ -31,7 +31,7 @@ public class GCodeTool
         optimizers.optimize(event);
         // print Model
         LayerDirection curDir = LayerDirection.X_THEN_Y;
-        Pixel lastPosition = new Pixel(0,0);
+        Pixel lastPosition = new Pixel(0,0); // TODO let user configure Printers home Position
         for(int i = 0; i < layers.size(); i++)
         {
             Logger.message("Starting with Layer {} !", i);
@@ -51,9 +51,9 @@ public class GCodeTool
                 event = new LineOfGCode(PrintSteps.SKIRT, 0);
                 optimizers.optimize(event);
                 lastPosition = vec.generatePathsFor(b,
-                        PixelCode.SKIRT_CODE,
-                                                lastPosition,
-                                                curDir);
+                                                    PixelCode.SKIRT_CODE,
+                                                    lastPosition,
+                                                    curDir);
             }
             b.selectPixelType(PixelCode.OUTLINE_CODE);
             if(true == b.hasMorePixels())
@@ -62,9 +62,9 @@ public class GCodeTool
                 event = new LineOfGCode(PrintSteps.WALL, 0);
                 optimizers.optimize(event);
                 lastPosition = vec.generatePathsFor(b,
-                        PixelCode.OUTLINE_CODE,
-                        lastPosition,
-                        curDir);
+                                                    PixelCode.OUTLINE_CODE,
+                                                    lastPosition,
+                                                    curDir);
             }
             b.selectPixelType(PixelCode.FILLIN_CODE);
             if(true == b.hasMorePixels())

@@ -53,6 +53,7 @@ public class Vectorization
             Pixel lastPosition,
             final LayerDirection direction) throws IOException
     {
+        System.out.println("Got Last Position of (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
         this.b = b;
         // as long as this bitmap has more pixels of pixelcode do the following steps:
         b.selectPixelType(pixelCode);
@@ -68,6 +69,7 @@ public class Vectorization
                 // -> all paths are generated !
                 return lastPosition;
             }
+            System.out.println("Found next Pixel at (" + target.getX() + ", " + target.getY() + ") !");
             // optimize the Pixel
             if(LayerDirection.X_THEN_Y == direction)
             {
@@ -83,6 +85,7 @@ public class Vectorization
             // move to that position
             moveToPixel(target);
             lastPosition = target;
+            System.out.println("Optimizing last Position to (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
         // 2. find a pixel next to the first that has the same pixelcode
         //    and has a pixel with a different Pixel code as neighbor.
             final int lastX = lastPosition.getX();
@@ -212,17 +215,27 @@ public class Vectorization
                              +1,  0,
                               0, -1);
             }
-        // 4. generate a Gcode to move to the end of this line.
-            final Pixel endOfLine = line.get(line.size() -1);
+        // 4. generate a G-Code to move to the end of this line.
+            final Pixel endOfLine = line.lastElement();
             printToPixel(endOfLine);
         // 5. change all these Pixel to pixelcode printed.
             for(int i = 0; i < line.size(); i++)
             {
+                try
+                {
                 final Pixel p = line.get(i);
                 b.setPixel(p.getX(), p.getY(), PixelCode.PRINTED_CODE, pixelCode);
+                }
+                catch(final IllegalArgumentException e)
+                {
+                    b.toTxt("exception.txt");
+                    System.err.println("Exception at Element Number " + i + " !");
+                    throw e;
+                }
             }
         // 6. set lastPosition to end of Line.
             lastPosition = endOfLine;
+            System.out.println("Moving last Position to (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
         }
         // return the lastPosition.
         return lastPosition;
@@ -333,9 +346,7 @@ public class Vectorization
             lastY = curP.getY();
         }
         // one last Vector
-        final int vecX = endOfLineX - lastX;
-        final int vecY = endOfLineY - lastY;
-        vc.addVector(vecX, vecY);
+        vc.addVector(endOfLineX, endOfLineY);
         if(false == vc.isStraight())
         {
             return false;
@@ -362,7 +373,7 @@ public class Vectorization
                 return x + searchDistance;
             }
         } while((x + searchDistance < b.getMaxX()) || (x - searchDistance > b.getMinX()));
-        throw new IllegalArgumentException("Line End not found on X");
+        return x;
     }
 
     private int findClosestEndOnYAxis(final PixelCode pixelCode,
