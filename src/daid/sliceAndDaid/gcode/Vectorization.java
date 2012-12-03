@@ -221,17 +221,8 @@ public class Vectorization
         // 5. change all these Pixel to pixelcode printed.
             for(int i = 0; i < line.size(); i++)
             {
-                try
-                {
                 final Pixel p = line.get(i);
                 b.setPixel(p.getX(), p.getY(), PixelCode.PRINTED_CODE, pixelCode);
-                }
-                catch(final IllegalArgumentException e)
-                {
-                    b.toTxt("exception.txt");
-                    System.err.println("Exception at Element Number " + i + " !");
-                    throw e;
-                }
             }
         // 6. set lastPosition to end of Line.
             lastPosition = endOfLine;
