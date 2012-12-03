@@ -167,6 +167,62 @@ public class LineOfGCode
                     res.append(" ; ");
                     res.append(comment);
                 }
+                else
+                {
+                    // automatic comments
+                    switch(command)
+                    {
+                    case MOVE_TO_POSITION:
+                        res.append(" ; Moving");
+                        if((true == hasX) || (true == hasY) || (true == hasZ))
+                        {
+                            res.append(" to");
+                            if(true == hasX)
+                            {
+                                res.append(" X=");
+                                res.append(xyzFormat.format(x));
+                            }
+                            if(true == hasY)
+                            {
+                                res.append(" Y=");
+                                res.append(xyzFormat.format(y));
+                            }
+                            if(true == hasZ)
+                            {
+                                res.append(" Z=");
+                                res.append(xyzFormat.format(z));
+                            }
+                        }
+                        break;
+
+                    case EXTRUDE_TO_POSITION:
+                        res.append(" ; Extruding");
+                        if((true == hasX) || (true == hasY) || (true == hasZ))
+                        {
+                            res.append(" to");
+                            if(true == hasX)
+                            {
+                                res.append(" X=");
+                                res.append(xyzFormat.format(x));
+                            }
+                            if(true == hasY)
+                            {
+                                res.append(" Y=");
+                                res.append(xyzFormat.format(y));
+                            }
+                            if(true == hasZ)
+                            {
+                                res.append(" Z=");
+                                res.append(xyzFormat.format(z));
+                            }
+                        }
+                        break;
+
+                    default:
+                        // no comment
+                        break;
+                    }
+                }
             }
         }
         else if(LineTypes.EVENT == lineType)
