@@ -50,7 +50,7 @@ public final class Tool
         return fromByteBufferToHexString(buf, buf.length);
     }
 
-    public static String fromByteBufferToHexString(final byte[] buf, int length)
+    public static String fromByteBufferToHexString(final byte[] buf, final int length)
     {
         if(null == buf)
         {
@@ -127,6 +127,38 @@ public final class Tool
                 res.append("\n");
             }
             return res.toString();
+        }
+    }
+
+    public static String reportTime(final long time)
+    {
+
+        long minutes = 0;
+        long hours = 0;
+        final int milis = (int) time % 1000;
+        long seconds = time / 1000;
+        if (seconds > 59)
+        {
+            minutes = seconds / 60;
+            seconds = seconds % 60;
+        }
+        if (minutes > 59)
+        {
+            hours = minutes / 60;
+            minutes = minutes % 60;
+        }
+        if (0 < hours)
+        {
+            return "" + hours + " hours and " + minutes + " minutes and "
+                       + seconds + "," + milis + " seconds";
+        }
+        else if (0 < minutes)
+        {
+            return "" + minutes + " minutes and " + seconds + "," + milis + " seconds";
+        }
+        else
+        {
+            return "" + seconds + "," + milis + " seconds";
         }
     }
 }

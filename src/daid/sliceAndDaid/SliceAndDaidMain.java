@@ -18,6 +18,7 @@ import daid.sliceAndDaid.gcode.GCodeTool;
 import daid.sliceAndDaid.ui.ConfigWindow;
 import daid.sliceAndDaid.ui.PreviewFrame;
 import daid.sliceAndDaid.util.Logger;
+import daid.sliceAndDaid.util.Tool;
 
 public class SliceAndDaidMain
 {
@@ -179,10 +180,11 @@ public class SliceAndDaidMain
             Logger.error("Failed to write G-Code File");
             return;
         }
+        if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("printed");
 
         // Post slicing
         final long sliceTime = System.currentTimeMillis() - startTime;
-        reportTime("Slice time", sliceTime);
+        Logger.message("Slice time : " + Tool.reportTime(sliceTime));
 
         if (true == showResultWindow)
         {
@@ -194,38 +196,6 @@ public class SliceAndDaidMain
                     new PreviewFrame(layers);
                 }
             });
-        }
-    }
-
-    private static void reportTime(final String timesName, final long time)
-    {
-
-        long minutes = 0;
-        long hours = 0;
-        final int milis = (int) time % 1000;
-        long seconds = time / 1000;
-        if (seconds > 59)
-        {
-            minutes = seconds / 60;
-            seconds = seconds % 60;
-        }
-        if (minutes > 59)
-        {
-            hours = minutes / 60;
-            minutes = minutes % 60;
-        }
-        if (0 < hours)
-        {
-            Logger.message(timesName + ": " + hours + " hours and " + minutes + " minutes and " + seconds + "," + milis
-                    + " seconds");
-        }
-        else if (0 < minutes)
-        {
-            Logger.message(timesName + ": " + minutes + " minutes and " + seconds + "," + milis + " seconds");
-        }
-        else
-        {
-            Logger.message(timesName + ": " + seconds + "," + milis + " seconds");
         }
     }
 
