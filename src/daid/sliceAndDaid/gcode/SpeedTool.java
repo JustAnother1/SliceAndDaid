@@ -30,9 +30,7 @@ public class SpeedTool extends GCodeOptimizer
             {
                 if(false == lastLineWasExtrude)
                 {
-                    final LineOfGCode addedLine = new LineOfGCode(Gcode.EXTRUDE_TO_POSITION);
-                    addedLine.setFeedrate(CraftConfig.printSpeed);
-                    next.optimize(addedLine);
+                    line.setFeedrate(CraftConfig.printSpeed);
                     lastLineWasMove = false;
                     lastLineWasExtrude = true;
                 }
@@ -42,9 +40,7 @@ public class SpeedTool extends GCodeOptimizer
             {
                 if(false == lastLineWasMove)
                 {
-                    final LineOfGCode addedLine = new LineOfGCode(Gcode.MOVE_TO_POSITION);
-                    addedLine.setFeedrate(CraftConfig.travelSpeed);
-                    next.optimize(addedLine);
+                    line.setFeedrate(CraftConfig.travelSpeed);
                     lastLineWasMove = true;
                     lastLineWasExtrude = false;
                 }
