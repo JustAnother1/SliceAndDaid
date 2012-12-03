@@ -6,6 +6,7 @@ package daid.sliceAndDaid.gcode;
 import java.io.IOException;
 
 import daid.sliceAndDaid.gcode.LineOfGCode.LineTypes;
+import daid.sliceAndDaid.util.Tool;
 import daid.sliceAndDaid.util.Vector3;
 
 /**
@@ -14,7 +15,7 @@ import daid.sliceAndDaid.util.Vector3;
  */
 public class BuildTime extends GCodeOptimizer
 {
-    private double buildTime = 0;
+    private double buildTime_in_minutes = 0;
     private final double lastFeedrate = 1;
     private final Vector3 oldPos = new Vector3();
 
@@ -35,7 +36,7 @@ public class BuildTime extends GCodeOptimizer
                 double x;
                 double y;
                 double z;
-                double feedrate;
+                double feedrate_in_mmPerMinute;
                 if(true == line.hasX())
                 {
                     x = line.getX();
@@ -62,14 +63,14 @@ public class BuildTime extends GCodeOptimizer
                 }
                 if(true == line.hasFeedrate())
                 {
-                    feedrate = line.getFeedrate();
+                    feedrate_in_mmPerMinute = line.getFeedrate();
                 }
                 else
                 {
-                    feedrate = lastFeedrate;
+                    feedrate_in_mmPerMinute = lastFeedrate;
                 }
-                final double dist = oldPos.sub(new Vector3(x, y, z)).vSize();
-                buildTime += dist / feedrate;
+                final double dist_in_mm = oldPos.sub(new Vector3(x, y, z)).vSize();
+                buildTime_in_minutes += dist_in_mm / feedrate_in_mmPerMinute;
             }
             // else -> no move -> no time consumption
         }
@@ -80,7 +81,8 @@ public class BuildTime extends GCodeOptimizer
     @Override
     public void close() throws IOException
     {
-        final LineOfGCode line = new LineOfGCode("; Build Time : " + buildTime);
+        final LineOfGCode line = new LineOfGCode("; Build Time : "
+             + Tool.reportTime((long)(buildTime_in_minutes*60*1000)));
         next.optimize(line);
         next.close();
     }

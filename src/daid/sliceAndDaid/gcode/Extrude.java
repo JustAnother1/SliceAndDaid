@@ -4,6 +4,7 @@
 package daid.sliceAndDaid.gcode;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.gcode.LineOfGCode.LineTypes;
@@ -93,7 +94,8 @@ public class Extrude extends GCodeOptimizer
     @Override
     public void close() throws IOException
     {
-        final LineOfGCode line = new LineOfGCode("; Build consumes : " + totalExtruderValue + " mm Filament");
+        final DecimalFormat eFormat = new DecimalFormat("#.###");
+        final LineOfGCode line = new LineOfGCode("; Build consumes : " + eFormat.format(totalExtruderValue) + " mm Filament");
         next.optimize(line);
         next.close();
     }
