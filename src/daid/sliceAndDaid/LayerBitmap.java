@@ -80,7 +80,12 @@ public class LayerBitmap
         drawLine(x2, y2, x1, y2, code, oldCode);
     }
 
-    public void drawLine(int x0, int y0, final int x1, final int y1, final PixelCode code, final PixelCode oldCode)
+    public void drawLine(int x0,
+                          int y0,
+                          final int x1,
+                          final int y1,
+                          final PixelCode code,
+                          final PixelCode oldCode)
     {
         // Algorithm see https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
         final int dx = Math.abs(x1 - x0);
@@ -91,7 +96,7 @@ public class LayerBitmap
         if(y0 < y1) { sy = 1; } else { sy = -1; }
         int err = dx - dy;
         int e2;
-        setPixel(x0, y0, code);
+        setPixel(x0, y0, code, oldCode);
         while(!((x0 == x1) && (y0 == y1)))
         {
             e2 = 2*err;
@@ -115,8 +120,9 @@ public class LayerBitmap
         final int xRaw = x + xoffset;
         final int yRaw = y + yoffset;
         // check if in Range
-        if((xRaw >= width) || (yRaw >= height))
+        if((xRaw >= width) || (yRaw >= height) || (xRaw < 0) || (yRaw < 0))
         {
+            toTxt("exception.txt");
             throw new IllegalArgumentException("Addressed Pixel(" + xRaw + ", " + yRaw + ") is out of Bitmap");
         }
         // update max/min Values
@@ -203,15 +209,7 @@ public class LayerBitmap
         {
             final FileWriter fw = new FileWriter(fileName);
             fw.write("Textual Dump of Layer Bitmap\n");
-            // Normal Pixel
-            fw.write("    -");
-            for(int x = 0; x < width; x++)
-            {
-                fw.write(String.format("%2d", x - xoffset));
-            }
-            fw.write("-\n");
-            // Raw Pixel
-            fw.write("    -");
+            fw.write("  -");
             for(int x = 0; x < width; x++)
             {
                 fw.write(String.format("%2X", x));
@@ -220,8 +218,6 @@ public class LayerBitmap
 
             for(int y = 0; y < height; y++)
             {
-                fw.write(String.format("%2d", y -yoffset));
-                fw.write("|");
                 fw.write(String.format("%2X", y));
                 fw.write("[");
                 for(int x = 0; x < width; x++)
