@@ -389,16 +389,16 @@ public class Vectorization
     private void printToPixel(final Pixel target) throws IOException
     {
         final LineOfGCode order = new LineOfGCode(Gcode.EXTRUDE_TO_POSITION);
-        order.setX(target.getX() * layers.getPixelPerMm());
-        order.setY(target.getY() * layers.getPixelPerMm());
+        order.setX(target.getX() / layers.getPixelPerMm());
+        order.setY(target.getY() / layers.getPixelPerMm());
         optimizers.optimize(order);
     }
 
     private void moveToPixel(final Pixel target) throws IOException
     {
         final LineOfGCode order = new LineOfGCode(Gcode.MOVE_TO_POSITION);
-        order.setX(target.getX() * layers.getPixelPerMm());
-        order.setY(target.getY() * layers.getPixelPerMm());
+        order.setX(target.getX() / layers.getPixelPerMm());
+        order.setY(target.getY() / layers.getPixelPerMm());
         optimizers.optimize(order);
     }
 
