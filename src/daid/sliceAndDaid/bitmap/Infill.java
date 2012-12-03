@@ -39,11 +39,12 @@ public class Infill extends BitmapOptimizer
             if(false == b.hasMorePixels())
             {
                 // Done with this Layer
-                break;
+                continue;
             }
             else
             {
-                // We draw the pattern on the whole used part of thLayer,
+                System.out.println("Drawing Area X : " + b.getMaxX() + " to " + b.getMinX() + " Y : " + b.getMaxY() + " to " + b.getMinY() + " !");
+                // We draw the pattern on the whole used part of the Layer,
                 // but it will only appear on the Inside Code.
                 // Pattern:
                 // %2 = 0   | %2 = 1
@@ -69,8 +70,8 @@ public class Infill extends BitmapOptimizer
                 if(0 == activeLayer%2)
                 {
                     // Start in top left corner and go down (x+; y+)
-                    int startX = b.getMinX();
-                    int startY = b.getMinY();
+                    int startX = (b.getMinX()/lineToLineX) * lineToLineX;
+                    int startY = (b.getMinY()/lineToLineY) * lineToLineY;
                     do{
                         drawLine(b, startX, startY, true);
                         startX = startX + lineToLineX;
@@ -126,6 +127,14 @@ public class Infill extends BitmapOptimizer
             {
                 nextY = startY - slideY;
             }
+            if(   (nextX > b.getMaxX())
+               || (nextY > b.getMaxY())
+               || (nextX < b.getMinX())
+               || (nextY < b.getMinY()) )
+            {
+                break;
+            }
+            System.out.println("Drawing line from (" + startX + ", " + startY + ") to (" + nextX + ", " + nextY + ") !");
             b.drawLine(startX, startY, nextX, nextY,
                        PixelCode.FILLIN_CODE,
                        PixelCode.INSIDE_CODE);
@@ -133,11 +142,22 @@ public class Infill extends BitmapOptimizer
             startY = nextY;
             // Line
             nextX = startX + straitLength;
+            if(   (nextX > b.getMaxX())
+               || (nextY > b.getMaxY())
+               || (nextX < b.getMinX())
+               || (nextY < b.getMinY()) )
+            {
+                break;
+            }
+            System.out.println("Drawing line from (" + startX + ", " + startY + ") to (" + nextX + ", " + nextY + ") !");
             b.drawLine(startX, startY, nextX, nextY,
                        PixelCode.FILLIN_CODE,
                        PixelCode.INSIDE_CODE);
             startX = nextX;
-        }while((startX < b.getMaxX()) && (startY < b.getMaxY()));
+        }while(   (startX < b.getMaxX())
+                && (startY < b.getMaxY())
+                && (startX > b.getMinY())
+                && (startY > b.getMinY()) );
     }
 
 }
