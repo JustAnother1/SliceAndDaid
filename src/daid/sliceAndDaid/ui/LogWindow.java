@@ -1,3 +1,17 @@
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see <http://www.gnu.org/licenses/>
+ *
+ */
 package daid.sliceAndDaid.ui;
 
 import java.awt.BorderLayout;
@@ -16,8 +30,8 @@ public class LogWindow extends JFrame implements LoggingInterface
 {
     private static final long serialVersionUID = 1L;
 
-    private JLabel statusLabel;
-    private JProgressBar progressBar;
+    private final JLabel statusLabel;
+    private final JProgressBar progressBar;
 
     public LogWindow()
     {
@@ -43,18 +57,22 @@ public class LogWindow extends JFrame implements LoggingInterface
         Logger.register(this);
     }
 
-    public void error(String error)
+    @Override
+    public void error(final String error)
     {
     }
 
-    public void message(String message)
+    @Override
+    public void message(final String message)
     {
     }
 
+    @Override
     public void updateStatus(final String status)
     {
         SwingUtilities.invokeLater(new Runnable()
         {
+            @Override
             public void run()
             {
                 statusLabel.setText(status);
@@ -65,20 +83,24 @@ public class LogWindow extends JFrame implements LoggingInterface
         });
     }
 
-    public void warning(String warning)
+    @Override
+    public void warning(final String warning)
     {
     }
 
+    @Override
     public void dispose()
     {
         Logger.unRegister(this);
         super.dispose();
     }
 
+    @Override
     public void setProgress(final int value, final int max)
     {
         SwingUtilities.invokeLater(new Runnable()
         {
+            @Override
             public void run()
             {
                 progressBar.setIndeterminate(false);
@@ -92,12 +114,12 @@ public class LogWindow extends JFrame implements LoggingInterface
     }
 
     @Override
-    public void trace(String error)
+    public void trace(final String error)
     {
     }
 
     @Override
-    public void trace(String message, Object obj)
+    public void trace(final String message, final Object obj)
     {
     }
 }

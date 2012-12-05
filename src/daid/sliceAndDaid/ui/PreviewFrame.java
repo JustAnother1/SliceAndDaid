@@ -1,3 +1,17 @@
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see <http://www.gnu.org/licenses/>
+ *
+ */
 package daid.sliceAndDaid.ui;
 
 import java.awt.BorderLayout;
@@ -19,7 +33,7 @@ import daid.sliceAndDaid.LayerStack;
 public class PreviewFrame extends JFrame
 {
     private static final long serialVersionUID = 1L;
-    private LayerStack layers;
+    private final LayerStack layers;
 
     public class PreviewPanel extends JPanel implements MouseMotionListener
     {
@@ -36,32 +50,35 @@ public class PreviewFrame extends JFrame
             addMouseMotionListener(this);
         }
 
-        public void paint(Graphics g)
+        @Override
+        public void paint(final Graphics g)
         {
             super.paint(g);
             layers.get(showLayer).drawAllSegmentsTo(g);
         }
 
-        public void mouseDragged(MouseEvent e)
+        @Override
+        public void mouseDragged(final MouseEvent e)
         {
-            viewOffsetX += (double) (e.getX() - oldX) / drawScale;
-            viewOffsetY += (double) (e.getY() - oldY) / drawScale;
+            viewOffsetX += (e.getX() - oldX) / drawScale;
+            viewOffsetY += (e.getY() - oldY) / drawScale;
             repaint();
             oldX = e.getX();
             oldY = e.getY();
         }
 
-        public void mouseMoved(MouseEvent e)
+        @Override
+        public void mouseMoved(final MouseEvent e)
         {
             oldX = e.getX();
             oldY = e.getY();
         }
     }
 
-    public PreviewFrame(LayerStack layers)
+    public PreviewFrame(final LayerStack layers)
     {
         final PreviewPanel viewPanel = new PreviewPanel();
-        JPanel actionPanel = new JPanel();
+        final JPanel actionPanel = new JPanel();
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
         this.setTitle("Preview");
         this.layers = layers;
@@ -69,7 +86,8 @@ public class PreviewFrame extends JFrame
         final JSpinner layerSpinner = new JSpinner(new SpinnerNumberModel(viewPanel.showLayer, 0, layers.size() - 1, 1));
         layerSpinner.addChangeListener(new ChangeListener()
         {
-            public void stateChanged(ChangeEvent e)
+            @Override
+            public void stateChanged(final ChangeEvent e)
             {
                 viewPanel.showLayer = ((Integer) layerSpinner.getValue()).intValue();
                 viewPanel.repaint();
@@ -78,7 +96,8 @@ public class PreviewFrame extends JFrame
         final JSpinner zoomSpinner = new JSpinner(new SpinnerNumberModel(viewPanel.drawScale, 1.0, 200.0, 1.0));
         zoomSpinner.addChangeListener(new ChangeListener()
         {
-            public void stateChanged(ChangeEvent e)
+            @Override
+            public void stateChanged(final ChangeEvent e)
             {
                 viewPanel.drawScale = ((Double) zoomSpinner.getValue()).doubleValue();
                 viewPanel.repaint();

@@ -1,3 +1,17 @@
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see <http://www.gnu.org/licenses/>
+ *
+ */
 package daid.sliceAndDaid.ui;
 
 import java.awt.BorderLayout;
@@ -46,9 +60,9 @@ import daid.sliceAndDaid.util.Logger;
 
 /**
  * The ConfigWindow class generates a JFrame window with the configurable options.
- * 
+ *
  * It uses reflection to get the configurable settings. This makes adding new settings easy.
- * 
+ *
  * NOTE: I suck at UI coding.
  */
 public class ConfigWindow extends JFrame
@@ -64,7 +78,7 @@ public class ConfigWindow extends JFrame
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        final JTabbedPane tabbedPane = new JTabbedPane();
         this.configSettingsPanel = new JPanel();
         this.configSettingsPanel.setLayout(new BoxLayout(this.configSettingsPanel, BoxLayout.Y_AXIS));
         this.actionPanel = new JPanel(new GridBagLayout());
@@ -76,7 +90,8 @@ public class ConfigWindow extends JFrame
 
         startCodeTextArea.addFocusListener(new FocusAdapter()
         {
-            public void focusLost(FocusEvent e)
+            @Override
+            public void focusLost(final FocusEvent e)
             {
                 CraftConfig.startGCode = startCodeTextArea.getText();
                 CraftConfigLoader.saveConfig(null);
@@ -84,7 +99,8 @@ public class ConfigWindow extends JFrame
         });
         endCodeTextArea.addFocusListener(new FocusAdapter()
         {
-            public void focusLost(FocusEvent e)
+            @Override
+            public void focusLost(final FocusEvent e)
             {
                 CraftConfig.endGCode = endCodeTextArea.getText();
                 CraftConfigLoader.saveConfig(null);
@@ -95,27 +111,30 @@ public class ConfigWindow extends JFrame
         tabbedPane.addTab("Start GCode", new JScrollPane(startCodeTextArea));
         tabbedPane.addTab("End GCode", new JScrollPane(endCodeTextArea));
 
-        GridBagConstraints c = new GridBagConstraints();
+        final GridBagConstraints c = new GridBagConstraints();
         c.gridy = 0;
         c.anchor = GridBagConstraints.WEST;
         c.insets = new Insets(1, 1, 1, 1);
         c.fill = GridBagConstraints.HORIZONTAL;
 
-        JButton sliceButton = new JButton("Slice");
+        final JButton sliceButton = new JButton("Slice");
         sliceButton.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e)
+            @Override
+            public void actionPerformed(final ActionEvent e)
             {
                 final JFileChooser fc = new JFileChooser();
                 fc.setFileFilter(new FileFilter()
                 {
-                    public boolean accept(File f)
+                    @Override
+                    public boolean accept(final File f)
                     {
                         if (f.isDirectory())
                             return true;
                         return f.getName().endsWith(".stl");
                     }
 
+                    @Override
                     public String getDescription()
                     {
                         return null;
@@ -123,31 +142,32 @@ public class ConfigWindow extends JFrame
 
                 });
                 fc.setSelectedFile(new File(CraftConfig.lastSlicedFile));
-                int returnVal = fc.showOpenDialog(null);
+                final int returnVal = fc.showOpenDialog(null);
                 if (returnVal == JFileChooser.APPROVE_OPTION)
                 {
                     final LogWindow logWindow = new LogWindow();
                     new Thread(new Runnable()
                     {
+                        @Override
                         public void run()
                         {
                             try
                             {
                                 CraftConfig.lastSlicedFile = fc.getSelectedFile().toString();
                                 CraftConfigLoader.saveConfig(null);
-                                SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(), 
+                                SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(),
                                                             true, /* graphic result window after operation */
                                                             false /* no picture files of Layers */);
                                 logWindow.dispose();
                             }
-                            catch (Exception e)
+                            catch (final Exception e)
                             {
                                 e.printStackTrace();
                                 logWindow.dispose();
-                                StringBuilder sb = new StringBuilder();
+                                final StringBuilder sb = new StringBuilder();
                                 sb.append(e.toString());
                                 sb.append("\n");
-                                for (StackTraceElement el : e.getStackTrace())
+                                for (final StackTraceElement el : e.getStackTrace())
                                 {
                                     sb.append(el.toString());
                                     sb.append("\n");
@@ -165,17 +185,18 @@ public class ConfigWindow extends JFrame
         final JComboBox levelSelect = new JComboBox(new String[] { "Starter", "Normal", "Advance", "+Kitchen sink" });
         levelSelect.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e)
+            @Override
+            public void actionPerformed(final ActionEvent e)
             {
                 CraftConfig.showLevel = levelSelect.getSelectedIndex();
                 Color buttonBgColor = null;
-                for (Component c : levelSelect.getComponents())
+                for (final Component c : levelSelect.getComponents())
                 {
                     if (c instanceof JButton)
                         buttonBgColor = ((JButton) c).getBackground();
                 }
                 levelSelect.setBackground(levelColor(CraftConfig.showLevel));
-                for (Component c : levelSelect.getComponents())
+                for (final Component c : levelSelect.getComponents())
                 {
                     if (c instanceof JButton)
                         ((JButton) c).setBackground(buttonBgColor);
@@ -189,7 +210,8 @@ public class ConfigWindow extends JFrame
         {
             private static final long serialVersionUID = 1L;
 
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+            @Override
+            public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus)
             {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (isSelected)
@@ -212,7 +234,7 @@ public class ConfigWindow extends JFrame
     {
         configSettingsPanel.removeAll();
 
-        HashSet<String> doneGroups = new HashSet<String>();
+        final HashSet<String> doneGroups = new HashSet<String>();
 
         for (final Field f : CraftConfig.class.getFields())
         {
@@ -222,7 +244,7 @@ public class ConfigWindow extends JFrame
             if (doneGroups.contains(s.group()))
                 continue;
             doneGroups.add(s.group());
-            JPanel p = new JPanel(new GridBagLayout());
+            final JPanel p = new JPanel(new GridBagLayout());
             p.setBorder(BorderFactory.createTitledBorder(s.group()));
             if (addConfigFields(p, s.group()) > 0)
                 configSettingsPanel.add(p);
@@ -232,9 +254,9 @@ public class ConfigWindow extends JFrame
         this.setLocationRelativeTo(null);
     }
 
-    private int addConfigFields(JPanel p, String groupName)
+    private int addConfigFields(final JPanel p, final String groupName)
     {
-        GridBagConstraints c = new GridBagConstraints();
+        final GridBagConstraints c = new GridBagConstraints();
         c.gridy = 0;
         c.anchor = GridBagConstraints.WEST;
         c.insets = new Insets(1, 1, 1, 1);
@@ -269,7 +291,8 @@ public class ConfigWindow extends JFrame
                     helpButton.setMargin(new java.awt.Insets(0, 1, 0, 1));
                     helpButton.addActionListener(new ActionListener()
                     {
-                        public void actionPerformed(ActionEvent e)
+                        @Override
+                        public void actionPerformed(final ActionEvent e)
                         {
                             JOptionPane.showMessageDialog(label, s.description());
                         }
@@ -288,11 +311,11 @@ public class ConfigWindow extends JFrame
                 p.add(comp, c);
                 c.gridy++;
             }
-            catch (IllegalArgumentException e)
+            catch (final IllegalArgumentException e)
             {
                 e.printStackTrace();
             }
-            catch (IllegalAccessException e)
+            catch (final IllegalAccessException e)
             {
                 e.printStackTrace();
             }
@@ -300,7 +323,7 @@ public class ConfigWindow extends JFrame
         return c.gridy;
     }
 
-    private Color levelColor(int level)
+    private Color levelColor(final int level)
     {
         switch (level)
         {
@@ -314,23 +337,24 @@ public class ConfigWindow extends JFrame
         return Color.WHITE;
     }
 
-    private Component getSwingComponentForField(final Field f, Setting s) throws IllegalArgumentException, IllegalAccessException
+    private Component getSwingComponentForField(final Field f, final Setting s) throws IllegalArgumentException, IllegalAccessException
     {
         if (f.getType() == Integer.TYPE)
         {
             if (s.enumName().equals(""))
             {
-                JSpinner spinner = new JSpinner(new SpinnerNumberModel(f.getInt(null), (int) s.minValue(), (int) s.maxValue(), 1));
+                final JSpinner spinner = new JSpinner(new SpinnerNumberModel(f.getInt(null), (int) s.minValue(), (int) s.maxValue(), 1));
                 spinner.addChangeListener(new ChangeListener()
                 {
-                    public void stateChanged(ChangeEvent e)
+                    @Override
+                    public void stateChanged(final ChangeEvent e)
                     {
                         try
                         {
                             f.setInt(null, ((Integer) ((JSpinner) e.getSource()).getValue()).intValue());
                             CraftConfigLoader.saveConfig(null);
                         }
-                        catch (Exception e1)
+                        catch (final Exception e1)
                         {
                             e1.printStackTrace();
                         }
@@ -340,7 +364,7 @@ public class ConfigWindow extends JFrame
             }
             else
             {
-                Vector<String> items = new Vector<String>();
+                final Vector<String> items = new Vector<String>();
                 for (final Field enumField : CraftConfig.class.getFields())
                 {
                     String name = enumField.getName();
@@ -356,14 +380,15 @@ public class ConfigWindow extends JFrame
                 combo.setSelectedIndex(f.getInt(null));
                 combo.addActionListener(new ActionListener()
                 {
-                    public void actionPerformed(ActionEvent e)
+                    @Override
+                    public void actionPerformed(final ActionEvent e)
                     {
                         try
                         {
                             f.setInt(null, combo.getSelectedIndex());
                             CraftConfigLoader.saveConfig(null);
                         }
-                        catch (Exception e1)
+                        catch (final Exception e1)
                         {
                             e1.printStackTrace();
                         }
@@ -374,17 +399,18 @@ public class ConfigWindow extends JFrame
         }
         else if (f.getType() == Double.TYPE)
         {
-            JSpinner spinner = new JSpinner(new SpinnerNumberModel(f.getDouble(null), s.minValue(), s.maxValue(), 0.01));
+            final JSpinner spinner = new JSpinner(new SpinnerNumberModel(f.getDouble(null), s.minValue(), s.maxValue(), 0.01));
             spinner.addChangeListener(new ChangeListener()
             {
-                public void stateChanged(ChangeEvent e)
+                @Override
+                public void stateChanged(final ChangeEvent e)
                 {
                     try
                     {
                         f.setDouble(null, ((Double) ((JSpinner) e.getSource()).getValue()).doubleValue());
                         CraftConfigLoader.saveConfig(null);
                     }
-                    catch (Exception e1)
+                    catch (final Exception e1)
                     {
                         e1.printStackTrace();
                     }
@@ -394,18 +420,19 @@ public class ConfigWindow extends JFrame
         }
         else if (f.getType() == Boolean.TYPE)
         {
-            JCheckBox checkbox = new JCheckBox();
+            final JCheckBox checkbox = new JCheckBox();
             checkbox.setSelected(f.getBoolean(null));
             checkbox.addActionListener(new ActionListener()
             {
-                public void actionPerformed(ActionEvent e)
+                @Override
+                public void actionPerformed(final ActionEvent e)
                 {
                     try
                     {
                         f.setBoolean(null, ((JCheckBox) e.getSource()).isSelected());
                         CraftConfigLoader.saveConfig(null);
                     }
-                    catch (Exception e1)
+                    catch (final Exception e1)
                     {
                         e1.printStackTrace();
                     }

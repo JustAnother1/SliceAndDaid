@@ -1,3 +1,17 @@
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see <http://www.gnu.org/licenses/>
+ *
+ */
 package daid.sliceAndDaid.config;
 
 import java.io.BufferedReader;
@@ -29,7 +43,7 @@ public class CraftConfigLoader
         try
         {
             br = new BufferedReader(new FileReader(filename));
-        } catch (FileNotFoundException e)
+        } catch (final FileNotFoundException e)
         {
             return;
         }
@@ -48,29 +62,29 @@ public class CraftConfigLoader
                 }
                 if (line.indexOf('=') < 0)
                     continue;
-                String key = line.substring(0, line.indexOf('='));
-                String value = line.substring(line.indexOf('=') + 1);
+                final String key = line.substring(0, line.indexOf('='));
+                final String value = line.substring(line.indexOf('=') + 1);
                 if ("[SliceAndDaid config]".equals(section))
                 {
                     setField(key, value);
                 }
             }
-        } catch (IOException e)
+        } catch (final IOException e)
         {
             Logger.error("IOException during loading of config file...");
         }
     }
 
-    private static void setField(String key, String value)
+    private static void setField(final String key, final String value)
     {
-        Class<?> c = CraftConfig.class;
+        final Class<?> c = CraftConfig.class;
         Field f = null;
         try
         {
             f = c.getField(key);
             if (f == null)
                 return;
-            Setting s = f.getAnnotation(Setting.class);
+            final Setting s = f.getAnnotation(Setting.class);
             if (f.getType() == Double.TYPE)
             {
                 double v = Double.parseDouble(value);
@@ -97,16 +111,16 @@ public class CraftConfigLoader
             {
                 throw new RuntimeException("Unknown config type: " + f.getType());
             }
-        } catch (IllegalArgumentException e)
+        } catch (final IllegalArgumentException e)
         {
             e.printStackTrace();
-        } catch (IllegalAccessException e)
+        } catch (final IllegalAccessException e)
         {
             e.printStackTrace();
-        } catch (SecurityException e)
+        } catch (final SecurityException e)
         {
             e.printStackTrace();
-        } catch (NoSuchFieldException e)
+        } catch (final NoSuchFieldException e)
         {
             Logger.warning("Found: " + key + " in the configuration, but I don't know this setting");
         }
@@ -124,28 +138,28 @@ public class CraftConfigLoader
             filename = System.getProperty("user.home") + "/.SliceAndDaid.conf";
         try
         {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+            final BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
             bw.write(";Saved with version: " + CraftConfig.VERSION + "\n");
             bw.write("[SliceAndDaid config]\n");
-            Class<CraftConfig> configClass = CraftConfig.class;
+            final Class<CraftConfig> configClass = CraftConfig.class;
             for (final Field f : configClass.getFields())
             {
-                Setting s = f.getAnnotation(Setting.class);
+                final Setting s = f.getAnnotation(Setting.class);
                 if (s == null)
                     continue;
                 try
                 {
                     bw.write(f.getName() + "=" + f.get(null).toString().replace("\n", "\\n") + "\n");
-                } catch (IllegalArgumentException e)
+                } catch (final IllegalArgumentException e)
                 {
                     e.printStackTrace();
-                } catch (IllegalAccessException e)
+                } catch (final IllegalAccessException e)
                 {
                     e.printStackTrace();
                 }
             }
             bw.close();
-        } catch (IOException e1)
+        } catch (final IOException e1)
         {
             // TODO Auto-generated catch block
             e1.printStackTrace();
