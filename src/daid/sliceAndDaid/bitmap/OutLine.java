@@ -20,8 +20,8 @@ import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.config.CraftConfig;
 
 /** reads Layers Vectors and creates the Outline/ shell of the Object.
- * @author lars
- *
+ * @author Lars P&ouml;tter
+ * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
  */
 public class OutLine extends BitmapOptimizer
 {

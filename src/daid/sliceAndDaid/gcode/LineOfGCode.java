@@ -19,8 +19,8 @@ import java.text.DecimalFormat;
 import daid.sliceAndDaid.config.CraftConfig;
 
 /**
- * @author lars
- *
+ * @author Lars P&ouml;tter
+ * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
  */
 public class LineOfGCode
 {

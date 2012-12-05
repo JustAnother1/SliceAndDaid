@@ -21,8 +21,8 @@ import daid.sliceAndDaid.util.Tool;
 import daid.sliceAndDaid.util.Vector3;
 
 /**
- * @author lars
- *
+ * @author Lars P&ouml;tter
+ * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
  */
 public class BuildTime extends GCodeOptimizer
 {

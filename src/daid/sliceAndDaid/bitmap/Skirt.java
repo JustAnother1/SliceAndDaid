@@ -21,8 +21,8 @@ import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.util.Logger;
 
 /** creates a skirt in Layer 0.
- * @author lars
- *
+ * @author Lars P&ouml;tter
+ * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
  */
 public class Skirt extends BitmapOptimizer
 {

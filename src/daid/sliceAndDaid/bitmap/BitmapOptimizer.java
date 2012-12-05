@@ -17,8 +17,8 @@ package daid.sliceAndDaid.bitmap;
 import daid.sliceAndDaid.LayerStack;
 
 /**
- * @author lars
- *
+ * @author Lars P&ouml;tter
+ * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
  */
 public abstract class BitmapOptimizer
 {
