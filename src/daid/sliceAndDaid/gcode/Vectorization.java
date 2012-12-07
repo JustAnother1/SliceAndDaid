@@ -32,7 +32,7 @@ public class Vectorization
 
     private GCodeOptimizer optimizers = null;
     private final LayerStack layers;
-    private LayerBitmap b;;
+    private LayerBitmap b;
 
     public Vectorization(final GCodeOptimizer optimizers,final LayerStack layers)
     {
@@ -42,13 +42,12 @@ public class Vectorization
 
     /** creates G-Codes to print the Pixels.
      *
-     * as long as this bitmap has more pixels of pixelcode do the following steps:
+     * as long as this bitmap has more pixels of pixelCode do the following steps:
      * 1. find pixel of "pixelCode" closest to lastPosition.
-     * 2. find a pixel next to the first that has the same pixelcode
-     *    and has a pixel with a different Pixel code as neighbor.
-     * 3. find more pixels in the same direction ( so that they form a line) with the same pixelcode.
-     * 4. generate a Gcode to move to the end of this line.
-     * 5. change all these Pixel to pixelcode printed.
+     * 2. find a pixel next to the first that has the same pixelCode.
+     * 3. find more pixels in the same direction ( so that they form a line) with the same pixelCode.
+     * 4. generate a G-Code to move to the end of this line.
+     * 5. change all these Pixel to pixelCode printed.
      * 6. set lastPosition to end of Line.
      * return the lastPosition.
      *
@@ -62,174 +61,34 @@ public class Vectorization
     public Pixel generatePathsFor(final LayerBitmap b,
             final PixelCode pixelCode,
             Pixel lastPosition,
-            final LayerDirection direction) throws IOException
+            final LayerDirection direction,
+            final RoutingAlgorithm routing) throws IOException
     {
         System.out.println("Got Last Position of (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
         this.b = b;
-        // as long as this bitmap has more pixels of pixelcode do the following steps:
+        // as long as this bitmap has more pixels of pixelCode do the following steps:
         b.selectPixelType(pixelCode);
         while(true == b.hasMorePixels())
         {
         // 1. find pixel of "pixelCode" closest to lastPosition.
-            Pixel target = null;
-            // Find the pixel with pixelCode that is closest to lastPosition
-            target = b.getPixelWithCodeClosestTo(pixelCode, lastPosition);
-            if(null == target)
-            {
-                // there are no Pixels of the Specified type on this layer
-                // -> all paths are generated !
-                return lastPosition;
-            }
-            System.out.println("Found next Pixel at (" + target.getX() + ", " + target.getY() + ") !");
-            // optimize the Pixel
-            if(LayerDirection.X_THEN_Y == direction)
-            {
-                final int x = findClosestEndOnXAxis(pixelCode, target.getX(), target.getY());
-                target = new Pixel(x, target.getY());
-            }
-            else
-            {
-                // Y then X
-                final int y = findClosestEndOnYAxis(pixelCode, target.getX(), target.getY());
-                target = new Pixel(target.getX(), y);
-            }
-            // move to that position
-            moveToPixel(target);
-            lastPosition = target;
-            System.out.println("Optimizing last Position to (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
-        // 2. find a pixel next to the first that has the same pixelcode
-        //    and has a pixel with a different Pixel code as neighbor.
-            final int lastX = lastPosition.getX();
-            final int lastY = lastPosition.getY();
+        // 2. find a pixel next to the first that has the same pixelCode.
+        // 3. find more pixels in the same direction ( so that they form a line) with the same pixelCode.
             Vector<Pixel> line = new Vector<Pixel>();
-            line.add(lastPosition);
-        // 3. find more pixels in the same direction ( so that they form a line) with the same pixelcode.
-            // +------+------+------+
-            // |  1   |  2   |  3   |
-            // | x -1 | x    | x +1 |
-            // | y +1 | y +1 | y +1 |
-            // +------+------+------+
-            // |  4   |  5   |  6   |
-            // | x -1 | x    | x +1 |
-            // | y    | y    | y    |
-            // +------+------+------+
-            // |  7   |  8   |  9   |
-            // | x -1 | x    | x +1 |
-            // | y -1 | y -1 | y -1 |
-            // +------+------+------+
-            if(LayerDirection.X_THEN_Y == direction)
+            switch(routing)
             {
-                    // 6
-                    line = check(line, pixelCode,
-                                 lastX +1, lastY +0,
-                                 +1,  0,
-                                 +1, +1,
-                                 +1, -1);
-                if(2 > line.size())
-                {
-                    // 4
-                    line = check(line, pixelCode,
-                                 lastX -1, lastY +0,
-                                 -1,  0,
-                                 -1, +1,
-                                 -1, -1);
-                }
-                if(2 > line.size())
-                {
-                    // 2
-                    line = check(line, pixelCode,
-                                 lastX +0, lastY +1,
-                                  0, +1,
-                                 -1, +1,
-                                 +1, +1);
-                }
-                if(2 > line.size())
-                {
-                    // 8
-                    line = check(line, pixelCode,
-                                 lastX +0, lastY -1,
-                                  0, -1,
-                                 -1, -1,
-                                 +1, -1);
-                }
-            }
-            else
-            {
-                // Y then X
-                    // 2
-                    line = check(line, pixelCode,
-                                 lastX +0, lastY +1,
-                                  0, +1,
-                                 -1, +1,
-                                 +1, +1);
-                if(2 > line.size())
-                {
-                    // 8
-                    line = check(line, pixelCode,
-                                 lastX +0, lastY -1,
-                                  0, -1,
-                                 -1, -1,
-                                 +1, -1);
-                }
-                if(2 > line.size())
-                {
-                    // 6
-                    line = check(line, pixelCode,
-                                 lastX +1, lastY +0,
-                                 +1,  0,
-                                 +1, +1,
-                                 +1, -1);
-                }
-                if(2 > line.size())
-                {
-                    // 4
-                    line = check(line, pixelCode,
-                                 lastX -1, lastY +0,
-                                 -1,  0,
-                                 -1, +1,
-                                 -1, -1);
-                }
-            }
-            if(2 > line.size())
-            {
-                // 1
-                line = check(line, pixelCode,
-                             lastX -1, lastY +1,
-                             -1, +1,
-                             -1,  0,
-                              0, +1);
-            }
-            if(2 > line.size())
-            {
-                // 3
-                line = check(line, pixelCode,
-                             lastX +1, lastY +1,
-                             +1, +1,
-                              0, +1,
-                             +1,  0);
-            }
-            if(2 > line.size())
-            {
-                // 7
-                line = check(line, pixelCode,
-                             lastX -1, lastY -1,
-                             -1, -1,
-                             -1,  0,
-                              0, -1);
-            }
-            if(2 > line.size())
-            {
-                // 9
-                line = check(line, pixelCode,
-                             lastX +1, lastY -1,
-                             +1, -1,
-                             +1,  0,
-                              0, -1);
+            case AREA:
+                // TODO
+            default:
+            case OUTLINE:
+                lastPosition = findStartPixelfor(pixelCode, lastPosition, direction);
+                System.out.println("Optimizing last Position to (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
+                line = getNextLineToPrint(line, pixelCode, lastPosition, direction);
+                break;
             }
         // 4. generate a G-Code to move to the end of this line.
             final Pixel endOfLine = line.lastElement();
             printToPixel(endOfLine);
-        // 5. change all these Pixel to pixelcode printed.
+        // 5. change all these Pixel to pixelCode printed.
             for(int i = 0; i < line.size(); i++)
             {
                 final Pixel p = line.get(i);
@@ -241,6 +100,172 @@ public class Vectorization
         }
         // return the lastPosition.
         return lastPosition;
+    }
+
+    private Vector<Pixel> getNextLineToPrint(Vector<Pixel> line, final PixelCode pixelCode, final Pixel lastPosition, final LayerDirection direction)
+    {
+        final int lastX = lastPosition.getX();
+        final int lastY = lastPosition.getY();
+        line.add(lastPosition);
+        // +------+------+------+
+        // |  1   |  2   |  3   |
+        // | x -1 | x    | x +1 |
+        // | y +1 | y +1 | y +1 |
+        // +------+------+------+
+        // |  4   |  5   |  6   |
+        // | x -1 | x    | x +1 |
+        // | y    | y    | y    |
+        // +------+------+------+
+        // |  7   |  8   |  9   |
+        // | x -1 | x    | x +1 |
+        // | y -1 | y -1 | y -1 |
+        // +------+------+------+
+        if(LayerDirection.X_THEN_Y == direction)
+        {
+                // 6
+                line = check(line, pixelCode,
+                             lastX +1, lastY +0,
+                             +1,  0,
+                             +1, +1,
+                             +1, -1);
+            if(2 > line.size())
+            {
+                // 4
+                line = check(line, pixelCode,
+                             lastX -1, lastY +0,
+                             -1,  0,
+                             -1, +1,
+                             -1, -1);
+            }
+            if(2 > line.size())
+            {
+                // 2
+                line = check(line, pixelCode,
+                             lastX +0, lastY +1,
+                              0, +1,
+                             -1, +1,
+                             +1, +1);
+            }
+            if(2 > line.size())
+            {
+                // 8
+                line = check(line, pixelCode,
+                             lastX +0, lastY -1,
+                              0, -1,
+                             -1, -1,
+                             +1, -1);
+            }
+        }
+        else
+        {
+            // Y then X
+                // 2
+                line = check(line, pixelCode,
+                             lastX +0, lastY +1,
+                              0, +1,
+                             -1, +1,
+                             +1, +1);
+            if(2 > line.size())
+            {
+                // 8
+                line = check(line, pixelCode,
+                             lastX +0, lastY -1,
+                              0, -1,
+                             -1, -1,
+                             +1, -1);
+            }
+            if(2 > line.size())
+            {
+                // 6
+                line = check(line, pixelCode,
+                             lastX +1, lastY +0,
+                             +1,  0,
+                             +1, +1,
+                             +1, -1);
+            }
+            if(2 > line.size())
+            {
+                // 4
+                line = check(line, pixelCode,
+                             lastX -1, lastY +0,
+                             -1,  0,
+                             -1, +1,
+                             -1, -1);
+            }
+        }
+        if(2 > line.size())
+        {
+            // 1
+            line = check(line, pixelCode,
+                         lastX -1, lastY +1,
+                         -1, +1,
+                         -1,  0,
+                          0, +1);
+        }
+        if(2 > line.size())
+        {
+            // 3
+            line = check(line, pixelCode,
+                         lastX +1, lastY +1,
+                         +1, +1,
+                          0, +1,
+                         +1,  0);
+        }
+        if(2 > line.size())
+        {
+            // 7
+            line = check(line, pixelCode,
+                         lastX -1, lastY -1,
+                         -1, -1,
+                         -1,  0,
+                          0, -1);
+        }
+        if(2 > line.size())
+        {
+            // 9
+            line = check(line, pixelCode,
+                         lastX +1, lastY -1,
+                         +1, -1,
+                         +1,  0,
+                          0, -1);
+        }
+        return line;
+    }
+
+    private Pixel findStartPixelfor(final PixelCode pixelCode,
+                                     Pixel lastPosition,
+                                     final LayerDirection direction) throws IOException
+    {
+        Pixel target = null;
+        // Find the pixel with pixelCode that is closest to lastPosition
+        target = b.getPixelWithCodeClosestTo(pixelCode, lastPosition);
+        if(null == target)
+        {
+            // there are no Pixels of the Specified type on this layer
+            // -> all paths are generated !
+            return lastPosition;
+        }
+        System.out.println("Found next Pixel at (" + target.getX() + ", " + target.getY() + ") !");
+        // optimize the Pixel
+        if(LayerDirection.X_THEN_Y == direction)
+        {
+            // X then Y
+            final int x = findClosestEndOnXAxis(pixelCode, target.getX(), target.getY());
+            target = new Pixel(x, target.getY());
+        }
+        else
+        {
+            // Y then X
+            final int y = findClosestEndOnYAxis(pixelCode, target.getX(), target.getY());
+            target = new Pixel(target.getX(), y);
+        }
+        // move to that position
+        if(false == lastPosition.isNeighborOf(target))
+        {
+            moveToPixel(target);
+            lastPosition = target;
+        }
+        return target;
     }
 
     private Vector<Pixel> check(Vector<Pixel> line,
@@ -359,6 +384,15 @@ public class Vectorization
         }
     }
 
+    /** find end of Line on X row.
+     *
+     * Start Pixel must have pixelCode !
+     *
+     * @param pixelCode the pixelCode.
+     * @param x Start x coordinate.
+     * @param y Start y coordinate.
+     * @return x coordinate of nearest last pixel with this pixelCode in this X row.
+     */
     private int findClosestEndOnXAxis(final PixelCode pixelCode,
                                          final int x,
                                          final int y)
@@ -368,16 +402,26 @@ public class Vectorization
             searchDistance ++;
             if(pixelCode != b.getPixel(x + searchDistance, y))
             {
-                return x + searchDistance;
+                return x + (searchDistance -1);
             }
             if(pixelCode != b.getPixel(x - searchDistance, y))
             {
-                return x + searchDistance;
+                return x - (searchDistance -1);
             }
-        } while((x + searchDistance < b.getMaxX()) || (x - searchDistance > b.getMinX()));
-        return x;
+        } // Max/Min Value is last _used_ Pixel not last _available_ Pixel !
+        while((x + searchDistance <= b.getMaxX()) || (x - searchDistance >= b.getMinX()));
+        return x; // Nothing found
     }
 
+    /** find end of Line on Y column.
+     *
+     * Start Pixel must have pixelCode !
+     *
+     * @param pixelCode the pixelCode.
+     * @param x Start x coordinate.
+     * @param y Start y coordinate.
+     * @return x coordinate of nearest last pixel with this pixelCode in this Y column.
+     */
     private int findClosestEndOnYAxis(final PixelCode pixelCode,
                                          final int x,
                                          final int y)
@@ -387,13 +431,14 @@ public class Vectorization
             searchDistance ++;
             if(pixelCode != b.getPixel(x, y + searchDistance))
             {
-                return y + searchDistance;
+                return y + (searchDistance -1);
             }
             if(pixelCode != b.getPixel(x, y - searchDistance))
             {
-                return y + searchDistance;
+                return y - (searchDistance -1);
             }
-        } while((y + searchDistance < b.getMaxY()) || (y - searchDistance > b.getMinY()));
+        } // Max/Min Value is last _used_ Pixel not last _available_ Pixel !
+        while((y + searchDistance <= b.getMaxY()) || (y - searchDistance >= b.getMinY()));
         throw new IllegalArgumentException("Line End not found on X");
     }
 

@@ -32,9 +32,6 @@ public class VectorChecker
     private int alternativeX = NOT_USED;
     private int alternativeY = NOT_USED;
 
-    /**
-     *
-     */
     public VectorChecker()
     {
     }
@@ -47,12 +44,14 @@ public class VectorChecker
         }
         if(NOT_USED == mainX)
         {
+            // First Vector -> save in main*
             mainX = x;
             mainY = y;
             return;
         }
         if((x == mainX) && (y == mainY))
         {
+            // Vector has same Direction as the Main Vector -> just count them
             numMains ++;
             return;
         }
@@ -60,9 +59,11 @@ public class VectorChecker
         {
             if(1 == Math.abs(mainX - x) + Math.abs(mainY - y))
             {
-                // is a neighbor
+                // is a neighbor Vector
+                // -> not a 90 degree line but maybe still straight
                 if(NOT_USED == alternativeX)
                 {
+                    // First Vector that is not the same as the main vector
                     alternativeX = x;
                     alternativeY = y;
                     frequency = numMains;
@@ -73,16 +74,22 @@ public class VectorChecker
                 {
                     if((alternativeX != x) || (alternativeY != y))
                     {
+                        // A Vector that is not the Main and not the Alternative
+                        // -> can not be a straight line !
                         isStraight = false;
                     }
                     else
                     {
+                        // Straight lines have a constant pattern of Vectors.
+                        // Example: mmAmmAmmA, or mAmAmA or mmmAmmmAmmmA
                         if(1 <  Math.abs(frequency - numMains))
                         {
+                            // Pattern is not the same -> not straight !
                             isStraight = false;
                         }
                         else
                         {
+                            // constant Pattern -> still straight
                             numMains = 0;
                         }
                     }
@@ -90,7 +97,8 @@ public class VectorChecker
             }
             else
             {
-                // is _not_ a neighbor
+                // is _not_ a neighbor Vector
+                // -> impossible to be a straight line !
                 isStraight = false;
             }
         }

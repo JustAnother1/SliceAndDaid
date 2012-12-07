@@ -76,4 +76,21 @@ public final class Pixel
         return true;
     }
 
+    public boolean isNeighborOf(final Pixel target)
+    {
+        if(null == target)
+        {
+            return false;
+        }
+        if(   (2 > Math.abs(x - target.getX()))
+           && (2 > Math.abs(y - target.getY())) )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 }

@@ -67,7 +67,8 @@ public class GCodeTool
                 lastPosition = vec.generatePathsFor(b,
                                                     PixelCode.SKIRT_CODE,
                                                     lastPosition,
-                                                    curDir);
+                                                    curDir,
+                                                    RoutingAlgorithm.OUTLINE);
             }
             b.selectPixelType(PixelCode.OUTLINE_CODE);
             if(true == b.hasMorePixels())
@@ -78,7 +79,8 @@ public class GCodeTool
                 lastPosition = vec.generatePathsFor(b,
                                                     PixelCode.OUTLINE_CODE,
                                                     lastPosition,
-                                                    curDir);
+                                                    curDir,
+                                                    RoutingAlgorithm.OUTLINE);
             }
             b.selectPixelType(PixelCode.FILLIN_CODE);
             if(true == b.hasMorePixels())
@@ -89,7 +91,8 @@ public class GCodeTool
                 lastPosition = vec.generatePathsFor(b,
                         PixelCode.FILLIN_CODE,
                         lastPosition,
-                        curDir);
+                        curDir,
+                        RoutingAlgorithm.AREA);
             }
             // next Layer gets other Direction
             if(LayerDirection.X_THEN_Y == curDir)
