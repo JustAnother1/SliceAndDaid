@@ -22,6 +22,7 @@ import daid.sliceAndDaid.LayerDirection;
 import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
+import daid.sliceAndDaid.util.Logger;
 
 /**
  * @author Lars P&ouml;tter
@@ -66,23 +67,39 @@ public class Vectorization
     {
         System.out.println("Got Last Position of (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
         this.b = b;
-        // as long as this bitmap has more pixels of pixelCode do the following steps:
         b.selectPixelType(pixelCode);
+        boolean increasing = true;
+        // as long as this bitmap has more pixels of pixelCode do the following steps:
         while(true == b.hasMorePixels())
         {
         // 1. find pixel of "pixelCode" closest to lastPosition.
         // 2. find a pixel next to the first that has the same pixelCode.
         // 3. find more pixels in the same direction ( so that they form a line) with the same pixelCode.
-            Vector<Pixel> line = new Vector<Pixel>();
+            Vector<Pixel> line;
             switch(routing)
             {
             case AREA:
-                // TODO
+                // search for Lines from last position in direction of increasing values
+                Vector<Pixel> res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
+                // if that failed search again in direction of falling values.
+                if(null == res)
+                {
+                    increasing = !increasing;
+                    res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
+                }
+                // if still no line found then we are done return lastPosition
+                if(null == res)
+                {
+                    return lastPosition;
+                }
+                line = res;
+                break;
+
             default:
             case OUTLINE:
                 lastPosition = findStartPixelfor(pixelCode, lastPosition, direction);
                 System.out.println("Optimizing last Position to (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
-                line = getNextLineToPrint(line, pixelCode, lastPosition, direction);
+                line = getNextLineToPrint(pixelCode, lastPosition, direction);
                 break;
             }
         // 4. generate a G-Code to move to the end of this line.
@@ -102,10 +119,224 @@ public class Vectorization
         return lastPosition;
     }
 
-    private Vector<Pixel> getNextLineToPrint(Vector<Pixel> line, final PixelCode pixelCode, final Pixel lastPosition, final LayerDirection direction)
+
+
+    private Vector<Pixel> searchForAreaLine(final boolean SearchDirectionIsIncreasingValues,
+                                             final PixelCode pixelCode,
+                                             final Pixel lastPosition,
+                                             final LayerDirection direction) throws IOException
+    {
+        Pixel searchStart = lastPosition;
+        do{
+            if(true == hasAtLeastOnePixel(pixelCode, searchStart, direction))
+            {
+                return getNextLine(pixelCode, searchStart, direction);
+            }
+            // else do another loop
+            searchStart = getNextPlaceToSearch(direction, searchStart, SearchDirectionIsIncreasingValues);
+        }while(null != searchStart); //not reached end of Layer
+        return null;
+    }
+
+    /** collect all pixels on this row/column that have the pixelCode.
+     *
+     * @param pixelCode searched pixelCode.
+     * @param searchStart Pixel to start the search from.
+     * @param direction row or column.
+     * @return the collected pixels.
+     * @throws IOException if moveToPixel() fails.
+     */
+    private Vector<Pixel> getNextLine(final PixelCode pixelCode,
+                                       final Pixel searchStart,
+                                       final LayerDirection direction) throws IOException
+    {
+        boolean isArea = true;
+        Pixel first = null;
+        Pixel vec = null;
+        Pixel last = null;
+        if(LayerDirection.X_THEN_Y == direction)
+        {
+            final int y = searchStart.getY();
+            final int startX = findClosestEndOnXAxis(pixelCode, searchStart.getX(), searchStart.getY());
+            first = new Pixel(startX, y);
+            int endX = startX;
+            if(pixelCode == b.getPixel(startX + 1, y))
+            {
+                do{
+                    endX++;
+                }while(pixelCode == b.getPixel(endX, y));
+                vec = new Pixel(+1, 0);
+            }
+            else
+            {
+                do{
+                    endX--;
+                }while(pixelCode == b.getPixel(endX, y));
+                vec = new Pixel(-1, 0);
+            }
+            last = new Pixel(endX, y);
+            if(2 > Math.abs(startX - endX))
+            {
+                isArea = false;
+            }
+        }
+        else
+        {
+            // Y then X
+            final int x = searchStart.getX();
+            final int startY = findClosestEndOnYAxis(pixelCode, searchStart.getX(), searchStart.getY());
+            first = new Pixel(x, startY);
+            int endY = startY;
+            if(pixelCode == b.getPixel(x, startY + 1))
+            {
+                do{
+                    endY++;
+                }while(pixelCode == b.getPixel(x, endY));
+                vec = new Pixel(0, +1);
+            }
+            else
+            {
+                do{
+                    endY--;
+                }while(pixelCode == b.getPixel(x, endY));
+                vec = new Pixel(0, -1);
+            }
+            last = new Pixel(x, endY);
+            if(2 > Math.abs(startY - endY))
+            {
+                isArea = false;
+            }
+        }
+        if(true == isArea)
+        {
+            if(searchStart != first)
+            {
+                moveToPixel(first);
+            }
+            final Vector<Pixel> line = new Vector<Pixel>();
+            line .add(first);
+            Pixel next = first;
+            do{
+                next = next.add(vec);
+                line.add(next);
+            }while(false == last.equals(next));
+            return line;
+        }
+        else
+        {
+            return getNextLineToPrint(pixelCode, searchStart, direction);
+        }
+    }
+
+    private boolean hasAtLeastOnePixel(final PixelCode pixelCode, final Pixel searchStart, final LayerDirection direction)
+    {
+        // easy solution
+        if(pixelCode == b.getPixel(searchStart.getX(), searchStart.getY()))
+        {
+            return true;
+        }
+        // real search
+        if(LayerDirection.X_THEN_Y == direction)
+        {
+            int startX = b.getMinX() -1;
+            final int startY = searchStart.getY();
+            do{
+                startX++;
+                if(pixelCode == b.getPixel(startX, startY))
+                {
+                    return true;
+                }
+                // else do another loop
+            }while(startX < b.getMaxX());
+            // nothing found
+            return false;
+        }
+        else
+        {
+            // Y then X
+            int startY = b.getMinY() -1;
+            final int startX = searchStart.getX();
+            do{
+                startY++;
+                if(pixelCode == b.getPixel(startX, startY))
+                {
+                    return true;
+                }
+                // else do another loop
+            }while(startY < b.getMaxY());
+            // nothing found
+            return false;
+        }
+    }
+
+    private Pixel getNextPlaceToSearch(final LayerDirection direction, final Pixel lastPlace, final boolean searchDirectionIsIncreasingValues)
+    {
+        if(LayerDirection.X_THEN_Y == direction)
+        {
+            if(true == searchDirectionIsIncreasingValues)
+            {
+                final int nextX = lastPlace.getX() + 1;
+                if(b.getMaxX() < nextX)
+                {
+                    // end of Layer reached
+                    return null;
+                }
+                else
+                {
+                    return new Pixel(nextX, lastPlace.getY());
+                }
+            }
+            else
+            {
+                final int nextX = lastPlace.getX() - 1;
+                if(b.getMinX() > nextX)
+                {
+                    // end of Layer reached
+                    return null;
+                }
+                else
+                {
+                    return new Pixel(nextX, lastPlace.getY());
+                }
+            }
+        }
+        else
+        {
+            // Y then X
+            if(true == searchDirectionIsIncreasingValues)
+            {
+                final int nextY = lastPlace.getY() + 1;
+                if(b.getMaxY() < nextY)
+                {
+                    // end of Layer reached
+                    return null;
+                }
+                else
+                {
+                    return new Pixel(lastPlace.getX(), nextY);
+                }
+            }
+            else
+            {
+                final int nextY = lastPlace.getY() - 1;
+                if(b.getMinY() > nextY)
+                {
+                    // end of Layer reached
+                    return null;
+                }
+                else
+                {
+                    return new Pixel(lastPlace.getX(), nextY);
+                }
+            }
+        }
+    }
+
+    private Vector<Pixel> getNextLineToPrint(final PixelCode pixelCode, final Pixel lastPosition, final LayerDirection direction)
     {
         final int lastX = lastPosition.getX();
         final int lastY = lastPosition.getY();
+        Vector<Pixel> line = new Vector<Pixel>();
         line.add(lastPosition);
         // +------+------+------+
         // |  1   |  2   |  3   |
@@ -245,7 +476,7 @@ public class Vectorization
             // -> all paths are generated !
             return lastPosition;
         }
-        System.out.println("Found next Pixel at (" + target.getX() + ", " + target.getY() + ") !");
+        Logger.message("Found next Pixel at {} !", target);
         // optimize the Pixel
         if(LayerDirection.X_THEN_Y == direction)
         {
@@ -444,6 +675,7 @@ public class Vectorization
 
     private void printToPixel(final Pixel target) throws IOException
     {
+        Logger.message("Printing to {} !", target);
         final LineOfGCode order = new LineOfGCode(Gcode.EXTRUDE_TO_POSITION);
         order.setX(target.getX() / layers.getPixelPerMm());
         order.setY(target.getY() / layers.getPixelPerMm());

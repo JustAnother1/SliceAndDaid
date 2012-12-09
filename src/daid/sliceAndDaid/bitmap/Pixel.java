@@ -93,4 +93,15 @@ public final class Pixel
         }
     }
 
+    public Pixel add(final Pixel vec)
+    {
+        return new Pixel(x + vec.getX(), y + vec.getY());
+    }
+
+    @Override
+    public String toString()
+    {
+        return "(" + x + ", " + y + ")";
+    }
+
 }
