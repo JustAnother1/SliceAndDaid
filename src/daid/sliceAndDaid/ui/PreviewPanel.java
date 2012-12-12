@@ -20,7 +20,6 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import daid.sliceAndDaid.Layer;
-import daid.sliceAndDaid.LayerBitmap;
 import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.ui.gcode.GCodeFile;
 import daid.sliceAndDaid.ui.gcode.GCodeStep;
@@ -49,10 +48,12 @@ public class PreviewPanel extends JPanel
     @Override
     public void paintComponent(final Graphics g)
     {
-        // clear component
+        // TODO clear component
+        // draw Vectors
         final Layer l = layers.get(showLayer);
         l.drawAllSegmentsTo(g, drawScale);
-        // Draw bitmap
+        // draw bitmap
+        /*
         final LayerBitmap b = l.getBitmap();
         final double pixelPerMm = layers.getPixelPerMm();
         for(int x = b.getMinX(); x <= b.getMaxX(); x++)
@@ -82,6 +83,7 @@ public class PreviewPanel extends JPanel
 
             }
         }
+        */
         // draw GCode Steps
         final GCodeStep[] steps = gFile.getActiveSteps();
         for(int i = 0; i < steps.length; i++)

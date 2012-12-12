@@ -27,7 +27,7 @@ import daid.sliceAndDaid.util.Vector3;
 public class BuildTime extends GCodeOptimizer
 {
     private double buildTime_in_minutes = 0;
-    private final double lastFeedrate = 1;
+    private double lastFeedrate = 1;
     private final Vector3 oldPos = new Vector3();
 
     public BuildTime(final GCodeOptimizer next)
@@ -75,13 +75,19 @@ public class BuildTime extends GCodeOptimizer
                 if(true == line.hasFeedrate())
                 {
                     feedrate_in_mmPerMinute = line.getFeedrate();
+                    lastFeedrate = feedrate_in_mmPerMinute;
                 }
                 else
                 {
                     feedrate_in_mmPerMinute = lastFeedrate;
                 }
                 final double dist_in_mm = oldPos.sub(new Vector3(x, y, z)).vSize();
-                buildTime_in_minutes += dist_in_mm / feedrate_in_mmPerMinute;
+                oldPos.x = x;
+                oldPos.y = y;
+                oldPos.z = z;
+                final double timeOfStep = dist_in_mm / feedrate_in_mmPerMinute;
+                // line.addComment("time used : " + timeOfStep);
+                buildTime_in_minutes = buildTime_in_minutes + timeOfStep;
             }
             // else -> no move -> no time consumption
         }

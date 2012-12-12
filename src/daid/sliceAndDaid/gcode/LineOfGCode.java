@@ -332,9 +332,17 @@ public class LineOfGCode
         return lineType;
     }
 
-    public void setComment(final String comment)
+    public void addComment(final String comment)
     {
-        this.comment = comment;
-        hasComment = true;
+        if(false == hasComment)
+        {
+            // first comment
+            this.comment = comment;
+            hasComment = true;
+        }
+        else
+        {
+            this.comment = this.comment + ", " + comment;
+        }
     }
 }
