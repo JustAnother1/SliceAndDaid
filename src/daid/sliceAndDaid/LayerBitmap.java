@@ -458,4 +458,54 @@ public class LayerBitmap
         return null;
     }
 
+    public void dumpAreaAroundPixel(final Pixel target)
+    {
+        // dump should look lie this: Distance = 4
+        // Pixel = ?? is (25,23)
+        // +------------------+
+        // |FIFIFIFIOL      SK|
+        // |FIFIFIFIOL      SK|
+        // |FIFIFIFIOL      SK|
+        // |FIFIFIFIOL      SK|
+        // |OLOLOLOL??      SK|
+        // |                SK|
+        // |                SK|
+        // |                SK|
+        // |SKSKSKSKSKSKSKSKSK|
+        // +------------------+
+        final int distance = 4;
+        final int numFieldsinRow = 2 * distance + 1;
+        Logger.message("Pixel = ?? is " + target);
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("+");
+        for(int i = 0; i < 2*numFieldsinRow; i++)
+        {
+            sb.append("-");
+        }
+        sb.append("+");
+        final String headline= sb.toString();
+        Logger.message(headline);
+        for(int y = target.getY() + distance; y >= target.getY() - distance; y--)
+        {
+            sb = new StringBuffer();
+            sb.append("|");
+            for(int x = target.getX() - distance; x <=  target.getX() + distance; x++)
+            {
+                if((x == target.getX()) && (y == target.getY()))
+                {
+                    sb.append("??");
+                }
+                else
+                {
+                    final PixelCode pc = this.getPixel(x, y);
+                    sb.append(pc.toString());
+                }
+            }
+            sb.append("|");
+            Logger.message(sb.toString());
+        }
+        Logger.message(headline);
+    }
+
 }

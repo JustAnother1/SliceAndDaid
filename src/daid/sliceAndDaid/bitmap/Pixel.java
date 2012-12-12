@@ -14,6 +14,8 @@
  */
 package daid.sliceAndDaid.bitmap;
 
+import daid.sliceAndDaid.gcode.DirectionVector;
+
 /**
  * @author Lars P&ouml;tter
  * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
@@ -102,6 +104,23 @@ public final class Pixel
     public String toString()
     {
         return "(" + x + ", " + y + ")";
+    }
+
+    public DirectionVector getDirectionOf(final Pixel curP)
+    {
+        for(int i = 1; i < 10; i++)
+        {
+            final DirectionVector curDv = new DirectionVector(i);
+            if(curDv.getX() == curP.getX() - this.getX())
+            {
+                if(curDv.getY() == curP.getY() - this.getY())
+                {
+                    return curDv;
+                }
+            }
+        }
+        throw new IllegalArgumentException("The Pixel " + curP.toString()
+                         + " is not a neighbor of " + this.toString() + " !");
     }
 
 }

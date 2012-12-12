@@ -36,20 +36,16 @@ public class VectorChecker
     {
     }
 
-    public void addVector(final int x, final int y)
+    public void addVector(final DirectionVector dv)
     {
-        if((x > 1) || (x < -1) || (y >1) || (y < -1))
-        {
-            throw new IllegalArgumentException("Invalid Vector (" + x + ", " + y + ")!");
-        }
         if(NOT_USED == mainX)
         {
             // First Vector -> save in main*
-            mainX = x;
-            mainY = y;
+            mainX = dv.getX();
+            mainY = dv.getY();
             return;
         }
-        if((x == mainX) && (y == mainY))
+        if((dv.getX() == mainX) && (dv.getY() == mainY))
         {
             // Vector has same Direction as the Main Vector -> just count them
             numMains ++;
@@ -57,22 +53,22 @@ public class VectorChecker
         }
         else
         {
-            if(1 == Math.abs(mainX - x) + Math.abs(mainY - y))
+            if(1 == Math.abs(mainX - dv.getX()) + Math.abs(mainY - dv.getY()))
             {
                 // is a neighbor Vector
                 // -> not a 90 degree line but maybe still straight
                 if(NOT_USED == alternativeX)
                 {
                     // First Vector that is not the same as the main vector
-                    alternativeX = x;
-                    alternativeY = y;
+                    alternativeX = dv.getX();
+                    alternativeY = dv.getY();
                     frequency = numMains;
                     numMains = 0;
                     return;
                 }
                 else
                 {
-                    if((alternativeX != x) || (alternativeY != y))
+                    if((alternativeX != dv.getX()) || (alternativeY != dv.getY()))
                     {
                         // A Vector that is not the Main and not the Alternative
                         // -> can not be a straight line !

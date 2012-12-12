@@ -62,6 +62,7 @@ public class GCodeTool
             if(true == b.hasMorePixels())
             {
                 // Skirt
+                Logger.message("Starting with Skirt !");
                 event = new LineOfGCode(PrintSteps.SKIRT, 0);
                 optimizers.optimize(event);
                 lastPosition = vec.generatePathsFor(b,
@@ -74,6 +75,7 @@ public class GCodeTool
             if(true == b.hasMorePixels())
             {
                 // Outer Wall
+                Logger.message("Starting with Outer Wall !");
                 event = new LineOfGCode(PrintSteps.WALL, 0);
                 optimizers.optimize(event);
                 lastPosition = vec.generatePathsFor(b,
@@ -86,6 +88,7 @@ public class GCodeTool
             if(true == b.hasMorePixels())
             {
                 // Fill
+                Logger.message("Starting with Fill !");
                 event = new LineOfGCode(PrintSteps.FILL, 0);
                 optimizers.optimize(event);
                 lastPosition = vec.generatePathsFor(b,

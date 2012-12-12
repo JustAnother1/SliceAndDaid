@@ -54,6 +54,7 @@ public class PreviewPanel extends JPanel
         l.drawAllSegmentsTo(g, drawScale);
         // Draw bitmap
         final LayerBitmap b = l.getBitmap();
+        final double pixelPerMm = layers.getPixelPerMm();
         for(int x = b.getMinX(); x <= b.getMaxX(); x++)
         {
             for(int y = b.getMinY(); y <= b.getMaxY(); y++)
@@ -66,7 +67,7 @@ public class PreviewPanel extends JPanel
                     // at this time these could should have been replaced with PRINTED_CODE !
                     // If they are still there this is a problem !
                     g.setColor(Color.RED);
-                    g.fillRect(x, y, 1, 1);
+                    g.fillRect((int)Math.round(x * pixelPerMm), (int)Math.round(y * pixelPerMm), 1, 1);
                     break;
 
                 case PRINTED_CODE:
