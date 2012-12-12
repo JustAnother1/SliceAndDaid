@@ -170,7 +170,7 @@ public class SliceAndDaidMain
         //     6. generate G-Code from bitmap
         //     7. optimize GCode (Speed,..)
         //     8. save G-Code to File
-        String gGcodeFileName = null;
+        final String gGcodeFileName;
         if(true == filename.toLowerCase().endsWith(".stl"))
         {
             gGcodeFileName = filename.substring(0, filename.length() -4) + GCODEFILEEXTENSION;
@@ -207,7 +207,7 @@ public class SliceAndDaidMain
                 @Override
                 public void run()
                 {
-                    new PreviewFrame(layers);
+                        new PreviewFrame(layers, gGcodeFileName);
                 }
             });
         }

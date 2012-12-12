@@ -15,11 +15,13 @@
 package daid.sliceAndDaid.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,76 +32,42 @@ import javax.swing.event.ChangeListener;
 
 import daid.sliceAndDaid.LayerStack;
 
+/** Window that shows the result of the Slicing in graphical form.
+ *
+ * @author Lars P&ouml;tter
+ * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
+ */
 public class PreviewFrame extends JFrame
 {
     private static final long serialVersionUID = 1L;
-    private final LayerStack layers;
 
-    public class PreviewPanel extends JPanel implements MouseMotionListener
+    public PreviewFrame(final LayerStack layers, final String gGcodeFileName)
     {
-        private static final long serialVersionUID = 1L;
-
-        public int showLayer = 0;
-        public double drawScale = 5.0;
-        public double viewOffsetX, viewOffsetY;
-
-        private int oldX, oldY;
-
-        public PreviewPanel()
-        {
-            addMouseMotionListener(this);
-        }
-
-        @Override
-        public void paint(final Graphics g)
-        {
-            super.paint(g);
-            layers.get(showLayer).drawAllSegmentsTo(g);
-        }
-
-        @Override
-        public void mouseDragged(final MouseEvent e)
-        {
-            viewOffsetX += (e.getX() - oldX) / drawScale;
-            viewOffsetY += (e.getY() - oldY) / drawScale;
-            repaint();
-            oldX = e.getX();
-            oldY = e.getY();
-        }
-
-        @Override
-        public void mouseMoved(final MouseEvent e)
-        {
-            oldX = e.getX();
-            oldY = e.getY();
-        }
-    }
-
-    public PreviewFrame(final LayerStack layers)
-    {
-        final PreviewPanel viewPanel = new PreviewPanel();
+        final PreviewPanel viewPanel = new PreviewPanel(layers, gGcodeFileName);
+        viewPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         final JPanel actionPanel = new JPanel();
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
         this.setTitle("Preview");
-        this.layers = layers;
 
-        final JSpinner layerSpinner = new JSpinner(new SpinnerNumberModel(viewPanel.showLayer, 0, layers.size() - 1, 1));
+        final JSpinner layerSpinner = new JSpinner(new SpinnerNumberModel(0, 0, layers.size() - 1, 1));
+        viewPanel.setActiveLayer(0);
         layerSpinner.addChangeListener(new ChangeListener()
         {
             @Override
             public void stateChanged(final ChangeEvent e)
             {
-                viewPanel.showLayer = ((Integer) layerSpinner.getValue()).intValue();
+                viewPanel.setActiveLayer(((Integer) layerSpinner.getValue()).intValue());
                 viewPanel.repaint();
             }
         });
-        final JSpinner zoomSpinner = new JSpinner(new SpinnerNumberModel(viewPanel.drawScale, 1.0, 200.0, 1.0));
+        final JSpinner zoomSpinner = new JSpinner(new SpinnerNumberModel(5.0, 1.0, 200.0, 1.0));
+        viewPanel.setScalingFactor(5.0);
         zoomSpinner.addChangeListener(new ChangeListener()
         {
             @Override
             public void stateChanged(final ChangeEvent e)
             {
-                viewPanel.drawScale = ((Double) zoomSpinner.getValue()).doubleValue();
+                viewPanel.setScalingFactor(((Double) zoomSpinner.getValue()).doubleValue());
                 viewPanel.repaint();
             }
         });
@@ -108,6 +76,30 @@ public class PreviewFrame extends JFrame
         actionPanel.add(layerSpinner);
         actionPanel.add(new JLabel("Zoom:"));
         actionPanel.add(zoomSpinner);
+
+        final JButton StepPlus = new JButton("Step +");
+        StepPlus.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(final ActionEvent e)
+            {
+                viewPanel.nextGCodeStep();
+                viewPanel.repaint();
+            }
+        });
+        actionPanel.add(StepPlus);
+
+        final JButton StepMinus = new JButton("Step -");
+        StepMinus.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(final ActionEvent e)
+            {
+                viewPanel.previousGCodeStep();
+                viewPanel.repaint();
+            }
+        });
+        actionPanel.add(StepMinus);
 
         this.setLayout(new BorderLayout());
         this.add(viewPanel, BorderLayout.CENTER);

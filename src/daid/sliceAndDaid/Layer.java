@@ -204,7 +204,7 @@ public class Layer
         g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, myStack.getPixelWidth(), myStack.getPixelHeight());
         Logger.debug("PNG gets {} segments !", modelSegmentList.size());
-        drawAllSegmentsTo(g2);
+        drawAllSegmentsTo(g2, 1);
         try
         {
             ImageIO.write(bi, "PNG", new File(fileName));
@@ -216,28 +216,33 @@ public class Layer
         }
     }
 
-    public void drawAllSegmentsTo(final Graphics g)
+    public void drawAllSegmentsTo(final Graphics g,
+                                   final double scale)
     {
         Logger.debug("Drawing {} segments !", modelSegmentList.size());
         for (final Segment2D s : modelSegmentList)
         {
-            drawSegment(g, s);
+            drawSegment(g, s, scale);
         }
     }
 
-    private void drawSegment(final Graphics g, final Segment2D s)
+    private void drawSegment(final Graphics g,
+                              final Segment2D s,
+                              final double scale)
     {
-        g.setColor(Color.GREEN);
-        drawModelLine(g, s.getStart(), s.getEnd());
+        g.setColor(Color.GREEN); // STL Vectors
+        drawModelLine(g, s.getStart(), s.getEnd(), scale);
     }
 
-    private void drawModelLine(final Graphics g, final Vector2 start, final Vector2 end)
+    private void drawModelLine(final Graphics g,
+                                final Vector2 start,
+                                final Vector2 end,
+                                final double scale)
     {
-
-        g.drawLine((int) ((start.x * myStack.getPixelPerMm()) + myStack.getPixelXoffset()),
-                   (int) ((start.y * myStack.getPixelPerMm()) + myStack.getPixelYoffset()),
-                   (int) ((  end.x * myStack.getPixelPerMm()) + myStack.getPixelXoffset()),
-                   (int) ((  end.y * myStack.getPixelPerMm()) + myStack.getPixelYoffset()));
+        g.drawLine((int) (scale * ((start.x * myStack.getPixelPerMm()) + myStack.getPixelXoffset())),
+                   (int) (scale * ((start.y * myStack.getPixelPerMm()) + myStack.getPixelYoffset())),
+                   (int) (scale * ((  end.x * myStack.getPixelPerMm()) + myStack.getPixelXoffset())),
+                   (int) (scale * ((  end.y * myStack.getPixelPerMm()) + myStack.getPixelYoffset())) );
     }
 
     public void logState()

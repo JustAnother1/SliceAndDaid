@@ -15,6 +15,7 @@
 package daid.sliceAndDaid.gcode;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 import daid.sliceAndDaid.config.CraftConfig;
 
@@ -111,9 +112,11 @@ public class LineOfGCode
         final StringBuffer res = new StringBuffer();
         if(LineTypes.GCODE == lineType)
         {
-            final DecimalFormat xyzFormat = new DecimalFormat("#.##");
-            final DecimalFormat eFormat = new DecimalFormat("#.###");
-            final DecimalFormat fFormat = new DecimalFormat("#.#");
+            final DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+            dfs.setDecimalSeparator('.');
+            final DecimalFormat xyzFormat = new DecimalFormat("#.##", dfs);
+            final DecimalFormat eFormat = new DecimalFormat("#.###", dfs);
+            final DecimalFormat fFormat = new DecimalFormat("#.#", dfs);
             // GCode Command
             res.append(command.toString());
             // X
