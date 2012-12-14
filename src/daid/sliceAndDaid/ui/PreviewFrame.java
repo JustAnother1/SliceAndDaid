@@ -51,6 +51,7 @@ public class PreviewFrame extends JFrame
 
         final JSpinner layerSpinner = new JSpinner(new SpinnerNumberModel(0, 0, layers.size() - 1, 1));
         viewPanel.setActiveLayer(0);
+        layerSpinner.setDropTarget(null);
         layerSpinner.addChangeListener(new ChangeListener()
         {
             @Override
@@ -62,6 +63,7 @@ public class PreviewFrame extends JFrame
         });
         final JSpinner zoomSpinner = new JSpinner(new SpinnerNumberModel(5.0, 1.0, 200.0, 1.0));
         viewPanel.setScalingFactor(5.0);
+        zoomSpinner.setDropTarget(null);
         zoomSpinner.addChangeListener(new ChangeListener()
         {
             @Override
