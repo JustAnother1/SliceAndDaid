@@ -48,6 +48,7 @@ public class GCodeFile
         BufferedReader br = null;
         InputStreamReader fr = null;
         layersSteps = new Vector<GCodeStep>();
+        boolean firstLayer = true;
         try
         {
             fr = new InputStreamReader(new FileInputStream(gGcodeFileName), Charset.forName("ASCII"));
@@ -61,8 +62,17 @@ public class GCodeFile
                 if(true == curStep.isNextLayerComment())
                 {
                     // found a new Layer
-                    allSteps.add(layersSteps);
-                    layersSteps = new Vector<GCodeStep>();
+                    if(true == firstLayer)
+                    {
+                        firstLayer = false;
+                        // any step before the first Layer marking belong to the first layer
+                        // -> no need to create new layersSteps
+                    }
+                    else
+                    {
+                        allSteps.add(layersSteps);
+                        layersSteps = new Vector<GCodeStep>();
+                    }
                 }
                 else
                 {
