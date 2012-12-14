@@ -15,7 +15,6 @@
 package daid.sliceAndDaid;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -25,6 +24,7 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 
 import daid.sliceAndDaid.bitmap.PixelCode;
+import daid.sliceAndDaid.ui.MilliMeterGraphic;
 import daid.sliceAndDaid.util.Logger;
 import daid.sliceAndDaid.util.Segment2D;
 import daid.sliceAndDaid.util.Vector2;
@@ -204,7 +204,11 @@ public class Layer
         g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, myStack.getPixelWidth(), myStack.getPixelHeight());
         Logger.debug("PNG gets {} segments !", modelSegmentList.size());
-        drawAllSegmentsTo(g2, 1);
+        final double xoff = myStack.getPixelXoffset()/myStack.getPixelPerMm();
+        final double yoff = myStack.getPixelYoffset()/myStack.getPixelPerMm();
+        final MilliMeterGraphic mmg = new MilliMeterGraphic(g2, xoff, yoff);
+        mmg.setScale(1);
+        drawAllSegmentsTo(mmg);
         try
         {
             ImageIO.write(bi, "PNG", new File(fileName));
@@ -216,33 +220,27 @@ public class Layer
         }
     }
 
-    public void drawAllSegmentsTo(final Graphics g,
-                                   final double scale)
+    public void drawAllSegmentsTo(final MilliMeterGraphic g)
     {
-        Logger.debug("Drawing {} segments !", modelSegmentList.size());
+        Logger.trace("Drawing {} segments !", modelSegmentList.size());
         for (final Segment2D s : modelSegmentList)
         {
-            drawSegment(g, s, scale);
+            g.setColor(Color.GREEN); // STL Vectors
+            drawSegment(g, s);
         }
     }
 
-    private void drawSegment(final Graphics g,
-                              final Segment2D s,
-                              final double scale)
+    private void drawSegment(final MilliMeterGraphic g,
+                              final Segment2D s)
     {
-        g.setColor(Color.GREEN); // STL Vectors
-        drawModelLine(g, s.getStart(), s.getEnd(), scale);
+        drawModelLine(g, s.getStart(), s.getEnd());
     }
 
-    private void drawModelLine(final Graphics g,
+    private void drawModelLine(final MilliMeterGraphic g,
                                 final Vector2 start,
-                                final Vector2 end,
-                                final double scale)
+                                final Vector2 end)
     {
-        g.drawLine((int) (scale * ((start.x * myStack.getPixelPerMm()) + myStack.getPixelXoffset())),
-                   (int) (scale * ((start.y * myStack.getPixelPerMm()) + myStack.getPixelYoffset())),
-                   (int) (scale * ((  end.x * myStack.getPixelPerMm()) + myStack.getPixelXoffset())),
-                   (int) (scale * ((  end.y * myStack.getPixelPerMm()) + myStack.getPixelYoffset())) );
+        g.drawLine(start.x, start.y, end.x, end.y);
     }
 
     public void logState()

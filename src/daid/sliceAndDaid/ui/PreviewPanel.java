@@ -20,7 +20,9 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import daid.sliceAndDaid.Layer;
+import daid.sliceAndDaid.LayerBitmap;
 import daid.sliceAndDaid.LayerStack;
+import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.ui.gcode.GCodeFile;
 import daid.sliceAndDaid.ui.gcode.GCodeStep;
 
@@ -46,16 +48,19 @@ public class PreviewPanel extends JPanel
     }
 
     @Override
-    public void paintComponent(final Graphics g)
+    public void paintComponent(final Graphics gra)
     {
-        // TODO clear component
-        // draw Vectors
+        // clear component
+        gra.clearRect(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+
         final Layer l = layers.get(showLayer);
-        l.drawAllSegmentsTo(g, drawScale);
+        final double xoff = layers.getPixelXoffset()/layers.getPixelPerMm();
+        final double yoff = layers.getPixelYoffset()/layers.getPixelPerMm();
+        final MilliMeterGraphic mmg = new MilliMeterGraphic(gra, xoff, yoff);
+        mmg.setScale(drawScale);
+
         // draw bitmap
-        /*
         final LayerBitmap b = l.getBitmap();
-        final double pixelPerMm = layers.getPixelPerMm();
         for(int x = b.getMinX(); x <= b.getMaxX(); x++)
         {
             for(int y = b.getMinY(); y <= b.getMaxY(); y++)
@@ -67,13 +72,19 @@ public class PreviewPanel extends JPanel
                 case SKIRT_CODE:
                     // at this time these could should have been replaced with PRINTED_CODE !
                     // If they are still there this is a problem !
-                    g.setColor(Color.RED);
-                    g.fillRect((int)Math.round(x * pixelPerMm), (int)Math.round(y * pixelPerMm), 1, 1);
+                    mmg.setColor(Color.RED);
+                    mmg.fillRect(x * CraftConfig.perimeterWidth,
+                                 y * CraftConfig.perimeterWidth,
+                                 CraftConfig.perimeterWidth,
+                                 CraftConfig.perimeterWidth );
                     break;
 
                 case PRINTED_CODE:
-                    g.setColor(Color.BLACK);
-                    g.fillRect(x, y, 1, 1);
+                    mmg.setColor(Color.BLACK);
+                    mmg.fillRect((x * CraftConfig.perimeterWidth) - CraftConfig.perimeterWidth/2,
+                                 (y * CraftConfig.perimeterWidth) - CraftConfig.perimeterWidth/2,
+                                 CraftConfig.perimeterWidth,
+                                 CraftConfig.perimeterWidth );
                     break;
 
                 default:
@@ -83,41 +94,38 @@ public class PreviewPanel extends JPanel
 
             }
         }
-        */
+
+        // draw Vectors
+        l.drawAllSegmentsTo(mmg);
+
         // draw GCode Steps
         final GCodeStep[] steps = gFile.getActiveSteps();
         for(int i = 0; i < steps.length; i++)
         {
-            drawStep(steps[i], g);
+            switch(steps[i].getType())
+            {
+            case MOVE_TO_POSITION:
+                mmg.setColor(Color.ORANGE);
+                break;
+
+            case EXTRUDE_TO_POSITION:
+                mmg.setColor(Color.BLUE);
+                break;
+            default:
+                break;
+            }
+            mmg.drawLine(steps[i].getLastX(), steps[i].getLastY(),
+                         steps[i].getX(), steps[i].getY() );
+
+            gra.setColor(Color.YELLOW);
+            gra.drawString("Layer : " + showLayer, 10, 10);
         }
-    }
-
-
-    private void drawStep(final GCodeStep step, final Graphics g)
-    {
-        switch(step.getType())
-        {
-        case MOVE_TO_POSITION:
-            g.setColor(Color.GRAY);
-            break;
-
-        case EXTRUDE_TO_POSITION:
-            g.setColor(Color.BLUE);
-            break;
-        default:
-            break;
-        }
-        //g.setColor(Color.GREEN); // STL Vectors
-        g.drawLine((int) (drawScale * ((step.getLastX() * layers.getPixelPerMm()) + layers.getPixelXoffset())),
-                   (int) (drawScale * ((step.getLastY() * layers.getPixelPerMm()) + layers.getPixelYoffset())),
-                   (int) (drawScale * ((    step.getX() * layers.getPixelPerMm()) + layers.getPixelXoffset())),
-                   (int) (drawScale * ((    step.getY() * layers.getPixelPerMm()) + layers.getPixelYoffset())) );
-
     }
 
     public void setActiveLayer(final int Number)
     {
         showLayer = Number;
+        gFile.moveToLayer(showLayer);
     }
 
     public void setScalingFactor(final double scale)
@@ -127,13 +135,12 @@ public class PreviewPanel extends JPanel
 
     public void nextGCodeStep()
     {
-        if(false ==gFile.moveToNextStep())
+        if(false == gFile.moveToNextStep())
         {
             // no more steps in this Layer -> move to next Layer
             if(showLayer < layers.size() + 1)
             {
-                showLayer++;
-                gFile.moveToLayer(showLayer);
+                setActiveLayer(showLayer + 1);
             }
             // else last layer reached, end of File -> no next Step available
         }
@@ -142,13 +149,12 @@ public class PreviewPanel extends JPanel
 
     public void previousGCodeStep()
     {
-        if(false ==gFile.moveToPreviousStep())
+        if(false == gFile.moveToPreviousStep())
         {
             // no more steps in this Layer -> move to previous Layer
             if(showLayer > 0)
             {
-                showLayer--;
-                gFile.moveToLayer(showLayer);
+                setActiveLayer(showLayer - 1);
                 gFile.moveToEndOfLayer();
             }
             // else first layer reached, start of File -> no previous Step available

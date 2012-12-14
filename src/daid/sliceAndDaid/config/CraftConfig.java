@@ -38,7 +38,7 @@ public class CraftConfig
     @Setting(level = Setting.LEVEL_STARTER, group = "Perimeter",
             title = "Width of the perimeter lines",
             description = "The width of the perimeter lines, a good value is the inner radius of your nozzle tip.",
-            minValue = 0, maxValue = Integer.MAX_VALUE)
+            minValue = 0, maxValue = 10)
     public static double perimeterWidth = 0.4;
 
     @Setting(level = Setting.LEVEL_NORMAL, group = "Perimeter",
