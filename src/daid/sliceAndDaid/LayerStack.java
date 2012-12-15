@@ -147,7 +147,7 @@ public class LayerStack
         {
             // With all the Layers...
             final Layer l = get(i);
-            l.saveToPng(filePrefix + "_Layer_" + i + ".png");
+            l.saveToPng(filePrefix + "_Layer_" + i + ".png", width, height, Xoffset, Yoffset);
             Logger.debug("Layer: {}", i);
         }
     }

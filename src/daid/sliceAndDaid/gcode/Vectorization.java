@@ -79,17 +79,20 @@ public class Vectorization
             switch(routing)
             {
             case AREA:
+                Logger.message("Area Routing");
                 // search for Lines from last position in direction of increasing values
                 Vector<Pixel> res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
                 // if that failed search again in direction of falling values.
                 if(null == res)
                 {
+                    Logger.message("now decreasing");
                     increasing = !increasing;
                     res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
                 }
                 // if still no line found then we are done return lastPosition
                 if(null == res)
                 {
+                    Logger.error("We did not find the Pixel !");
                     return lastPosition;
                 }
                 line = res;
@@ -97,6 +100,7 @@ public class Vectorization
 
             default:
             case OUTLINE:
+                Logger.message("Outline Routing");
                 lastPosition = findStartPixelfor(pixelCode, lastPosition, direction);
                 System.out.println("Optimizing last Position to " + lastPosition + " !");
                 line = getNextLineToPrint(pixelCode, lastPosition, direction);
@@ -177,6 +181,7 @@ public class Vectorization
             last = new Pixel(endX, y);
             if(2 > Math.abs(startX - endX))
             {
+                Logger.error("Only One Pixel found !");
                 isArea = false;
             }
         }
@@ -204,6 +209,7 @@ public class Vectorization
             last = new Pixel(x, endY);
             if(2 > Math.abs(startY - endY))
             {
+                Logger.error("Only One Pixel found !");
                 isArea = false;
             }
         }
@@ -224,6 +230,7 @@ public class Vectorization
         }
         else
         {
+            Logger.message("Trying Outline Routing");
             return getNextLineToPrint(pixelCode, searchStart, direction);
         }
     }
@@ -244,6 +251,7 @@ public class Vectorization
                 startX++;
                 if(pixelCode == b.getPixel(startX, startY))
                 {
+                    Logger.message("Found a Pixel at " + startX + "," + startY + ") !");
                     return true;
                 }
                 // else do another loop
@@ -260,6 +268,7 @@ public class Vectorization
                 startY++;
                 if(pixelCode == b.getPixel(startX, startY))
                 {
+                    Logger.message("Found a Pixel at " + startX + "," + startY + ") !");
                     return true;
                 }
                 // else do another loop

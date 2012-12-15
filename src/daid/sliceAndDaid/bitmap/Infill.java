@@ -80,7 +80,7 @@ public class Infill extends BitmapOptimizer
 
                 if(0 == activeLayer%2)
                 {
-                    // Start in top left corner and go down (x+; y+)
+                    // Start in top left corner and go right (x+)
                     int startX = (b.getMinX()/lineToLineX) * lineToLineX;
                     int startY = (b.getMinY()/lineToLineY) * lineToLineY;
                     do{
@@ -88,7 +88,8 @@ public class Infill extends BitmapOptimizer
                         startX = startX + lineToLineX;
                     } while(startX < b.getMaxX());
 
-                    startX = b.getMinX();
+                    // Start in top left corner and go down (y+)
+                    startX = (b.getMinX()/lineToLineX) * lineToLineX;
                     do{
                         drawLine(b, startX, startY, true);
                         startY = startY + lineToLineY;
@@ -96,21 +97,22 @@ public class Infill extends BitmapOptimizer
                 }
                 else
                 {
-                    // start in bottom left and go up (x+; y-)
-                    int startX = b.getMinX();
+                    // start in bottom left and go right (x+)
+                    int startX = (b.getMinX()/lineToLineX) * lineToLineX;
                     final int Ylength = b.getMaxY() - b.getMinY();
-
                     int startY = (Ylength/lineToLineY) * lineToLineY; // this makes sense ! Tipp: Integer div
                     if(0 != Ylength%lineToLineY)
                     {
                         startY = startY + lineToLineY;
                     }
+
                     do{
                         drawLine(b, startX, startY, false);
                         startX = startX + lineToLineX;
                     } while(startX < b.getMaxX());
 
-                    startX = b.getMinX();
+                    // start in bottom left and go up (y-)
+                    startX = (b.getMinX()/lineToLineX) * lineToLineX;
                     do{
                         drawLine(b, startX, startY, false);
                         startY = startY - lineToLineY;
@@ -126,7 +128,14 @@ public class Infill extends BitmapOptimizer
     {
         int nextX;
         int nextY;
-
+        if(true == increaseY)
+        {
+            Logger.message("Infill: Starting line at (" + startX + "," + startY + ") and going up");
+        }
+        else
+        {
+            Logger.message("Infill: Starting line at (" + startX + "," + startY + ") and going down");
+        }
         do{
             // Slide
             nextX = startX + slideX;

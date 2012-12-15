@@ -57,11 +57,11 @@ public class SliceTool
         Logger.message("Slicing " + layerCount + " layers");
 
         // First Layer
-        layers.add(new Layer(layers, 0, firstLayerHeight));
+        layers.add(new Layer(layers.getPixelPerMm(), 0, firstLayerHeight));
         // all other Layers
         for (int i = 1; i < layerCount; i++)
         {
-            layers.add(new Layer(layers, (i -1) * layerHeight + firstLayerHeight, layerHeight));
+            layers.add(new Layer(layers.getPixelPerMm(), (i -1) * layerHeight + firstLayerHeight, layerHeight));
         }
     }
 
