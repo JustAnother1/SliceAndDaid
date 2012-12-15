@@ -36,7 +36,6 @@ import daid.sliceAndDaid.util.Vector3;
  */
 public class Layer
 {
-    private final LayerStack myStack;
     private LayerBitmap bitmap;
     private final Vector<Segment2D> modelSegmentList = new Vector<Segment2D>();
     private final double zMin;
@@ -53,12 +52,13 @@ public class Layer
     private double y3;
     private Vector3 normal;
     private final static double OMEGA = 0.0001;
+    private final double pixelPerMm;
 
-    public Layer(final LayerStack stack, final double zMin, final double layerHeight)
+    public Layer(final double pixelPerMm, final double zMin, final double layerHeight)
     {
         this.zMin = zMin;
         this.layerHeight = layerHeight;
-        this.myStack = stack;
+        this.pixelPerMm = pixelPerMm;
     }
 
     public double getZ()
@@ -195,17 +195,21 @@ public class Layer
 
 
 
-    public void saveToPng(final String fileName)
+    public void saveToPng(final String fileName,
+                           final int pixelWidth,
+                           final int pixelHeight,
+                           final int pixelXoffset,
+                           final int pixelYoffset)
     {
         // TYPE_INT_ARGB specifies the image format: 8-bit RGBA packed
         // into integer pixels
-        final BufferedImage bi = new BufferedImage(myStack.getPixelWidth(), myStack.getPixelHeight(), BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage bi = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g2 = bi.createGraphics();
         g2.setColor(Color.WHITE);
-        g2.fillRect(0, 0, myStack.getPixelWidth(), myStack.getPixelHeight());
+        g2.fillRect(0, 0, pixelWidth, pixelHeight);
         Logger.debug("PNG gets {} segments !", modelSegmentList.size());
-        final double xoff = myStack.getPixelXoffset()/myStack.getPixelPerMm();
-        final double yoff = myStack.getPixelYoffset()/myStack.getPixelPerMm();
+        final double xoff = pixelXoffset/pixelPerMm;
+        final double yoff = pixelYoffset/pixelPerMm;
         final MilliMeterGraphic mmg = new MilliMeterGraphic(g2, xoff, yoff);
         mmg.setScale(1);
         drawAllSegmentsTo(mmg);
@@ -278,18 +282,18 @@ public class Layer
         Logger.debug("Adding {} Segments !", modelSegmentList.size());
         for (final Segment2D s : modelSegmentList)
         {
-            final int startx = (int)Math.round(s.getStart().x* myStack.getPixelPerMm());
-            final int starty = (int)Math.round(s.getStart().y* myStack.getPixelPerMm());
-            final int endx = (int)Math.round(s.getEnd().x* myStack.getPixelPerMm());
-            final int endy = (int)Math.round(s.getEnd().y* myStack.getPixelPerMm());
+            final int startx = (int)Math.round(s.getStart().x * pixelPerMm);
+            final int starty = (int)Math.round(s.getStart().y * pixelPerMm);
+            final int endx   = (int)Math.round(s.getEnd().x   * pixelPerMm);
+            final int endy   = (int)Math.round(s.getEnd().y   * pixelPerMm);
             bitmap.drawLine(startx, starty, endx, endy, PixelCode.VECTOR_CODE, PixelCode.EMPTY_CODE);
         }
         // Marking the inside area
         for (final Segment2D s : modelSegmentList)
         {
             // Middle of segment
-            int x = (int)Math.round((s.getStart().x + ((s.getEnd().x - s.getStart().x)/2))* myStack.getPixelPerMm());
-            int y = (int)Math.round((s.getStart().y + ((s.getEnd().y - s.getStart().y)/2)) * myStack.getPixelPerMm());
+            int x = (int)Math.round((s.getStart().x + ((s.getEnd().x - s.getStart().x)/2)) * pixelPerMm);
+            int y = (int)Math.round((s.getStart().y + ((s.getEnd().y - s.getStart().y)/2)) * pixelPerMm);
             final Vector3 normal = s.getNormal();
             // !!! Normal points outward !!!
             // !!! we need to get on the Inside !!!
