@@ -91,12 +91,33 @@ public class LayerBitmap
         drawLine(x2, y2, x1, y2, code, oldCode);
     }
 
-    public void drawLine(int x0,
+    public void drawLineCareless(final int x0,
+            final int y0,
+            final int x1,
+            final int y1,
+            final PixelCode code,
+            final PixelCode oldCode)
+    {
+        drawLine(x0, y0, x1, y1, code, oldCode, false);
+    }
+
+    public void drawLine(final int x0,
+            final int y0,
+            final int x1,
+            final int y1,
+            final PixelCode code,
+            final PixelCode oldCode)
+    {
+        drawLine(x0, y0, x1, y1, code, oldCode, true);
+    }
+
+    private void drawLine(int x0,
                           int y0,
                           final int x1,
                           final int y1,
                           final PixelCode code,
-                          final PixelCode oldCode)
+                          final PixelCode oldCode,
+                          final boolean carefull)
     {
         // Algorithm see https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
         final int dx = Math.abs(x1 - x0);
@@ -107,7 +128,7 @@ public class LayerBitmap
         if(y0 < y1) { sy = 1; } else { sy = -1; }
         int err = dx - dy;
         int e2;
-        setPixel(x0, y0, code, oldCode);
+        setPixel(x0, y0, code, oldCode, true, carefull);
         while(!((x0 == x1) && (y0 == y1)))
         {
             e2 = 2*err;
@@ -121,11 +142,16 @@ public class LayerBitmap
                 err = err + dx;
                 y0 = y0 + sy;
             }
-            setPixel(x0, y0, code, oldCode);
+            setPixel(x0, y0, code, oldCode, true, carefull);
         }
     }
 
-    private boolean setPixel(final int x, final int y, final PixelCode code, final PixelCode oldCode, final boolean careForOldCode)
+    private boolean setPixel(final int x,
+                               final int y,
+                               final PixelCode code,
+                               final PixelCode oldCode,
+                               final boolean careForOldCode,
+                               final boolean careIfValid)
     {
         // convert to raw pixel address
         final int xRaw = x + xoffset;
@@ -133,8 +159,15 @@ public class LayerBitmap
         // check if in Range
         if((xRaw >= width) || (yRaw >= height) || (xRaw < 0) || (yRaw < 0))
         {
-            toTxt("exception.txt");
-            throw new IllegalArgumentException("Addressed Pixel(" + xRaw + ", " + yRaw + ") is out of Bitmap");
+            if(true == careIfValid)
+            {
+                toTxt("exception.txt");
+                throw new IllegalArgumentException("Addressed Pixel(" + xRaw + ", " + yRaw + ") is out of Bitmap");
+            }
+            else
+            {
+                return false;
+            }
         }
         // update max/min Values
         if(PixelCode.EMPTY_CODE != code)
@@ -184,7 +217,7 @@ public class LayerBitmap
      */
     public void setPixel(final int x, final int y, final PixelCode code)
     {
-        setPixel(x, y ,code, PixelCode.EMPTY_CODE, false);
+        setPixel(x, y ,code, PixelCode.EMPTY_CODE, false, true);
     }
 
     /** set the Pixel to code if it had the value of oldCode.
@@ -197,7 +230,7 @@ public class LayerBitmap
      */
     public boolean setPixel(final int x, final int y, final PixelCode code, final PixelCode oldCode)
     {
-        return setPixel(x, y, code, oldCode, true);
+        return setPixel(x, y, code, oldCode, true, true);
     }
 
     public PixelCode getPixel(final int x, final int y)

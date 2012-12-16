@@ -147,37 +147,24 @@ public class Infill extends BitmapOptimizer
             {
                 nextY = startY - slideY;
             }
-            if(   (nextX > b.getMaxX())
-               || (nextY > b.getMaxY())
-               || (nextX < b.getMinX())
-               || (nextY < b.getMinY()) )
-            {
-                break;
-            }
             System.out.println("Drawing line from (" + startX + ", " + startY + ") to (" + nextX + ", " + nextY + ") !");
-            b.drawLine(startX, startY, nextX, nextY,
+            b.drawLineCareless(startX, startY, nextX, nextY,
                        PixelCode.FILLIN_CODE,
                        PixelCode.INSIDE_CODE);
             startX = nextX;
             startY = nextY;
             // Line
             nextX = startX + straitLength;
-            if(   (nextX > b.getMaxX())
-               || (nextY > b.getMaxY())
-               || (nextX < b.getMinX())
-               || (nextY < b.getMinY()) )
-            {
-                break;
-            }
             System.out.println("Drawing line from (" + startX + ", " + startY + ") to (" + nextX + ", " + nextY + ") !");
-            b.drawLine(startX, startY, nextX, nextY,
+            b.drawLineCareless(startX, startY, nextX, nextY,
                        PixelCode.FILLIN_CODE,
                        PixelCode.INSIDE_CODE);
             startX = nextX;
-        }while(   (startX < b.getMaxX())
-                && (startY < b.getMaxY())
-                && (startX > b.getMinY())
-                && (startY > b.getMinY()) );
+        }while(((true == increaseY)
+                && ((startX < b.getMaxX()) && (startY < b.getMaxY())))
+                ||
+                ((false == increaseY)
+                 && ((startX < b.getMaxX()) && (startY > b.getMinY()))) );
     }
 
 }
