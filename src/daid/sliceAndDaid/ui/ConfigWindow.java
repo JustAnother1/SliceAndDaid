@@ -153,7 +153,7 @@ public class ConfigWindow extends JFrame
                         {
                             try
                             {
-                                CraftConfig.lastSlicedFile = fc.getSelectedFile().toString();
+                                CraftConfig.lastSlicedFile = fc.getSelectedFile().getAbsolutePath();
                                 CraftConfigLoader.saveConfig(null);
                                 SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(),
                                                             true, /* graphic result window after operation */
@@ -344,6 +344,7 @@ public class ConfigWindow extends JFrame
             if (s.enumName().equals(""))
             {
                 final JSpinner spinner = new JSpinner(new SpinnerNumberModel(f.getInt(null), (int) s.minValue(), (int) s.maxValue(), 1));
+                spinner.setDropTarget(null);
                 spinner.addChangeListener(new ChangeListener()
                 {
                     @Override
@@ -400,6 +401,7 @@ public class ConfigWindow extends JFrame
         else if (f.getType() == Double.TYPE)
         {
             final JSpinner spinner = new JSpinner(new SpinnerNumberModel(f.getDouble(null), s.minValue(), s.maxValue(), 0.01));
+            spinner.setDropTarget(null);
             spinner.addChangeListener(new ChangeListener()
             {
                 @Override
