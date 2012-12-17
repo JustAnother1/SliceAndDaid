@@ -38,6 +38,11 @@ public class LayerStack
         pixelPerMm = (1/CraftConfig.perimeterWidth);
     }
 
+    public LayerStack(final double pixelPerMm)
+    {
+        this.pixelPerMm = pixelPerMm;
+    }
+
     public void add(final Layer layer)
     {
         layers.add(layer);

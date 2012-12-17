@@ -1,0 +1,25 @@
+===Test start===
+===settings===
+pixelpermm = 1
+endxositionx = 6
+endxositiony = 6
+bitmapwidth = 7
+bitmapheight = 7
+bitmapxoffset = 0
+bitmapyoffset = 0
+startpositionx = 0
+startpositiony = 0
+layerdirection = X_THEN_Y
+routingalgorithm = AREA
+pixelcodetoprint = OUTLINE_CODE
+===bitmap===
+*       *
+* OOOOO *
+* OOOOO *
+* OOOOO *
+* OOOOO *
+* OOOOO *
+*       *
+===g-code===
+*G1 X7 Y1*
+===Test end===

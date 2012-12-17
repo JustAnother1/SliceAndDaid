@@ -16,6 +16,7 @@ package daid.sliceAndDaid.gcode;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -204,5 +205,91 @@ public class VectorizationTest
             e.printStackTrace();
             fail("unexpected Exception");
         }
+    }
+
+    private void testAllFilesThatMatch(final File dir, final String Pattern)
+    {
+        final File[] files = dir.listFiles();
+        for(int i = 0; i < files.length; i++)
+        {
+            final File f = files[i];
+            if(true == f.isDirectory())
+            {
+                System.out.println("Searching Directory " + f.getName());
+                testAllFilesThatMatch(f, Pattern);
+            }
+            else
+            {
+                final String fileName = f.getName();
+                if(true == fileName.matches(Pattern))
+                {
+                    System.out.println("Found Test " + f.getName());
+                    try
+                    {
+                        final TestCaseDefinitionDataFile testDefinition = new TestCaseDefinitionDataFile(f);
+                        executeTest(testDefinition);
+                    }
+                    catch (final IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void executeTest(final TestCaseDefinitionDataFile testDefinition) throws IOException
+    {
+        System.out.println("Starting Execution...");
+        final LayerStack stack = new LayerStack(testDefinition.getPixelPerMm());
+        final Layer l = new Layer(testDefinition.getPixelPerMm(), 0, 0);
+
+        l.createBitmap(testDefinition.getBitmapWidth(),
+                       testDefinition.getBitmapHeight(),
+                       testDefinition.getBitmapXOffset(),
+                       testDefinition.getBitmapYOffset());
+        stack.add(l);
+        final LayerBitmap bitmap = l.getBitmap();
+        testDefinition.addDataToBitmap(bitmap);
+        final GCodeOptimizerStub gCodeStub = new GCodeOptimizerStub();
+        final Vectorization v = new Vectorization(gCodeStub, stack);
+        System.out.println("Generating Paths...");
+        final Pixel res = v.generatePathsFor(bitmap,
+                                              testDefinition.getPixelCodeToPrint(),
+                                              testDefinition.getStartPosition(),
+                                              testDefinition.getDirection(),
+                                              testDefinition.getRouting());
+        System.out.println("Checking Results...");
+        if(false == res.equals(testDefinition.getEndPosition()))
+        {
+            System.out.println("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
+            for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
+            {
+                final LineOfGCode gl = gCodeStub.getCodeLine(i);
+                System.out.println(gl.toString());
+            }
+            fail("Moved without reason ! expected: " + testDefinition.getEndPosition() + " received: " + res);
+        }
+        if(false == testDefinition.sameGCodes(gCodeStub))
+        {
+            System.out.println("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
+            for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
+            {
+                final LineOfGCode gl = gCodeStub.getCodeLine(i);
+                System.out.println(gl.toString());
+            }
+            System.out.println("End of generated G-Codes!");
+            fail("Generated wrong G-Code!");
+        }
+    }
+
+    @Test
+    public void testFromFile()
+    {
+        // find all Test Files
+        final File dir = new File("tests");
+        System.out.println("Searching for Test Files,...");
+        testAllFilesThatMatch(dir, "vec_[a-zA-Z].*.txt");
+        System.out.println("Searching for Test Files Done !");
     }
 }
