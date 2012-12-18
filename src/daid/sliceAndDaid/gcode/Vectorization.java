@@ -483,7 +483,6 @@ public class Vectorization
         if(false == lastPosition.isNeighborOf(target))
         {
             moveToPixel(target);
-            lastPosition = target;
         }
         return target;
     }

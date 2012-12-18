@@ -46,9 +46,10 @@ public class Model
                 readAsciiSTL(filename);
             else
                 readBinarySTL(filename);
-        } else
+        }
+        else
         {
-            new RuntimeException("Unknown model format: " + filename);
+            throw new RuntimeException("Unknown model format: " + filename);
         }
         Logger.message("Triangle count: " + triangles.size());
     }
