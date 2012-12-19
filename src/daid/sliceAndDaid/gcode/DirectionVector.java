@@ -20,7 +20,7 @@ package daid.sliceAndDaid.gcode;
  */
 public class DirectionVector
 {
-    final int direction;
+    private final int direction;
 
     // +------+------+------+
     // |  1   |  2   |  3   |
@@ -69,8 +69,10 @@ public class DirectionVector
         case 6:
         case 9:
             return +1;
+
+        default:
+            throw new IllegalArgumentException("Invalid Direction Vector X (" + direction + ")!");
         }
-        throw new IllegalArgumentException("Invalid Direction Vector X (" + direction + ")!");
     }
 
     public int getY()
@@ -91,8 +93,10 @@ public class DirectionVector
         case 8:
         case 9:
             return -1;
+
+        default:
+            throw new IllegalArgumentException("Invalid Direction Vector Y (" + direction + ")!");
         }
-        throw new IllegalArgumentException("Invalid Direction Vector Y (" + direction + ")!");
     }
 
 }
