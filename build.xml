@@ -4,9 +4,9 @@
         <tstamp>
             <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
         </tstamp>
-        <javac srcdir="." destdir="." includeantruntime="false" />
+        <javac srcdir="src" destdir="daid" includeantruntime="false" />
         <jar destfile="SliceAndDaid.jar" update="false">
-            <fileset dir=".">
+            <fileset dir="daid">
                 <include name="**/*.class" />
             </fileset>
             <manifest>
