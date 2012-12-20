@@ -49,15 +49,15 @@ public class TestCaseDefinitionDataFile
      * ===Test end===
      */
 
-    public final static String FILE_START = "===Test start===";
-    public final static String FILE_END = "===Test end===";
-    public final static String SECTION_START_END = "===";
-    public final static String BITMAP_SECTION = "bitmap";
-    public final static String G_CODE_SECTION = "g-code";
-    public final static String SETTINGS_SECTION = "settings";
+    public static final String FILE_START = "===Test start===";
+    public static final String FILE_END = "===Test end===";
+    public static final String SECTION_START_END = "===";
+    public static final String BITMAP_SECTION = "bitmap";
+    public static final String G_CODE_SECTION = "g-code";
+    public static final String SETTINGS_SECTION = "settings";
 
     private final Vector<String> bitmapStrings = new Vector<String>();
-    private final Vector<LineOfGCode> GCodes = new Vector<LineOfGCode>();
+    private final Vector<String> GCodes = new Vector<String>();
 
     private double pixelPerMm;
     private int EndPositionX;
@@ -71,10 +71,12 @@ public class TestCaseDefinitionDataFile
     private LayerDirection layerDirection;
     private RoutingAlgorithm routing;
     private PixelCode PixelCodeToPrint;
+    private String fileName;
 
-    public TestCaseDefinitionDataFile(final File FileName) throws IOException
+    public TestCaseDefinitionDataFile(final File testDataFile) throws IOException
     {
-        final InputStreamReader fr = new InputStreamReader(new FileInputStream(FileName), Charset.forName("UTF8"));
+        this.fileName = testDataFile.getName();
+        final InputStreamReader fr = new InputStreamReader(new FileInputStream(testDataFile), Charset.forName("UTF8"));
         final BufferedReader br = new BufferedReader(fr);
         String curLine = br.readLine();
         if(false == FILE_START.equals(curLine))
@@ -133,8 +135,7 @@ public class TestCaseDefinitionDataFile
     private void parseGCodeString(final String curLine)
     {
         final String line = curLine.substring(1, curLine.length() -1);
-        final LineOfGCode gl = new LineOfGCode(line);
-        GCodes.add(gl);
+        GCodes.add(line);
     }
 
     private void parseSettingString(final String curLine)
@@ -143,75 +144,75 @@ public class TestCaseDefinitionDataFile
         {
             throw new IllegalArgumentException("Invalid Setting Line :" + curLine + " !");
         }
-        final String Name = ((curLine.substring(0, curLine.indexOf('='))).trim()).toLowerCase();
-        final String Value = (curLine.substring(curLine.indexOf('=') + 1)).trim();
-        if("pixelpermm".equals(Name))
+        final String name = ((curLine.substring(0, curLine.indexOf('='))).trim()).toLowerCase();
+        final String value = (curLine.substring(curLine.indexOf('=') + 1)).trim();
+        if("pixelpermm".equals(name))
         {
-            pixelPerMm = Double.valueOf(Value);
+            pixelPerMm = Double.valueOf(value);
             return;
         }
-        if("endxositionx".equals(Name))
+        if("endxositionx".equals(name))
         {
-            EndPositionX = Integer.valueOf(Value);
+            EndPositionX = Integer.valueOf(value);
             return;
         }
-        if("endxositiony".equals(Name))
+        if("endxositiony".equals(name))
         {
-            EndPositionY = Integer.valueOf(Value);
+            EndPositionY = Integer.valueOf(value);
             return;
         }
-        if("bitmapwidth".equals(Name))
+        if("bitmapwidth".equals(name))
         {
-            bitmapWidth = Integer.valueOf(Value);
+            bitmapWidth = Integer.valueOf(value);
             return;
         }
-        if("bitmapheight".equals(Name))
+        if("bitmapheight".equals(name))
         {
-            bitmapHeight = Integer.valueOf(Value);
+            bitmapHeight = Integer.valueOf(value);
             return;
         }
-        if("bitmapxoffset".equals(Name))
+        if("bitmapxoffset".equals(name))
         {
-            bitmapXOffset = Integer.valueOf(Value);
+            bitmapXOffset = Integer.valueOf(value);
             return;
         }
-        if("bitmapyoffset".equals(Name))
+        if("bitmapyoffset".equals(name))
         {
-            bitmapYOffset = Integer.valueOf(Value);
+            bitmapYOffset = Integer.valueOf(value);
             return;
         }
-        if("startpositionx".equals(Name))
+        if("startpositionx".equals(name))
         {
-            StartPositionX = Integer.valueOf(Value);
+            StartPositionX = Integer.valueOf(value);
             return;
         }
-        if("startpositiony".equals(Name))
+        if("startpositiony".equals(name))
         {
-            StartPositionY = Integer.valueOf(Value);
+            StartPositionY = Integer.valueOf(value);
             return;
         }
-        if("layerdirection".equals(Name))
+        if("layerdirection".equals(name))
         {
-            if("X_THEN_Y".equals(Value))
+            if("X_THEN_Y".equals(value))
             {
                 layerDirection = LayerDirection.X_THEN_Y;
                 return;
             }
-            if("Y_THEN_X".equals(Value))
+            if("Y_THEN_X".equals(value))
             {
                 layerDirection = LayerDirection.Y_THEN_X;
                 return;
             }
             throw new IllegalArgumentException("Invalid Value in Setting Line :" + curLine + " !");
         }
-        if("routingalgorithm".equals(Name))
+        if("routingalgorithm".equals(name))
         {
-            if("OUTLINE".equals(Value))
+            if("OUTLINE".equals(value))
             {
-                routing = RoutingAlgorithm.AREA;
+                routing = RoutingAlgorithm.OUTLINE;
                 return;
             }
-            if("AREA".equals(Value))
+            if("AREA".equals(value))
             {
                 routing = RoutingAlgorithm.AREA;
                 return;
@@ -219,19 +220,19 @@ public class TestCaseDefinitionDataFile
             throw new IllegalArgumentException("Invalid Value in Setting Line :" + curLine + " !");
         }
 
-        if("pixelcodetoprint".equals(Name))
+        if("pixelcodetoprint".equals(name))
         {
-            if("OUTLINE_CODE".equals(Value))
+            if("OUTLINE_CODE".equals(value))
             {
                 PixelCodeToPrint = PixelCode.OUTLINE_CODE;
                 return;
             }
-            if("FILLIN_CODE".equals(Value))
+            if("FILLIN_CODE".equals(value))
             {
                 PixelCodeToPrint = PixelCode.FILLIN_CODE;
                 return;
             }
-            if("SKIRT_CODE".equals(Value))
+            if("SKIRT_CODE".equals(value))
             {
                 PixelCodeToPrint = PixelCode.SKIRT_CODE;
                 return;
@@ -257,8 +258,8 @@ public class TestCaseDefinitionDataFile
         }
         for(int i = 0; i < GCodes.size(); i++)
         {
-            final LineOfGCode shouldLine = GCodes.get(i);
-            final LineOfGCode isLine = gCodeStub.getCodeLine(i);
+            final String shouldLine = (GCodes.get(i)).trim();
+            final String isLine = (gCodeStub.getCodeLine(i)).toString();
             if(false == shouldLine.equals(isLine))
             {
                 Logger.error("Wrong G-Code: Should be: " + shouldLine + " but is " + isLine + "  !");
@@ -342,6 +343,11 @@ public class TestCaseDefinitionDataFile
     public PixelCode getPixelCodeToPrint()
     {
         return PixelCodeToPrint;
+    }
+
+    public String getName()
+    {
+        return fileName;
     }
 
 }

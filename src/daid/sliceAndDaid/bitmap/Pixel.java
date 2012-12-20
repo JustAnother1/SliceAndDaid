@@ -123,4 +123,9 @@ public final class Pixel
                          + " is not a neighbor of " + this.toString() + " !");
     }
 
+    public int getDistanceTo(final Pixel pixel)
+    {
+        return Math.abs(getX() - pixel.getX()) + Math.abs(getY() - pixel.getY());
+    }
+
 }

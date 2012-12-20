@@ -98,5 +98,9 @@ public class DirectionVector
             throw new IllegalArgumentException("Invalid Direction Vector Y (" + direction + ")!");
         }
     }
+    public int getDirection()
+    {
+        return direction;
+    }
 
 }

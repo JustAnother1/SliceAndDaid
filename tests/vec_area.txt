@@ -1,8 +1,8 @@
 ===Test start===
 ===settings===
 pixelpermm = 1
-endxositionx = 6
-endxositiony = 6
+endxositionx = 5
+endxositiony = 5
 bitmapwidth = 7
 bitmapheight = 7
 bitmapxoffset = 0
@@ -21,5 +21,14 @@ pixelcodetoprint = OUTLINE_CODE
 * OOOOO *
 *       *
 ===g-code===
-*G1 X7 Y1*
+*G1 X1 Y1*
+*G1 X5 Y1 E0*
+*G1 X5 Y2*
+*G1 X1 Y2 E0*
+*G1 X1 Y3*
+*G1 X5 Y3 E0*
+*G1 X5 Y4*
+*G1 X1 Y4 E0*
+*G1 X1 Y5*
+*G1 X5 Y5 E0*
 ===Test end===

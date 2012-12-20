@@ -19,6 +19,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import daid.sliceAndDaid.Layer;
@@ -27,6 +28,7 @@ import daid.sliceAndDaid.LayerDirection;
 import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
+import daid.sliceAndDaid.util.Logger;
 
 /**
  * @author Lars P&ouml;tter
@@ -34,6 +36,12 @@ import daid.sliceAndDaid.bitmap.PixelCode;
  */
 public class VectorizationTest
 {
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception
+    {
+        Logger.setLevel(Logger.LOG_LEVEL_MESSAGE);
+    }
+
     @Test
     public void testNull()
     {
@@ -45,7 +53,6 @@ public class VectorizationTest
         }
         catch (final IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             fail("unexpected Exception");
         }
@@ -207,7 +214,7 @@ public class VectorizationTest
         }
     }
 
-    private void testAllFilesThatMatch(final File dir, final String Pattern)
+    private void testAllFilesThatMatch(final File dir, final String pattern)
     {
         final File[] files = dir.listFiles();
         for(int i = 0; i < files.length; i++)
@@ -216,12 +223,12 @@ public class VectorizationTest
             if(true == f.isDirectory())
             {
                 System.out.println("Searching Directory " + f.getName());
-                testAllFilesThatMatch(f, Pattern);
+                testAllFilesThatMatch(f, pattern);
             }
             else
             {
                 final String fileName = f.getName();
-                if(true == fileName.matches(Pattern))
+                if(true == fileName.matches(pattern))
                 {
                     System.out.println("Found Test " + f.getName());
                     try
@@ -262,16 +269,18 @@ public class VectorizationTest
         System.out.println("Checking Results...");
         if(false == res.equals(testDefinition.getEndPosition()))
         {
+            l.saveBitmapToTxt("junit_problem_" + testDefinition.getName() + ".txt");
             System.out.println("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
             for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
             {
                 final LineOfGCode gl = gCodeStub.getCodeLine(i);
                 System.out.println(gl.toString());
             }
-            fail("Moved without reason ! expected: " + testDefinition.getEndPosition() + " received: " + res);
+            System.out.println("End of generated G-Codes!");
         }
         if(false == testDefinition.sameGCodes(gCodeStub))
         {
+            l.saveBitmapToTxt("junit_problem_" + testDefinition.getName() + ".txt");
             System.out.println("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
             for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
             {
