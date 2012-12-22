@@ -23,7 +23,7 @@ public class VectorChecker
 {
     private boolean isStraight = true;
 
-    private final static int NOT_USED = 5;
+    private static final int NOT_USED = 5;
 
     private int mainX = NOT_USED;
     private int mainY = NOT_USED;
