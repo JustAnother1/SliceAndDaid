@@ -20,10 +20,52 @@ package daid.sliceAndDaid.gcode;
  */
 public enum PrintSteps
 {
-    PREPARE_PRINTER,
-    SHUTDOWN_PRINTER,
-    NEW_LAYER,
-    SKIRT,
-    WALL,
+    PREPARE_PRINTER
+    {
+        @Override
+        public String toString()
+        {
+            return "prepare Printer";
+        }
+    },
+    SHUTDOWN_PRINTER
+    {
+        @Override
+        public String toString()
+        {
+            return "shutdown Printer";
+        }
+    },
+    NEW_LAYER
+    {
+        @Override
+        public String toString()
+        {
+            return "new Layer";
+        }
+    },
+    SKIRT
+    {
+        @Override
+        public String toString()
+        {
+            return "Skirt";
+        }
+    },
+    WALL
+    {
+        @Override
+        public String toString()
+        {
+            return "Wall";
+        }
+    },
     FILL
+    {
+        @Override
+        public String toString()
+        {
+            return "Fill";
+        }
+    }
 }

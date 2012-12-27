@@ -79,8 +79,8 @@ public class PreviewFrame extends JFrame
         actionPanel.add(new JLabel("Zoom:"));
         actionPanel.add(zoomSpinner);
 
-        final JButton StepPlus = new JButton("Step +");
-        StepPlus.addActionListener(new ActionListener()
+        final JButton stepPlus = new JButton("Step +");
+        stepPlus.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(final ActionEvent e)
@@ -89,10 +89,10 @@ public class PreviewFrame extends JFrame
                 viewPanel.repaint();
             }
         });
-        actionPanel.add(StepPlus);
+        actionPanel.add(stepPlus);
 
-        final JButton StepMinus = new JButton("Step -");
-        StepMinus.addActionListener(new ActionListener()
+        final JButton stepMinus = new JButton("Step -");
+        stepMinus.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(final ActionEvent e)
@@ -101,7 +101,7 @@ public class PreviewFrame extends JFrame
                 viewPanel.repaint();
             }
         });
-        actionPanel.add(StepMinus);
+        actionPanel.add(stepMinus);
 
         this.setLayout(new BorderLayout());
         this.add(viewPanel, BorderLayout.CENTER);

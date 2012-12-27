@@ -1,0 +1,32 @@
+===Test start===
+===settings===
+pixelpermm = 1
+endxositionx = 3
+endxositiony = 3
+bitmapwidth = 18
+bitmapheight = 14
+bitmapxoffset = 0
+bitmapyoffset = 0
+startpositionx = 0
+startpositiony = 0
+layerdirection = X_THEN_Y
+routingalgorithm = OUTLINE
+pixelcodetoprint = FILLIN_CODE
+===bitmap===
+*OOOOOOOOOOOOOOOOOO*
+*O              F O*
+*O              F O*
+*O             F  O*
+*O            F   O*
+*O            F   O*
+*O   FFFFFFFFF    O*
+*O  F             O*
+*O  F             O*
+*O F              O*
+*OF               O*
+*OF               O*
+*O                O*
+*OOOOOOOOOOOOOOOOOO*
+===g-code===
+*G1 X4 Y-5*
+===Test end===

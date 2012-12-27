@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
+import daid.sliceAndDaid.gcode.DirectionVector;
 import daid.sliceAndDaid.util.Logger;
 
 /**
@@ -30,7 +31,7 @@ public class LayerBitmap
     // (x/y)Raw are Coordinates with no negative values for direct access into bitmap
     // (x/y) are coordinates with 0.0 in the center
     // The raw Coordinates are used only inside this class and may not leak !
-
+    public static final int DUMP_DISTANCE = 4; // Size of Dumps
     private final PixelCode[] bitmap;
     private final int xoffset;
     private final int yoffset;
@@ -368,6 +369,7 @@ public class LayerBitmap
         else
         {
             Logger.error("Caculation of Normal lead me to the middle of nowhere - I'm lost !");
+            throw new IllegalArgumentException("Caculation of Normal lead me to the middle of nowhere - I'm lost !");
         }
     }
 
@@ -495,39 +497,38 @@ public class LayerBitmap
     {
         // dump should look lie this: Distance = 4
         // Pixel = ?? is (25,23)
-        // +------------------+
-        // |FIFIFIFIOL      SK|
-        // |FIFIFIFIOL      SK|
-        // |FIFIFIFIOL      SK|
-        // |FIFIFIFIOL      SK|
-        // |OLOLOLOL??      SK|
-        // |                SK|
-        // |                SK|
-        // |                SK|
-        // |SKSKSKSKSKSKSKSKSK|
-        // +------------------+
-        final int distance = 4;
-        final int numFieldsinRow = 2 * distance + 1;
-        Logger.message("Pixel = ?? is " + target);
+        // +---------+
+        // |FFFFO   K|
+        // |FFFFO   K|
+        // |FFFFO   K|
+        // |FFFFO   K|
+        // |OOOO?   K|
+        // |        K|
+        // |        K|
+        // |        K|
+        // |KKKKKKKKK|
+        // +---------+
+        final PixelCode tpc = this.getPixel(target.getX(), target.getY());
+        Logger.message("Pixel(" + tpc + ") = ? is " + target);
 
         StringBuffer sb = new StringBuffer();
         sb.append("+");
-        for(int i = 0; i < 2*numFieldsinRow; i++)
+        for(int i = 0; i < (2 * DUMP_DISTANCE) + 1; i++)
         {
             sb.append("-");
         }
         sb.append("+");
         final String headline= sb.toString();
         Logger.message(headline);
-        for(int y = target.getY() + distance; y >= target.getY() - distance; y--)
+        for(int y = target.getY() + DUMP_DISTANCE; y >= target.getY() - DUMP_DISTANCE; y--)
         {
             sb = new StringBuffer();
             sb.append("|");
-            for(int x = target.getX() - distance; x <=  target.getX() + distance; x++)
+            for(int x = target.getX() - DUMP_DISTANCE; x <=  target.getX() + DUMP_DISTANCE; x++)
             {
                 if((x == target.getX()) && (y == target.getY()))
                 {
-                    sb.append("??");
+                    sb.append("?");
                 }
                 else
                 {
@@ -541,4 +542,67 @@ public class LayerBitmap
         Logger.message(headline);
     }
 
+    public int getNextDirectionFor(final int nextDirection)
+    {
+        // +------+------+------+
+        // |  1   |  2   |  3   |
+        // +------+------+------+
+        // |  4   |      |  6   |
+        // +------+------+------+
+        // |  7   |  8   |  9   |
+        // +------+------+------+
+        switch(nextDirection)
+        {
+        case 1: return 2;
+        case 2: return 3;
+        case 3: return 6;
+        case 4: return 1;
+        case 6: return 9;
+        case 7: return 4;
+        case 8: return 7;
+        case 9: return 8;
+        default:return 0;
+        }
+    }
+
+    public int getNumberOfSameNeighbors(final Pixel start, final PixelCode pixelCode)
+    {
+        int numFound = 0;
+        int curDirection = 1;
+        for(int i = 0; i < 8; i++)
+        {
+            // search for pixel in neighbors
+            final DirectionVector dv = new DirectionVector(curDirection);
+            curDirection = getNextDirectionFor(curDirection);
+            if(pixelCode == this.getPixel(start.getX() + dv.getX(),
+                                           start.getY() + dv.getY()) )
+            {
+                numFound++;
+            }
+        }
+        return numFound;
+    }
+
+    public int oppositeOf(final int nextDirection)
+    {
+        // +------+------+------+
+        // |  1   |  2   |  3   |
+        // +------+------+------+
+        // |  4   |      |  6   |
+        // +------+------+------+
+        // |  7   |  8   |  9   |
+        // +------+------+------+
+        switch(nextDirection)
+        {
+        case 1: return 9;
+        case 2: return 8;
+        case 3: return 7;
+        case 4: return 6;
+        case 6: return 4;
+        case 7: return 3;
+        case 8: return 2;
+        case 9: return 1;
+        default:return 0;
+        }
+    }
 }

@@ -25,7 +25,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "ii";
+            return "i";
         }
     },
     EMPTY_CODE      // fresh unused Pixel
@@ -33,7 +33,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "  ";
+            return " ";
         }
     },
     VECTOR_CODE     // The Model cuts the Layer here
@@ -41,7 +41,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "vv";
+            return "v";
         }
     },
     INSIDE_CODE     // This is the Space inside the Model
@@ -49,7 +49,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "IS";
+            return ".";
         }
     },
     TEMPORAL_CODE   // This code is used in optimizers to detect which Pixel have already been changed.
@@ -57,7 +57,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "TM";
+            return "T";
         }
     },
     // Only the following Codes will be printed
@@ -66,7 +66,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "OL";
+            return "O";
         }
     },
     FILLIN_CODE     // Structure inside the Model that needs to be printed
@@ -74,7 +74,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "FI";
+            return "F";
         }
     },
     SKIRT_CODE      // Skirt around the Model on Layer0
@@ -82,7 +82,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "SK";
+            return "K";
         }
     },
     // After the GCode Generation:
@@ -91,7 +91,7 @@ public enum PixelCode
         @Override
         public String toString()
         {
-            return "XX";
+            return "X";
         }
     }
 }

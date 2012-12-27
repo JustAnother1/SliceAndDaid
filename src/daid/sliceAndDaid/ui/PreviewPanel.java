@@ -122,9 +122,9 @@ public class PreviewPanel extends JPanel
         }
     }
 
-    public void setActiveLayer(final int Number)
+    public void setActiveLayer(final int number)
     {
-        showLayer = Number;
+        showLayer = number;
         gFile.moveToLayer(showLayer);
     }
 
@@ -138,7 +138,7 @@ public class PreviewPanel extends JPanel
         if(false == gFile.moveToNextStep())
         {
             // no more steps in this Layer -> move to next Layer
-            if(showLayer < layers.size() + 1)
+            if(showLayer + 1 < layers.size())
             {
                 setActiveLayer(showLayer + 1);
             }

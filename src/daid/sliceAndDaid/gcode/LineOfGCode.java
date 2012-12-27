@@ -69,11 +69,11 @@ public class LineOfGCode
             break;
 
         case NEW_LAYER:
-            comment = "Layer " + parameter;
+            comment = "layer " + parameter;
             break;
 
         case SKIRT:
-            comment = "Skirt";
+            comment = "skirt";
             break;
 
         case WALL:
@@ -81,7 +81,7 @@ public class LineOfGCode
             break;
 
         case FILL:
-            comment = "Fill ";
+            comment = "fill ";
             break;
 
         default:
