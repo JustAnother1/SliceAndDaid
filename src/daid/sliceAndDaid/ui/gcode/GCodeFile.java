@@ -86,11 +86,11 @@ public class GCodeFile
                 lastY = curStep.getY();
                 curLine = br.readLine();
             }
-            Logger.message("G-Code File has {} Layers !", allSteps.size());
+            Logger.debug("G-Code File has {} Layers !", allSteps.size());
             for(int i = 0; i < allSteps.size(); i++)
             {
                 final Vector<GCodeStep> cl = allSteps.get(i);
-                Logger.message("Layer has {} steps!", cl.size());
+                Logger.debug("Layer has {} steps!", cl.size());
             }
         }
         catch (final FileNotFoundException e)

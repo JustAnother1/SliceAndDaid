@@ -222,7 +222,7 @@ public class VectorizationTest
             final File f = files[i];
             if(true == f.isDirectory())
             {
-                System.out.println("Searching Directory " + f.getName());
+                Logger.message("Searching Directory " + f.getName());
                 testAllFilesThatMatch(f, pattern);
             }
             else
@@ -230,7 +230,7 @@ public class VectorizationTest
                 final String fileName = f.getName();
                 if(true == fileName.matches(pattern))
                 {
-                    System.out.println("Found Test " + f.getName());
+                    Logger.message("Found Test " + f.getName());
                     try
                     {
                         final TestCaseDefinitionDataFile testDefinition = new TestCaseDefinitionDataFile(f);
@@ -247,7 +247,7 @@ public class VectorizationTest
 
     private void executeTest(final TestCaseDefinitionDataFile testDefinition) throws IOException
     {
-        System.out.println("Starting Execution...");
+        Logger.message("Starting Execution...");
         final LayerStack stack = new LayerStack(testDefinition.getPixelPerMm());
         final Layer l = new Layer(testDefinition.getPixelPerMm(), 0, 0);
 
@@ -260,34 +260,34 @@ public class VectorizationTest
         testDefinition.addDataToBitmap(bitmap);
         final GCodeOptimizerStub gCodeStub = new GCodeOptimizerStub();
         final Vectorization v = new Vectorization(gCodeStub, stack);
-        System.out.println("Generating Paths...");
+        Logger.message("Generating Paths...");
         final Pixel res = v.generatePathsFor(bitmap,
                                               testDefinition.getPixelCodeToPrint(),
                                               testDefinition.getStartPosition(),
                                               testDefinition.getDirection(),
                                               testDefinition.getRouting());
-        System.out.println("Checking Results...");
+        Logger.message("Checking Results...");
         if(false == res.equals(testDefinition.getEndPosition()))
         {
             l.saveBitmapToTxt("junit_problem_" + testDefinition.getName() + ".txt");
-            System.out.println("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
+            Logger.message("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
             for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
             {
                 final LineOfGCode gl = gCodeStub.getCodeLine(i);
-                System.out.println(gl.toString());
+                Logger.message(gl.toString());
             }
-            System.out.println("End of generated G-Codes!");
+            Logger.message("End of generated G-Codes!");
         }
         if(false == testDefinition.sameGCodes(gCodeStub))
         {
             l.saveBitmapToTxt("junit_problem_" + testDefinition.getName() + ".txt");
-            System.out.println("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
+            Logger.message("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
             for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
             {
                 final LineOfGCode gl = gCodeStub.getCodeLine(i);
-                System.out.println(gl.toString());
+                Logger.message(gl.toString());
             }
-            System.out.println("End of generated G-Codes!");
+            Logger.message("End of generated G-Codes!");
             fail("Generated wrong G-Code!");
         }
     }
@@ -297,8 +297,8 @@ public class VectorizationTest
     {
         // find all Test Files
         final File dir = new File("tests");
-        System.out.println("Searching for Test Files,...");
+        Logger.message("Searching for Test Files,...");
         testAllFilesThatMatch(dir, "vec_[a-zA-Z].*.txt");
-        System.out.println("Searching for Test Files Done !");
+        Logger.message("Searching for Test Files Done !");
     }
 }

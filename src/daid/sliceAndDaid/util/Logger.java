@@ -21,7 +21,7 @@ import java.util.HashSet;
  *
  * TODO: Different log listeners can connect to this logging service. So the GUI version can show a nice progress dialog.
  */
-public class Logger
+public final class Logger
 {
     private static HashSet<LoggingInterface> loggers = new HashSet<LoggingInterface>();
 
@@ -36,15 +36,19 @@ public class Logger
      *   trace
      * least Important
      */
-    public final static int LOG_LEVEL_ERROR = 0;
-    public final static int LOG_LEVEL_WARNING = 1;
-    public final static int LOG_LEVEL_STATUS_UPDATE = 2;
-    public final static int LOG_LEVEL_MESSAGE = 3;
-    public final static int LOG_LEVEL_DEBUG = 4;
-    public final static int LOG_LEVEL_PROGRESS = 5;
-    public final static int LOG_LEVEL_TRACE = 6;
+    public static final int LOG_LEVEL_ERROR = 0;
+    public static final int LOG_LEVEL_WARNING = 1;
+    public static final int LOG_LEVEL_STATUS_UPDATE = 2;
+    public static final int LOG_LEVEL_MESSAGE = 3;
+    public static final int LOG_LEVEL_DEBUG = 4;
+    public static final int LOG_LEVEL_PROGRESS = 5;
+    public static final int LOG_LEVEL_TRACE = 6;
 
     private static int logLevel = LOG_LEVEL_ERROR;
+
+    private Logger()
+    {
+    }
 
     /** debug statements describing details that happened.
      *

@@ -77,7 +77,7 @@ public class Vectorization
             final RoutingAlgorithm routing) throws IOException
     {
         boolean useOutline = false;
-        System.out.println("Got Last Position of (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
+        Logger.trace("Got Last Position of {} !", lastPosition);
         this.b = b;
         b.selectPixelType(pixelCode);
         if(RoutingAlgorithm.AREA == routing)
@@ -87,7 +87,7 @@ public class Vectorization
             // if this Pixel has less than 3 neighbors then switch to OUTLINE Routing!
             if(3 > b.getNumberOfSameNeighbors(start, pixelCode))
             {
-                Logger.message("Using Outline routing instead of Area routing !");
+                Logger.debug("Using Outline routing instead of Area routing !");
                 useOutline = true;
             }
         }
@@ -95,7 +95,7 @@ public class Vectorization
         // as long as this bitmap has more pixels of pixelCode do the following steps:
         while(true == b.hasMorePixels())
         {
-            System.out.println("** start get next Line **");
+            Logger.trace("** start get next Line **");
         // 1. find pixel of "pixelCode" closest to lastPosition.
         // 2. find a pixel next to the first that has the same pixelCode.
         // 3. find more pixels in the same direction ( so that they form a line) with the same pixelCode.
@@ -105,7 +105,7 @@ public class Vectorization
             case AREA:
                 if(true == useOutline)
                 {
-                    Logger.message("Outline Routing");
+                    Logger.debug("Outline Routing");
                     line = getNextOutLineLineToPrint(pixelCode, lastPosition, direction, false); // important to have false here !
                     if(null == line)
                     {
@@ -116,13 +116,13 @@ public class Vectorization
                 }
                 else
                 {
-                    Logger.message("Area Routing");
+                    Logger.debug("Area Routing");
                     // search for Lines from last position in direction of increasing values
                     PixelLine res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
                     // if that failed search again in direction of falling values.
                     if(null == res)
                     {
-                        Logger.message("now decreasing");
+                        Logger.debug("now decreasing");
                         increasing = !increasing;
                         res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
                     }
@@ -139,7 +139,7 @@ public class Vectorization
 
             default:
             case OUTLINE:
-                Logger.message("Outline Routing");
+                Logger.debug("Outline Routing");
                 line = getNextOutLineLineToPrint(pixelCode, lastPosition, direction, true);
                 if(null == line)
                 {
@@ -149,14 +149,14 @@ public class Vectorization
                 }
                 break;
             }
-            System.out.println("** got a line **");
+            Logger.trace("** got a line **");
             // check the line
             line = checkLine(line, pixelCode);
         // 4. generate a G-Code to move to the end of this line.
         // 5. change all these Pixel to pixelCode printed.
         // 6. set lastPosition to end of Line.
             lastPosition = printTheFoundLine(line, lastPosition, pixelCode);
-            System.out.println("Moving last Position to (" + lastPosition.getX() + ", " + lastPosition.getY() + ") !");
+            Logger.trace("Moving last Position to {} !", lastPosition);
         }
         // return the lastPosition.
         return lastPosition;
@@ -287,7 +287,7 @@ public class Vectorization
         if(5 > collectedPoints.size())
         {
             // found only a short line -> Outline Routing
-            Logger.message("Trying Outline Routing");
+            Logger.debug("Trying Outline Routing");
             return getNextOutLineLineToPrint(pixelCode, searchStart, direction, false);
         }
 
@@ -335,7 +335,7 @@ public class Vectorization
                 startX++;
                 if(pixelCode == b.getPixel(startX, startY))
                 {
-                    Logger.message("Found a Pixel at " + startX + "," + startY + ") !");
+                    Logger.debug("Found a Pixel at " + startX + "," + startY + ") !");
                     return true;
                 }
                 // else do another loop
@@ -352,7 +352,7 @@ public class Vectorization
                 startY++;
                 if(pixelCode == b.getPixel(startX, startY))
                 {
-                    Logger.message("Found a Pixel at " + startX + "," + startY + ") !");
+                    Logger.debug("Found a Pixel at " + startX + "," + startY + ") !");
                     return true;
                 }
                 // else do another loop
@@ -432,7 +432,7 @@ public class Vectorization
                                                  ) throws IOException
     {
         final Pixel lastPosition = findOutLineStartPixelfor(pixelCode, startPosition, direction);
-        System.out.println("Optimizing last Position to " + lastPosition + " !");
+        Logger.trace("Optimizing last Position to {} !", lastPosition);
         final int lastX = lastPosition.getX();
         final int lastY = lastPosition.getY();
         if(pixelCode != b.getPixel(lastX, lastY))
@@ -452,14 +452,14 @@ public class Vectorization
             for(int i = 0; i < 8; i++)
             {
                 nextDirection = b.getNextDirectionFor(nextDirection);
-                System.out.println("Checking in Direction " + nextDirection + " !");
+                Logger.trace("Checking in Direction {} !", nextDirection);
                 final PixelLine lineToCheck = new PixelLine(line);
                 curRes = checkInDirection(nextDirection, lineToCheck, pixelCode,
                         lastX, lastY, needsDifferentNeighbor);
                 if(2 == curRes.length()) {poorSolution = curRes;}
                 if(2 < curRes.length())
                 {
-                    System.out.println("Found Solution in direction " + nextDirection);
+                    Logger.trace("Found Solution in direction {} !", nextDirection);
                     lastPrintDirection = b.oppositeOf(nextDirection);
                     return curRes;
                 }
@@ -471,32 +471,32 @@ public class Vectorization
             for(int i = 0; i < 7; i++)
             {
                 nextDirection = b.getNextDirectionFor(nextDirection);
-                System.out.println("Checking in Direction " + nextDirection + " !");
+                Logger.trace("Checking in Direction {} !", nextDirection);
                 final PixelLine lineToCheck = new PixelLine(line);
                 curRes = checkInDirection(nextDirection, lineToCheck, pixelCode,
                         lastX, lastY, needsDifferentNeighbor);
                 if(2 == curRes.length()) {poorSolution = curRes;}
                 if(2 < curRes.length())
                 {
-                    System.out.println("Found Solution in direction " + nextDirection);
+                    Logger.trace("Found Solution in direction {} !", nextDirection);
                     lastPrintDirection = b.oppositeOf(nextDirection);
                     return curRes;
                 }
             }
             // if still no solution then check LastPrintDirection
-            System.out.println("Falling back to checking last Direction");
-            System.out.println("Checking in Direction " + lastPrintDirection + " !");
+            Logger.trace("Falling back to checking last Direction");
+            Logger.trace("Checking in Direction {} !", lastPrintDirection);
             final PixelLine lineToCheck = new PixelLine(line);
             curRes = checkInDirection(lastPrintDirection, lineToCheck, pixelCode,
                     lastX, lastY, needsDifferentNeighbor);
             if(2 <= curRes.length())
             {
-                System.out.println("Found Solution in last print direction");
+                Logger.trace("Found Solution in last print direction");
                 return curRes; // found a poor Solution
             }
         }
         b.dumpAreaAroundPixel(lastPosition);
-        System.out.println("Found only poor Solution");
+        Logger.trace("Found only poor Solution");
         return poorSolution; // the found poorSolution or null if nothing found
     }
 
@@ -559,7 +559,7 @@ public class Vectorization
             // -> all paths are generated !
             return lastPosition;
         }
-        Logger.message("Found next Pixel at {} !", target);
+        Logger.debug("Found next Pixel at {} !", target);
         b.dumpAreaAroundPixel(target);
         // optimize the Pixel
         // Outline Routing !
@@ -600,7 +600,7 @@ public class Vectorization
         if(pixelCode != b.getPixel(pixelX, pixelY))
         {
             // this Pixel is not anymore in the Line
-            System.out.println("Pixel (" + pixelX + ", " + pixelY + ") is not part of the Line!");
+            // System.out.println("Pixel (" + pixelX + ", " + pixelY + ") is not part of the Line!");
             return line;
         }
 
@@ -626,13 +626,13 @@ public class Vectorization
             if(false == foundDifferentNeighbor)
             {
                 // has no pixel with a different Pixel code as neighbor.
-                System.out.println("Pixel (" + pixelX + ", " + pixelY + ") has no different neighbour !");
+                // System.out.println("Pixel (" + pixelX + ", " + pixelY + ") has no different neighbour !");
                 return line;
             }
         }
         // else check not needed because I don't care
 
-        System.out.println("Adding Pixel (" + pixelX + ", " + pixelY + ") to the Line.");
+        // System.out.println("Adding Pixel (" + pixelX + ", " + pixelY + ") to the Line.");
         line.add(new Pixel(pixelX, pixelY));
         final int lineLength = line.length();
         line = check(line, pixelCode,
@@ -775,7 +775,7 @@ public class Vectorization
                                final PixelCode pixelCode) throws IOException
     {
         final Pixel target = line.lastElement();
-        Logger.message("Printing to {} !", target);
+        Logger.debug("Printing to {} !", target);
 
         for(int i = 0; i < line.length(); i++)
         {
@@ -792,7 +792,7 @@ public class Vectorization
 
     private void moveToPixel(final Pixel target) throws IOException
     {
-        Logger.message("Moving to {} !", target);
+        Logger.debug("Moving to {} !", target);
         b.dumpAreaAroundPixel(target);
         final LineOfGCode order = new LineOfGCode(Gcode.MOVE_TO_POSITION);
         order.setX(target.getX() / layers.getPixelPerMm());

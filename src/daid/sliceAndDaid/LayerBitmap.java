@@ -509,7 +509,7 @@ public class LayerBitmap
         // |KKKKKKKKK|
         // +---------+
         final PixelCode tpc = this.getPixel(target.getX(), target.getY());
-        Logger.message("Pixel(" + tpc + ") = ? is " + target);
+        Logger.debug("Pixel(" + tpc + ") = ? is " + target);
 
         StringBuffer sb = new StringBuffer();
         sb.append("+");
@@ -519,7 +519,7 @@ public class LayerBitmap
         }
         sb.append("+");
         final String headline= sb.toString();
-        Logger.message(headline);
+        Logger.debug(headline);
         for(int y = target.getY() + DUMP_DISTANCE; y >= target.getY() - DUMP_DISTANCE; y--)
         {
             sb = new StringBuffer();
@@ -537,9 +537,9 @@ public class LayerBitmap
                 }
             }
             sb.append("|");
-            Logger.message(sb.toString());
+            Logger.debug(sb.toString());
         }
-        Logger.message(headline);
+        Logger.debug(headline);
     }
 
     public int getNextDirectionFor(final int nextDirection)

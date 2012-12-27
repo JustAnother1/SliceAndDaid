@@ -51,7 +51,7 @@ public class Model
         {
             throw new RuntimeException("Unknown model format: " + filename);
         }
-        Logger.message("Triangle count: " + triangles.size());
+        Logger.debug("Triangle count: " + triangles.size());
     }
 
     public Vector3 getMin()
@@ -98,7 +98,7 @@ public class Model
 
     private void readBinarySTL(final String filename) throws IOException
     {
-        Logger.message("Source File is in binary STL File Format.");
+        Logger.debug("Source File is in binary STL File Format.");
         final RandomAccessFile raf = new RandomAccessFile(filename, "r");
         final byte[] header = new byte[80];
         raf.read(header);
@@ -137,13 +137,13 @@ public class Model
             Logger.debug("*** End of Triangle ***");
         }
         raf.close();
-        Logger.message("min: " + getMin());
-        Logger.message("max: " + getMax());
+        Logger.debug("min: " + getMin());
+        Logger.debug("max: " + getMax());
     }
 
     private void readAsciiSTL(final String filename) throws IOException
     {
-        Logger.message("Source File is in ASCII STL File Format.");
+        Logger.debug("Source File is in ASCII STL File Format.");
         final BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;
         int i = 0;

@@ -46,7 +46,7 @@ public class GCodeTool
                                  final RoutingAlgorithm router
                                  ) throws IOException
     {
-        Logger.message("**Starting with " + curStep);
+        Logger.debug("**Starting with " + curStep);
         final LineOfGCode event = new LineOfGCode(curStep, 0);
         optimizers.optimize(event);
         lastPosition = vec.generatePathsFor(b,
@@ -76,7 +76,7 @@ public class GCodeTool
         {
             try
             {
-                Logger.message("**Starting with Layer {} !", i);
+                Logger.debug("**Starting with Layer {} !", i);
                 final Layer l = layers.get(i);
                 // move to Layers Z
                 final LineOfGCode moveZ = new LineOfGCode(Gcode.MOVE_TO_POSITION);

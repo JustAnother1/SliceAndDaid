@@ -27,7 +27,7 @@ public class Infill extends BitmapOptimizer
 {
 
     // Configuration
-    public final static double honeyCombSideLengthMm = 3;
+    public static final double HONEY_COMB_SIDE_LENGTH_MM = 3;
 
     // State
     private int straitLength;
@@ -43,7 +43,7 @@ public class Infill extends BitmapOptimizer
     {
         for(int activeLayer = 0; activeLayer < layers.size(); activeLayer ++)
         {
-            Logger.message("Starting INFILL in Layer {} !", activeLayer);
+            Logger.debug("Starting INFILL in Layer {} !", activeLayer);
             final Layer l = layers.get(activeLayer);
             final LayerBitmap b = l.getBitmap();
             b.selectPixelType(PixelCode.INSIDE_CODE);
@@ -54,7 +54,7 @@ public class Infill extends BitmapOptimizer
             }
             else
             {
-                System.out.println("Drawing Area X : " + b.getMaxX() + " to " + b.getMinX() + " Y : " + b.getMaxY() + " to " + b.getMinY() + " !");
+                Logger.trace("Drawing Area X : " + b.getMaxX() + " to " + b.getMinX() + " Y : " + b.getMaxY() + " to " + b.getMinY() + " !");
                 // We draw the pattern on the whole used part of the Layer,
                 // but it will only appear on the Inside Code.
                 // Pattern:
@@ -72,9 +72,9 @@ public class Infill extends BitmapOptimizer
                 // \_/ \_/
 
                 // prepare
-                straitLength = (int)Math.round(honeyCombSideLengthMm * layers.getPixelPerMm());
-                slideX = (int)Math.round((honeyCombSideLengthMm * 0.5) * layers.getPixelPerMm());
-                slideY = (int)Math.round((honeyCombSideLengthMm * 0.866) * layers.getPixelPerMm());
+                straitLength = (int)Math.round(HONEY_COMB_SIDE_LENGTH_MM * layers.getPixelPerMm());
+                slideX = (int)Math.round((HONEY_COMB_SIDE_LENGTH_MM * 0.5) * layers.getPixelPerMm());
+                slideY = (int)Math.round((HONEY_COMB_SIDE_LENGTH_MM * 0.866) * layers.getPixelPerMm());
                 final int lineToLineX = 2 * (slideX + straitLength);
                 final int lineToLineY = 2 * slideY;
 
@@ -99,9 +99,9 @@ public class Infill extends BitmapOptimizer
                 {
                     // start in bottom left and go right (x+)
                     int startX = (b.getMinX()/lineToLineX) * lineToLineX;
-                    final int Ylength = b.getMaxY() - b.getMinY();
-                    int startY = (Ylength/lineToLineY) * lineToLineY; // this makes sense ! Tipp: Integer div
-                    if(0 != Ylength%lineToLineY)
+                    final int yLength = b.getMaxY() - b.getMinY();
+                    int startY = (yLength/lineToLineY) * lineToLineY; // this makes sense ! Tipp: Integer div
+                    if(0 != yLength%lineToLineY)
                     {
                         startY = startY + lineToLineY;
                     }
@@ -130,11 +130,11 @@ public class Infill extends BitmapOptimizer
         int nextY;
         if(true == increaseY)
         {
-            Logger.message("Infill: Starting line at (" + startX + "," + startY + ") and going up");
+            Logger.debug("Infill: Starting line at (" + startX + "," + startY + ") and going up");
         }
         else
         {
-            Logger.message("Infill: Starting line at (" + startX + "," + startY + ") and going down");
+            Logger.debug("Infill: Starting line at (" + startX + "," + startY + ") and going down");
         }
         do{
             // Slide
@@ -147,7 +147,7 @@ public class Infill extends BitmapOptimizer
             {
                 nextY = startY - slideY;
             }
-            System.out.println("Drawing line from (" + startX + ", " + startY + ") to (" + nextX + ", " + nextY + ") !");
+            Logger.trace("Drawing line from (" + startX + ", " + startY + ") to (" + nextX + ", " + nextY + ") !");
             b.drawLineCareless(startX, startY, nextX, nextY,
                        PixelCode.FILLIN_CODE,
                        PixelCode.INSIDE_CODE);
@@ -155,7 +155,7 @@ public class Infill extends BitmapOptimizer
             startY = nextY;
             // Line
             nextX = startX + straitLength;
-            System.out.println("Drawing line from (" + startX + ", " + startY + ") to (" + nextX + ", " + nextY + ") !");
+            Logger.trace("Drawing line from (" + startX + ", " + startY + ") to (" + nextX + ", " + nextY + ") !");
             b.drawLineCareless(startX, startY, nextX, nextY,
                        PixelCode.FILLIN_CODE,
                        PixelCode.INSIDE_CODE);

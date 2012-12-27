@@ -21,13 +21,13 @@ import daid.sliceAndDaid.util.Logger;
 
 public class LayerStack
 {
-    public final static double BORDER_MM = 5;
+    public static final double BORDER_MM = 5;
     private double maxX = Double.MIN_VALUE;
     private double maxY = Double.MIN_VALUE;
     private double minX = Double.MAX_VALUE;
     private double minY = Double.MAX_VALUE;
-    private int Xoffset = 0;
-    private int Yoffset = 0;
+    private int xOffset = 0;
+    private int yOffset = 0;
     private int width;
     private int height;
     private double pixelPerMm = 100;
@@ -111,11 +111,11 @@ public class LayerStack
                 minY = help;
             }
         }
-        Logger.message("Layer Stack has this Volume:");
-        Logger.message("Min X  : {}", minX);
-        Logger.message("Min Y  : {}", minY);
-        Logger.message("Max X  : {}", maxX);
-        Logger.message("Max Y  : {}", maxY);
+        Logger.debug("Layer Stack has this Volume:");
+        Logger.debug("Min X  : {}", minX);
+        Logger.debug("Min Y  : {}", minY);
+        Logger.debug("Max X  : {}", maxX);
+        Logger.debug("Max Y  : {}", maxY);
         final long lXoffset = Math.round(pixelPerMm * (Math.abs(minX) + BORDER_MM + extraBorderMm));
         final long lYoffset = Math.round(pixelPerMm * (Math.abs(minY) + BORDER_MM + extraBorderMm));
         final long lwidth = Math.round(pixelPerMm * ((Math.abs(maxX - minX) + (2 * (BORDER_MM + extraBorderMm)))));
@@ -129,19 +129,19 @@ public class LayerStack
         }
         else
         {
-            Xoffset = (int)lXoffset;
-            Yoffset = (int)lYoffset;
+            xOffset = (int)lXoffset;
+            yOffset = (int)lYoffset;
             width = (int)lwidth;
             height = (int)lheight;
         }
-        Logger.message("Border for Optimizers/mm : {}", extraBorderMm);
-        Logger.message("Pixel/mm : {}", pixelPerMm);
-        Logger.message("X-Offset : {}", Xoffset);
-        Logger.message("Y-Offset : {}", Yoffset);
-        Logger.message("width    : {}", width);
-        Logger.message("height   : {}", height);
+        Logger.debug("Border for Optimizers/mm : {}", extraBorderMm);
+        Logger.debug("Pixel/mm : {}", pixelPerMm);
+        Logger.debug("X-Offset : {}", xOffset);
+        Logger.debug("Y-Offset : {}", yOffset);
+        Logger.debug("width    : {}", width);
+        Logger.debug("height   : {}", height);
 
-        Logger.message("complete Stack has {} Pixels.", width * height * layers.size());
+        Logger.debug("complete Stack has {} Pixels.", width * height * layers.size());
     }
 
     public void dumpStackToLayerFiles(final String filePrefix)
@@ -152,7 +152,7 @@ public class LayerStack
         {
             // With all the Layers...
             final Layer l = get(i);
-            l.saveToPng(filePrefix + "_Layer_" + i + ".png", width, height, Xoffset, Yoffset);
+            l.saveToPng(filePrefix + "_Layer_" + i + ".png", width, height, xOffset, yOffset);
             Logger.debug("Layer: {}", i);
         }
     }
@@ -174,12 +174,12 @@ public class LayerStack
 
     public int getPixelXoffset()
     {
-        return Xoffset;
+        return xOffset;
     }
 
     public int getPixelYoffset()
     {
-        return Yoffset;
+        return yOffset;
     }
 
     public void createLayerBitmaps(final double extraBorderMm)
@@ -189,7 +189,7 @@ public class LayerStack
         {
             // With all the Layers...
             final Layer l = get(i);
-            l.createBitmap(width, height, Xoffset, Yoffset);
+            l.createBitmap(width, height, xOffset, yOffset);
         }
     }
 
