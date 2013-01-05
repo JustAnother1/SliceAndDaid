@@ -52,28 +52,16 @@ public final class CraftConfig
     public static int perimeterCount = 3;
 
     @Setting(level = Setting.LEVEL_STARTER, group = "Speed",
-            title = "Print speed (mm/s)",
+            title = "Print speed (mm/minute)",
             description = "Speed at which the head is moved while it's printing",
-            minValue = 0, maxValue = 10000)
-    public static double printSpeed = 40.0;
+            minValue = 0, maxValue = 600000)
+    public static double printSpeed = 900.0;
 
     @Setting(level = Setting.LEVEL_NORMAL, group = "Speed",
-            title = "First layer print speed (mm/s)",
-            description = "Speed at which the head is moved while it's printing the first layer",
-            minValue = 0, maxValue = 10000)
-    public static double layerZeroPrintSpeed = 20.0;
-
-    @Setting(level = Setting.LEVEL_NORMAL, group = "Speed",
-            title = "Max speedup per layer (mm/s)",
-            description = "Amount of speed increase per layer after the first layer, until it reaches the print speed.",
-            minValue = 0, maxValue = 10000)
-    public static double layerPrintSpeedIncrease = 10.0;
-
-    @Setting(level = Setting.LEVEL_NORMAL, group = "Speed",
-            title = "Travel speed (mm/s)",
+            title = "Travel speed (mm/min)",
             description = "Speed at which the head is moved while it's not printing",
             minValue = 0, maxValue = 10000)
-    public static double travelSpeed = 150.0;
+    public static double travelSpeed = 9000.0;
 
     @Setting(level = Setting.LEVEL_STARTER, group = "Dimensions",
             title = "Filament diameter (mm)",
@@ -82,13 +70,6 @@ public final class CraftConfig
                 "If you get to little extrusion reduce this number, if you get to much, increase this number.",
             minValue = 0, maxValue = 10)
     public static double filamentDiameter = 2.89;
-
-    @Setting(level = Setting.LEVEL_ADVANCED, group = "Speed",
-            title = "Minimum layer time (s)",
-            description = "The minimal amount of time spend to print a single layer.\n" +
-            "Gives time to cool the layer before the next one is printed.",
-            minValue = 0, maxValue = 200)
-    public static double minLayerTime = 10;
 
     @Setting(level = Setting.LEVEL_NORMAL, group = "Skirt",
             title = "Skirt distance (mm)",
@@ -101,33 +82,6 @@ public final class CraftConfig
             description = "Starting height of the first slice in the model. 50% is the default.",
             minValue = 0, maxValue = 200)
     public static int firstLayerHeightPercent = 50;
-
-    @Setting(level = Setting.LEVEL_ADVANCED, group = "Perimeter",
-            title = "Minimal line segment cosinus value",
-            description = "If the cosinus of the line angle difference is higher then this value then 2 lines are joined into 1.\nSpeeding up the slicing, and creating less gcode commands. Lower values makes circles less round,\nfor a faster slicing and less GCode. A value of 1.0 leaves every line intact.",
-            minValue = 0.95, maxValue = 1.0)
-    public static double joinMinCosAngle = 0.995;
-
-    @Setting(level = Setting.LEVEL_KITCHENSINK, group = "Layers",
-            title = "Start layer number",
-            description = "First layer that is sliced, can be used to remove the bottom X layers",
-            minValue = 0, maxValue = Integer.MAX_VALUE)
-    public static int startLayerNr = 0;
-
-    @Setting(level = Setting.LEVEL_KITCHENSINK, group = "Layers",
-            title = "Final layer number",
-            description = "Last layer that is sliced, can be used to remove the top X layers.",
-            minValue = 0, maxValue = Integer.MAX_VALUE)
-    public static int endLayerNr = Integer.MAX_VALUE;
-
-    @Setting(level = Setting.LEVEL_KITCHENSINK, group = "Perimeter",
-            title = "Cap perimeter corners",
-            description = "Cap off tight corners in the perimeter.")
-    public static boolean perimeterCap = true;
-    @Setting(level = Setting.LEVEL_KITCHENSINK,
-            title = "Minimum segment length (mm)",
-            description = "Remove segments shorter then this length.")
-    public static double minSegmentLength = 0.1;
 
     @Setting(level = Setting.LEVEL_ADVANCED, group = "GCode",
             title = "GCode format",
