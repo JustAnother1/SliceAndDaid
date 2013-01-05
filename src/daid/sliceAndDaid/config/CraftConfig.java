@@ -86,13 +86,16 @@ public final class CraftConfig
     @Setting(level = Setting.LEVEL_ADVANCED, group = "GCode",
             title = "GCode format",
             description = "Different GCode exports types are supported.\n"+
-            "Full: exports everything with comments. Use this for debugging, or post processing of the GCode.\n" +
-            "Compact: removes the comments, and assumes the last feedrate will be reused. (About 25% smaller then full)\n" +
-            "Tiny compact: tries to export the minimum amount of GCode required. Not all firmwares and parsers will work with this (About 10% smaller then compact).",
-            enumName = "GCODE")
+            "Full(" + GCODE_FULL + "): exports everything with comments. Use this for debugging, or post processing of the GCode.\n" +
+            "Compact(" + GCODE_COMPACT + "): removes the comments, and assumes the last feedrate will be reused. (About 25% smaller then full)\n" +
+            "Tiny compact(" + GCODE_TINY_COMPACT + "): tries to export the minimum amount of GCode required. Not all firmwares and parsers will work with this (About 10% smaller then compact).",
+            enumName = "GCODE",
+            minValue = 0, maxValue = 2)
     public static int gcodeType = GCODE_COMPACT;
 
-    @Setting(level = Setting.LEVEL_HIDDEN)
+    @Setting(level = Setting.LEVEL_HIDDEN,
+            title = "G-Code to Start printer.",
+            description = "Theses G-Codes will be prefixed to the generated G-Codes to intiialise the Printer.")
     public static String startGCode = "M98 E926; Set the number of steps per E mm\n" +
         "G28; Move to origin\n" +
         "G92 X-105 Y-105 Z0; Put the 'origin' on the center of the platform\n" +
@@ -101,11 +104,15 @@ public final class CraftConfig
         "M106 S255; Turn on the fan\n" +
         "G1 Z0 F180; Move the head down for printing of layer 0";
 
-    @Setting(level = Setting.LEVEL_HIDDEN)
+    @Setting(level = Setting.LEVEL_HIDDEN,
+            title = "G-Code to stop printer.",
+            description = "Theses G-Codes will be appended to the generated G-Codes to shut the Printer down.")
     public static String endGCode = "G1 X-200 Y-200; Move the X/Y away from the printed object\n" +
         "M104 S0; Turn off the extruder temperature";
 
     @Setting(level = Setting.LEVEL_HIDDEN,
+            title = "Configuration Level shown in GUI.",
+            description = "Con be starter(0), Normal(1), Advanced(2) or Kitchen Sink(3).",
             minValue = Setting.LEVEL_STARTER, maxValue = Setting.LEVEL_KITCHENSINK)
     public static int showLevel = Setting.LEVEL_STARTER;
 }

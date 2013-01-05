@@ -54,7 +54,6 @@ import javax.swing.filechooser.FileFilter;
 
 import daid.sliceAndDaid.SliceAndDaidMain;
 import daid.sliceAndDaid.config.CraftConfig;
-import daid.sliceAndDaid.config.CraftConfigLoader;
 import daid.sliceAndDaid.config.Setting;
 import daid.sliceAndDaid.util.Logger;
 
@@ -94,7 +93,6 @@ public class ConfigWindow extends JFrame
             public void focusLost(final FocusEvent e)
             {
                 CraftConfig.startGCode = startCodeTextArea.getText();
-                CraftConfigLoader.saveConfig(null);
             }
         });
         endCodeTextArea.addFocusListener(new FocusAdapter()
@@ -103,7 +101,6 @@ public class ConfigWindow extends JFrame
             public void focusLost(final FocusEvent e)
             {
                 CraftConfig.endGCode = endCodeTextArea.getText();
-                CraftConfigLoader.saveConfig(null);
             }
         });
 
@@ -152,7 +149,6 @@ public class ConfigWindow extends JFrame
                         {
                             try
                             {
-                                CraftConfigLoader.saveConfig(null);
                                 SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(),
                                                             true, /* graphic result window after operation */
                                                             false /* no picture files of Layers */);
@@ -199,7 +195,6 @@ public class ConfigWindow extends JFrame
                     if (c instanceof JButton)
                         ((JButton) c).setBackground(buttonBgColor);
                 }
-                CraftConfigLoader.saveConfig(null);
                 createConfigFields();
             }
         });
@@ -331,8 +326,10 @@ public class ConfigWindow extends JFrame
             return Color.YELLOW;
         case Setting.LEVEL_KITCHENSINK:
             return Color.RED;
+        default:
+            return Color.WHITE;
         }
-        return Color.WHITE;
+
     }
 
     private Component getSwingComponentForField(final Field f, final Setting s) throws IllegalArgumentException, IllegalAccessException
@@ -351,7 +348,6 @@ public class ConfigWindow extends JFrame
                         try
                         {
                             f.setInt(null, ((Integer) ((JSpinner) e.getSource()).getValue()).intValue());
-                            CraftConfigLoader.saveConfig(null);
                         }
                         catch (final Exception e1)
                         {
@@ -385,7 +381,6 @@ public class ConfigWindow extends JFrame
                         try
                         {
                             f.setInt(null, combo.getSelectedIndex());
-                            CraftConfigLoader.saveConfig(null);
                         }
                         catch (final Exception e1)
                         {
@@ -408,7 +403,6 @@ public class ConfigWindow extends JFrame
                     try
                     {
                         f.setDouble(null, ((Double) ((JSpinner) e.getSource()).getValue()).doubleValue());
-                        CraftConfigLoader.saveConfig(null);
                     }
                     catch (final Exception e1)
                     {
@@ -430,7 +424,6 @@ public class ConfigWindow extends JFrame
                     try
                     {
                         f.setBoolean(null, ((JCheckBox) e.getSource()).isSelected());
-                        CraftConfigLoader.saveConfig(null);
                     }
                     catch (final Exception e1)
                     {

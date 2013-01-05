@@ -16,6 +16,8 @@ package daid.sliceAndDaid;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -26,7 +28,8 @@ import javax.swing.SwingUtilities;
 
 import daid.sliceAndDaid.bitmap.BitmapOptimizer;
 import daid.sliceAndDaid.bitmap.BitmapOptimizerFactory;
-import daid.sliceAndDaid.config.CraftConfigLoader;
+import daid.sliceAndDaid.config.CraftConfig;
+import daid.sliceAndDaid.config.Setting;
 import daid.sliceAndDaid.gcode.GCodeTool;
 import daid.sliceAndDaid.ui.ConfigWindow;
 import daid.sliceAndDaid.ui.PreviewFrame;
@@ -47,35 +50,41 @@ public class SliceAndDaidMain
         Logger.setLevel(Logger.LOG_LEVEL_MESSAGE);
         printVersionInformation();
 
-
-        if (args.length < 1)
+        if(args.length < 1)
         {
-            CraftConfigLoader.loadConfig(null);
             Logger.setLevel(Logger.LOG_LEVEL_PROGRESS);
             startGUI();
         }
         else
         {
             // parse command line arguments
-            String SourceFileName = null;
+            String sourceFileName = null;
             boolean showResultWindow = false; // defaults to false for command
                                               // line mode
             boolean createLayerPictureFiles = false; // big performance penalty
                                                      // -> only for debugging
-            String configFileName = null; // Defaults to "user.home" + "/.SliceAndDaid.conf"
-            for (int i = 0; i < args.length; i++)
+            boolean useTheGui = false;
+
+            for(int i = 0; i < args.length; i++)
             {
-                if (true == args[i].startsWith("-"))
+                if(true == args[i].startsWith("--"))
                 {
-                    if (true == "-v".equals(args[i]))
+                    final String key = args[i].substring(2, args[i].indexOf(':'));
+                    final String value =args[i].substring(args[i].indexOf(':') + 1);
+                    System.out.println("Found key -" + key + "- and value -" + value + "- !");
+                    setField(key, value);
+                }
+                else if(true == args[i].startsWith("-"))
+                {
+                    if(true == "-v".equals(args[i]))
                     {
                         Logger.setLevel(Logger.LOG_LEVEL_DEBUG);
                     }
-                    else if (true == "-vv".equals(args[i]))
+                    else if(true == "-vv".equals(args[i]))
                     {
                         Logger.setLevel(Logger.LOG_LEVEL_TRACE);
                     }
-                    else if (true == "-h".equals(args[i]))
+                    else if(true == "-h".equals(args[i]))
                     {
                         System.out.println("Usage: Java -jar SliceAndDaid.jar [Options] SourceDataFileName");
                         System.out.println("Options can be:");
@@ -84,21 +93,50 @@ public class SliceAndDaidMain
                         System.out.println("  -h           - print this help.");
                         System.out.println("  -p           - generate png-Files off all Layers in all steps.");
                         System.out.println("  -showResult  - show graphic Window with result data.");
-                        System.out.println("  -c cfgfile   - use the specified configuration.");
+                        System.out.println("  -g           - use the Graphic User Interafce.");
+                        System.out.println("  --key:value  - sets the configuration key to vaue.");
+                        System.out.println("  -l           - lists all configuration keys.");
                         System.exit(0);
                     }
-                    else if (true == "-showResult".equals(args[i]))
+                    else if(true == "-l".equals(args[i]))
+                    {
+                        // todo
+                        final Class<?> c = CraftConfig.class;
+                        final Field[] f = c.getFields();
+                        System.out.println("All Configuration Keys:");
+                        for(int j = 0; j < f.length; j++)
+                        {
+                            final Field cf = f[j];
+                            final int m = cf.getModifiers();
+                            if(false == Modifier.isFinal(m))
+                            {
+                                System.out.println(cf.getName());
+                                final Setting s = cf.getAnnotation(Setting.class);
+                                System.out.println("    " + s.title());
+                                System.out.println("    " + s.description());
+                                if((Double.TYPE == cf.getType()) || (Integer.TYPE == cf.getType()))
+                                {
+                                    System.out.println("    Min:" + s.minValue());
+                                    System.out.println("    Max:" + s.maxValue());
+                                }
+                                System.out.println("");
+                            }
+                            // else skip final fields as they can not be changed
+                        }
+                        System.out.println("End of List.");
+                        System.exit(0);
+                    }
+                    else if(true == "-showResult".equals(args[i]))
                     {
                         showResultWindow = true;
                     }
-                    else if (true == "-p".equals(args[i]))
+                    else if(true == "-p".equals(args[i]))
                     {
                         createLayerPictureFiles = true;
                     }
-                    else if (true == "-c".equals(args[i]))
+                    else if(true == "-g".equals(args[i]))
                     {
-                        i++;
-                        configFileName = args[i];
+                        useTheGui = true;
                     }
                     else
                     {
@@ -107,20 +145,95 @@ public class SliceAndDaidMain
                 }
                 else
                 {
-                    SourceFileName = args[i];
+                    sourceFileName = args[i];
                 }
             }
-            // Do it now !
-            if (null != SourceFileName)
+            if(true == useTheGui)
             {
-                CraftConfigLoader.loadConfig(configFileName);
-                CraftConfigLoader.saveConfig(null);
-                sliceModel(SourceFileName, showResultWindow, createLayerPictureFiles);
+                Logger.setLevel(Logger.LOG_LEVEL_PROGRESS);
+                startGUI();
             }
             else
             {
-                System.err.println("No File Name of Source Data specified !");
+                // Do it now !
+                if(null != sourceFileName)
+                {
+                    sliceModel(sourceFileName, showResultWindow, createLayerPictureFiles);
+                }
+                else
+                {
+                    System.err.println("No File Name of Source Data specified !");
+                }
             }
+        }
+    }
+
+    private void setField(final String key, final String value)
+    {
+        final Class<?> c = CraftConfig.class;
+        Field f = null;
+        try
+        {
+            f = c.getField(key);
+            if(f == null)
+            {
+                return;
+            }
+            final Setting s = f.getAnnotation(Setting.class);
+            if(f.getType() == Double.TYPE)
+            {
+                double v = Double.parseDouble(value);
+                if(s != null && v < s.minValue())
+                {
+                    v = s.minValue();
+                }
+                if(s != null && v > s.maxValue())
+                {
+                    v = s.maxValue();
+                }
+                f.setDouble(null, v);
+            }
+            else if(f.getType() == Integer.TYPE)
+            {
+                int v = Integer.parseInt(value);
+                if(s != null && v < s.minValue())
+                {
+                    v = (int) s.minValue();
+                }
+                if(s != null && v > s.maxValue())
+                {
+                    v = (int) s.maxValue();
+                }
+                f.setInt(null, v);
+            }
+            else if(f.getType() == Boolean.TYPE)
+            {
+                f.setBoolean(null, Boolean.parseBoolean(value));
+            }
+            else if(f.getType() == String.class)
+            {
+                f.set(null, value.toString().replace("\\n", "\n"));
+            }
+            else
+            {
+                throw new RuntimeException("Unknown config type: " + f.getType());
+            }
+        }
+        catch(final IllegalArgumentException e)
+        {
+            e.printStackTrace();
+        }
+        catch(final IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+        catch(final SecurityException e)
+        {
+            e.printStackTrace();
+        }
+        catch(final NoSuchFieldException e)
+        {
+            Logger.warning("Found: " + key + " in the configuration, but I don't know this setting");
         }
     }
 
@@ -135,7 +248,7 @@ public class SliceAndDaidMain
         {
             m = new Model(filename);
         }
-        catch (final IOException e)
+        catch(final IOException e)
         {
             e.printStackTrace();
             Logger.error("Failed to load model");
@@ -161,18 +274,41 @@ public class SliceAndDaidMain
         }
         layers.createLayerBitmaps(extraBorderMm);
         layers.projectVectorsToBitmap();
-        if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("created");
+        if(true == createLayerPictureFiles) layers.dumpBitMapsToFiles("created");
         //     5. optimize Layer bitmaps (Infill, Skirt,...)
         for(int i = 0; i < bitOptis.length; i++)
         {
             bitOptis[i].optimize(layers);
         }
-        if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("optimized");
+        if(true == createLayerPictureFiles) layers.dumpBitMapsToFiles("optimized");
         Logger.message("Optimized the Layers");
         // if (true == createLayerPictureFiles) layers.dumpStackToLayerFiles("optimized");
         //     6. generate G-Code from bitmap
         //     7. optimize GCode (Speed,..)
         //     8. save G-Code to File
+
+        final String gGcodeFileName = createGCodes(filename, layers);
+        if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("printed");
+
+        // Post slicing
+        final long sliceTime = System.currentTimeMillis() - startTime;
+        Logger.message("Slice time : " + Tool.reportTime(sliceTime));
+
+        if(true == showResultWindow)
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                        new PreviewFrame(layers, gGcodeFileName);
+                }
+            });
+        }
+    }
+
+    private static String createGCodes(final String filename, final LayerStack layers)
+    {
         final String gGcodeFileName;
         if(true == filename.toLowerCase().endsWith(".stl"))
         {
@@ -191,29 +327,13 @@ public class SliceAndDaidMain
             gt.generateGCode(layers, wr);
             Logger.message("Created the GCode");
         }
-        catch (final IOException e)
+        catch(final IOException e)
         {
             e.printStackTrace();
             Logger.error("Failed to write G-Code File");
-            return;
+            return "";
         }
-        if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("printed");
-
-        // Post slicing
-        final long sliceTime = System.currentTimeMillis() - startTime;
-        Logger.message("Slice time : " + Tool.reportTime(sliceTime));
-
-        if (true == showResultWindow)
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                        new PreviewFrame(layers, gGcodeFileName);
-                }
-            });
-        }
+        return gGcodeFileName;
     }
 
     private void printVersionInformation() throws IOException
@@ -242,7 +362,7 @@ public class SliceAndDaidMain
                 {
                     new ConfigWindow();
                 }
-                catch (final Exception e)
+                catch(final Exception e)
                 {
                     e.printStackTrace();
                     // We sometimes get a "Cannot write XdndAware property"
@@ -251,7 +371,7 @@ public class SliceAndDaidMain
                     // text areas.
 
                     // Just retry and hope for the best.
-                    if (e.getMessage().equals("Cannot write XdndAware property"))
+                    if(e.getMessage().equals("Cannot write XdndAware property"))
                     {
                         new ConfigWindow();
                         return;
