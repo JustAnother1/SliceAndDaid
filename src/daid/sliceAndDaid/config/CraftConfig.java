@@ -108,6 +108,4 @@ public final class CraftConfig
     @Setting(level = Setting.LEVEL_HIDDEN,
             minValue = Setting.LEVEL_STARTER, maxValue = Setting.LEVEL_KITCHENSINK)
     public static int showLevel = Setting.LEVEL_STARTER;
-    @Setting(level = Setting.LEVEL_HIDDEN)
-    public static String lastSlicedFile = "";
 }

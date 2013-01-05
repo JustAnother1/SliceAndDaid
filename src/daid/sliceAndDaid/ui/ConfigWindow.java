@@ -141,7 +141,6 @@ public class ConfigWindow extends JFrame
                     }
 
                 });
-                fc.setSelectedFile(new File(CraftConfig.lastSlicedFile));
                 final int returnVal = fc.showOpenDialog(null);
                 if (returnVal == JFileChooser.APPROVE_OPTION)
                 {
@@ -153,7 +152,6 @@ public class ConfigWindow extends JFrame
                         {
                             try
                             {
-                                CraftConfig.lastSlicedFile = fc.getSelectedFile().getAbsolutePath();
                                 CraftConfigLoader.saveConfig(null);
                                 SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(),
                                                             true, /* graphic result window after operation */

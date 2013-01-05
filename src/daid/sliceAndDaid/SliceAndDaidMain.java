@@ -26,7 +26,6 @@ import javax.swing.SwingUtilities;
 
 import daid.sliceAndDaid.bitmap.BitmapOptimizer;
 import daid.sliceAndDaid.bitmap.BitmapOptimizerFactory;
-import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.config.CraftConfigLoader;
 import daid.sliceAndDaid.gcode.GCodeTool;
 import daid.sliceAndDaid.ui.ConfigWindow;
@@ -115,7 +114,6 @@ public class SliceAndDaidMain
             if (null != SourceFileName)
             {
                 CraftConfigLoader.loadConfig(configFileName);
-                CraftConfig.lastSlicedFile = SourceFileName;
                 CraftConfigLoader.saveConfig(null);
                 sliceModel(SourceFileName, showResultWindow, createLayerPictureFiles);
             }
