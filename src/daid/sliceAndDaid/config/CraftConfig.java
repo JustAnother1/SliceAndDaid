@@ -21,13 +21,17 @@ package daid.sliceAndDaid.config;
  * dialog.
  * NOTE: Do not auto format this file. Manual format keeps it readable!
  */
-public class CraftConfig
+public final class CraftConfig
 {
     public static final String VERSION = "Dev-Prerelease";
 
     public static final int GCODE_FULL = 0;
     public static final int GCODE_COMPACT = 1;
     public static final int GCODE_TINY_COMPACT = 2;
+
+    private CraftConfig()
+    {
+    }
 
     @Setting(level = Setting.LEVEL_STARTER, group = "Layers",
             title = "Layer height (mm)",

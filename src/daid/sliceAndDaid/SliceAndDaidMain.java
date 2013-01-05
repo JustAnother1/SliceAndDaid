@@ -36,9 +36,14 @@ import daid.sliceAndDaid.util.Tool;
 
 public class SliceAndDaidMain
 {
-    public final static String GCODEFILEEXTENSION = ".g";
+    public static final String GCODEFILEEXTENSION = ".g";
 
     public static void main(final String[] args) throws IOException
+    {
+        final SliceAndDaidMain main = new SliceAndDaidMain(args);
+    }
+
+    public SliceAndDaidMain(final String[] args) throws IOException
     {
         Logger.setLevel(Logger.LOG_LEVEL_MESSAGE);
         printVersionInformation();
@@ -213,7 +218,7 @@ public class SliceAndDaidMain
         }
     }
 
-    private static void printVersionInformation() throws IOException
+    private void printVersionInformation() throws IOException
     {
         final ProtectionDomain domain = SliceAndDaidMain.class.getProtectionDomain();
         final CodeSource source = domain.getCodeSource();
@@ -228,7 +233,7 @@ public class SliceAndDaidMain
         }
     }
 
-    private static void startGUI()
+    private void startGUI()
     {
         SwingUtilities.invokeLater(new Runnable()
         {

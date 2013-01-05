@@ -29,17 +29,17 @@ public @interface Setting
     int LEVEL_KITCHENSINK = 3;
     int LEVEL_HIDDEN = 4;
 
-    public String title() default "";
+    String title() default "";
 
-    public String description() default "";
+    String description() default "";
 
-    public double minValue() default Double.MIN_VALUE;
+    double minValue() default Double.MIN_VALUE;
 
-    public double maxValue() default Double.MAX_VALUE;
+    double maxValue() default Double.MAX_VALUE;
 
-    public int level() default Setting.LEVEL_NORMAL;
+    int level() default Setting.LEVEL_NORMAL;
 
-    public String enumName() default "";
+    String enumName() default "";
 
-    public String group() default "";
+    String group() default "";
 }
