@@ -51,7 +51,7 @@ public class Layer
     private double y2;
     private double y3;
     private Vector3 normal;
-    private final static double OMEGA = 0.0001;
+    private static final double OMEGA = 0.0001;
     private final double pixelPerMm;
 
     public Layer(final double pixelPerMm, final double zMin, final double layerHeight)

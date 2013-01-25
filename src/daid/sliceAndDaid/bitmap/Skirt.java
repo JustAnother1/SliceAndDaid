@@ -35,13 +35,13 @@ public class Skirt extends BitmapOptimizer
     {
         final Layer l = layers.get(0);
         final double pixelPerMm = layers.getPixelPerMm();
-        final int SkirtDistancePix = (int) Math.round(CraftConfig.skirtDistance * pixelPerMm);
+        final int skirtDistancePix = (int) Math.round(CraftConfig.skirtDistance * pixelPerMm);
         final LayerBitmap bitmap = l.getBitmap();
-        Logger.debug("Skirt Distance in Pixel is {} !", SkirtDistancePix);
-        bitmap.drawRect(bitmap.getMinX() - SkirtDistancePix,
-                        bitmap.getMinY() - SkirtDistancePix,
-                        bitmap.getMaxX() + SkirtDistancePix,
-                        bitmap.getMaxY() + SkirtDistancePix,
+        Logger.debug("Skirt Distance in Pixel is {} !", skirtDistancePix);
+        bitmap.drawRect(bitmap.getMinX() - skirtDistancePix,
+                        bitmap.getMinY() - skirtDistancePix,
+                        bitmap.getMaxX() + skirtDistancePix,
+                        bitmap.getMaxY() + skirtDistancePix,
                         PixelCode.SKIRT_CODE,
                         PixelCode.EMPTY_CODE);
     }

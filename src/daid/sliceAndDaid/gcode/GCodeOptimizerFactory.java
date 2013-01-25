@@ -22,8 +22,12 @@ import java.io.Writer;
  * @author Lars P&ouml;tter
  * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
  */
-public class GCodeOptimizerFactory
+public final class GCodeOptimizerFactory
 {
+
+    private GCodeOptimizerFactory()
+    {
+    }
 
     public static GCodeOptimizer getAllActiveOptimizers(final Writer wr)
     {

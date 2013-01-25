@@ -26,7 +26,7 @@ import daid.sliceAndDaid.util.Vector3;
  */
 public class BuildTime extends GCodeOptimizer
 {
-    private double buildTime_in_minutes = 0;
+    private double buildTimeInMinutes = 0;
     private double lastFeedrate = 1;
     private final Vector3 oldPos = new Vector3();
 
@@ -47,7 +47,7 @@ public class BuildTime extends GCodeOptimizer
                 double x;
                 double y;
                 double z;
-                double feedrate_in_mmPerMinute;
+                double feedrateInMmPerMinute;
                 if(true == line.hasX())
                 {
                     x = line.getX();
@@ -74,20 +74,20 @@ public class BuildTime extends GCodeOptimizer
                 }
                 if(true == line.hasFeedrate())
                 {
-                    feedrate_in_mmPerMinute = line.getFeedrate();
-                    lastFeedrate = feedrate_in_mmPerMinute;
+                    feedrateInMmPerMinute = line.getFeedrate();
+                    lastFeedrate = feedrateInMmPerMinute;
                 }
                 else
                 {
-                    feedrate_in_mmPerMinute = lastFeedrate;
+                    feedrateInMmPerMinute = lastFeedrate;
                 }
-                final double dist_in_mm = oldPos.sub(new Vector3(x, y, z)).vSize();
+                final double distInMm = oldPos.sub(new Vector3(x, y, z)).vSize();
                 oldPos.x = x;
                 oldPos.y = y;
                 oldPos.z = z;
-                final double timeOfStep = dist_in_mm / feedrate_in_mmPerMinute;
+                final double timeOfStep = distInMm / feedrateInMmPerMinute;
                 // line.addComment("time used : " + timeOfStep);
-                buildTime_in_minutes = buildTime_in_minutes + timeOfStep;
+                buildTimeInMinutes = buildTimeInMinutes + timeOfStep;
             }
             // else -> no move -> no time consumption
         }
@@ -99,7 +99,7 @@ public class BuildTime extends GCodeOptimizer
     public void close() throws IOException
     {
         final LineOfGCode line = new LineOfGCode("; Build Time : "
-             + Tool.reportTime((long)(buildTime_in_minutes*60*1000)));
+             + Tool.reportTime((long)(buildTimeInMinutes*60*1000)));
         next.optimize(line);
         next.close();
     }

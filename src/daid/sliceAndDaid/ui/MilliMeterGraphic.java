@@ -58,10 +58,10 @@ public class MilliMeterGraphic
     }
 
     public void drawLine(final double startX, final double startY,
-                          final double EndX, final double EndY)
+                          final double endX, final double endY)
     {
         g.drawLine(mm2Px(startX), mm2Py(startY),
-                   mm2Px(EndX),   mm2Py(EndY));
+                   mm2Px(endX),   mm2Py(endY));
     }
 
     public void setColor(final Color c)

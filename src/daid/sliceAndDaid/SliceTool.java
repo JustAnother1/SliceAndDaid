@@ -81,14 +81,14 @@ public class SliceTool
             {
                 final Layer l = layers.get(i);
                 Logger.debug("Layer : {}", i);
-                final double LayersZ = l.getZ();
-                if(triangleZmin > LayersZ)
+                final double layersZ = l.getZ();
+                if(triangleZmin > layersZ)
                 {
                     // This layer is below the Triangle
                     // Skip this Layer
                     continue;
                 }
-                if(triangleZmax < LayersZ)
+                if(triangleZmax < layersZ)
                 {
                     // This Layer is above the Triangle
                     // Skip this and all other Layers

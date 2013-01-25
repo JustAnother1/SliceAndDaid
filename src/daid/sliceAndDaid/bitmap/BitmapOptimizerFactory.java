@@ -20,8 +20,12 @@ import java.util.Vector;
  * @author Lars P&ouml;tter
  * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
  */
-public class BitmapOptimizerFactory
+public final class BitmapOptimizerFactory
 {
+    private BitmapOptimizerFactory()
+    {
+
+    }
 
     public static BitmapOptimizer[] getAllActiveOptimizers()
     {
