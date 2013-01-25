@@ -16,6 +16,7 @@ package daid.sliceAndDaid;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -48,7 +49,7 @@ public class SliceAndDaidMain
     public SliceAndDaidMain(final String[] args) throws IOException
     {
         Logger.setLevel(Logger.LOG_LEVEL_MESSAGE);
-        printVersionInformation();
+        System.out.println("SliceAndDaid " + getVersionInformation());
 
         if(args.length < 1)
         {
@@ -165,6 +166,72 @@ public class SliceAndDaidMain
                     System.err.println("No File Name of Source Data specified !");
                 }
             }
+        }
+    }
+
+    private static void writeVersionInformationToGCodeFile(final Writer wr) throws IOException
+    {
+        wr.write("; SliceAndDaid build " + getVersionInformation() + "\n");
+        wr.write("; Configuration used to Slice:\n");
+        final Class<?> c = CraftConfig.class;
+        final Field[] fields = c.getDeclaredFields();
+        try
+        {
+            for(int i = 0; i < fields.length; i++)
+            {
+                final Field f = fields[i];
+                final int m = f.getModifiers();
+                if(true == Modifier.isStatic(m))
+                {
+                    if(true == Modifier.isFinal(m))
+                    {
+                        // Do not print final ints
+                        if(String.class == f.getType())
+                        {
+                            // Version Information
+                            String value = (String)f.get(null);
+                            value = value.replaceAll("\n", "\n;");
+                            wr.write("; " + f.getName() + " : " + value + "\n");
+                        }
+                        // else do not print this
+                    }
+                    else
+                    {
+                        // print the Setting
+                        if(Double.TYPE == f.getType())
+                        {
+                            // Version Information
+                            wr.write("; " + f.getName() + " : " + f.getDouble(null) + "\n");
+                        }
+                        else if(Integer.TYPE == f.getType())
+                        {
+                            // Version Information
+                            wr.write("; " + f.getName() + " : " + f.getInt(null) + "\n");
+                        }
+                        else if(Boolean.TYPE == f.getType())
+                        {
+                            // Version Information
+                            wr.write("; " + f.getName() + " : " + f.getBoolean(null) + "\n");
+                        }
+                        else if(String.class == f.getType())
+                        {
+                            // Version Information
+                            String value = (String)f.get(null);
+                            value = value.replaceAll("\n", "\n;");
+                            wr.write("; " + f.getName() + " : " + value + "\n");
+                        }
+                    }
+                }
+                // else there are no not static Fields !
+            }
+        }
+        catch (final IllegalArgumentException e)
+        {
+            e.printStackTrace();
+        }
+        catch (final IllegalAccessException e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -323,6 +390,8 @@ public class SliceAndDaidMain
         try
         {
             wr = new FileWriter(gGcodeFileName);
+            // Put Version Information as comment into GCode File as help with debugging
+            writeVersionInformationToGCodeFile(wr);
             final GCodeTool gt = new GCodeTool();
             gt.generateGCode(layers, wr);
             Logger.message("Created the GCode");
@@ -336,8 +405,9 @@ public class SliceAndDaidMain
         return gGcodeFileName;
     }
 
-    private void printVersionInformation() throws IOException
+    private static String getVersionInformation() throws IOException
     {
+        String res = "-unknown-";
         final ProtectionDomain domain = SliceAndDaidMain.class.getProtectionDomain();
         final CodeSource source = domain.getCodeSource();
         final URL url = source.getLocation();
@@ -345,10 +415,10 @@ public class SliceAndDaidMain
         {
             final JarInputStream jarStream = new JarInputStream(url.openStream(), false);
             final Attributes attr = jarStream.getManifest().getMainAttributes();
-            final String res = attr.getValue("Built-Date");
-            System.out.println("SliceAndDaid " + res);
+            res = attr.getValue("Built-Date");
             jarStream.close();
         }
+        return res;
     }
 
     private void startGUI()
