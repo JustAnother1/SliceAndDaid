@@ -96,19 +96,38 @@ public final class CraftConfig
     @Setting(level = Setting.LEVEL_HIDDEN,
             title = "G-Code to Start printer.",
             description = "Theses G-Codes will be prefixed to the generated G-Codes to intiialise the Printer.")
-    public static String startGCode = "M98 E926; Set the number of steps per E mm\n" +
-        "G28; Move to origin\n" +
-        "G92 X-105 Y-105 Z0; Put the 'origin' on the center of the platform\n" +
-        "G1 Z5 F180; Move the head up a bit\n" +
-        "G1 X0 Y0; Move to the center of the platfrom\n"+
-        "M106 S255; Turn on the fan\n" +
-        "G1 Z0 F180; Move the head down for printing of layer 0";
+    public static String startGCode =
+            "G21                ;metric values\n" +
+            "M92 E865.888000    ;Stepps per mm\n" +
+            "G90                ;absolute positioning\n" +
+            "M106 S0            ;start with the fan off\n" +
+            "G28 X0 Y0          ;move X/Y to min endstops\n" +
+            "G28 Z0             ;move Z to min endstops\n" +
+            "G92 X-105 Y-105 Z0 ;Put the 'origin' on the center of the platform\n" +
+            "G1 Z15.0 F180      ;move up\n" +
+            "M109 S230.000000   ;set Extruder Temperature and wait \n" +
+            "G92 E0             ;zero the extruded length\n" +
+            "G1 F200 E3         ;extrude 3mm\n" +
+            "G92 E0             ;zero the extruded length again\n" +
+            "G1 F9000           ;set Speed to fast\n" +
+            "G1 X0 Y0 Z0 F9000  ;Move to center and down";
+
 
     @Setting(level = Setting.LEVEL_HIDDEN,
             title = "G-Code to stop printer.",
             description = "Theses G-Codes will be appended to the generated G-Codes to shut the Printer down.")
-    public static String endGCode = "G1 X-200 Y-200; Move the X/Y away from the printed object\n" +
-        "M104 S0; Turn off the extruder temperature";
+    public static String endGCode =
+            "G92 E0             ;zero the extruded length\n" +
+            "M106 S0            ;Fan off\n" +
+            "M104 S0            ;extruder heater off\n" +
+            "M140 S0            ;heated bed heater off (if you have it)\n" +
+            "G91                ;relative positioning\n" +
+            "G1 F300 E-1        ;retract\n" +
+            "G1 Z0.5 F9000 E-5  ;move away from Print and retract\n" +
+            "G28 X0 Y0          ;move X/Y to min endstops, so the head is out of the way\n" +
+            "M84                ;steppers off\n" +
+            "G90                ;absolute positioning";
+
 
     @Setting(level = Setting.LEVEL_HIDDEN,
             title = "Configuration Level shown in GUI.",
