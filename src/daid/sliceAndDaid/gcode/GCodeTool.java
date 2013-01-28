@@ -24,6 +24,7 @@ import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
 import daid.sliceAndDaid.config.CraftConfig;
+import daid.sliceAndDaid.gcode.optimizers.GCodeOptimizerFactory;
 import daid.sliceAndDaid.util.Logger;
 
 public class GCodeTool

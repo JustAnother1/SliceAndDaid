@@ -12,11 +12,14 @@
  * with this program; if not, see <http://www.gnu.org/licenses/>
  *
  */
-package daid.sliceAndDaid.gcode;
+package daid.sliceAndDaid.gcode.optimizers;
 
 import java.io.IOException;
 
 import daid.sliceAndDaid.config.CraftConfig;
+import daid.sliceAndDaid.gcode.GCodeOptimizer;
+import daid.sliceAndDaid.gcode.Gcode;
+import daid.sliceAndDaid.gcode.LineOfGCode;
 import daid.sliceAndDaid.gcode.LineOfGCode.LineTypes;
 
 

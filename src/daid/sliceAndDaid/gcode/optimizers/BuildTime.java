@@ -12,28 +12,28 @@
  * with this program; if not, see <http://www.gnu.org/licenses/>
  *
  */
-package daid.sliceAndDaid.gcode;
+package daid.sliceAndDaid.gcode.optimizers;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 
-import daid.sliceAndDaid.config.CraftConfig;
+import daid.sliceAndDaid.gcode.GCodeOptimizer;
+import daid.sliceAndDaid.gcode.Gcode;
+import daid.sliceAndDaid.gcode.LineOfGCode;
 import daid.sliceAndDaid.gcode.LineOfGCode.LineTypes;
+import daid.sliceAndDaid.util.Tool;
 import daid.sliceAndDaid.util.Vector3;
 
 /**
  * @author Lars P&ouml;tter
  * (<a href=mailto:Lars_Poetter@gmx.de>Lars_Poetter@gmx.de</a>)
  */
-public class Extrude extends GCodeOptimizer
+public class BuildTime extends GCodeOptimizer
 {
-    private double totalExtruderValue = 0;
-    // Math: = 1mm*pi*r*r
-    private final double filamentMM3PerMM = Math.PI * (CraftConfig.filamentDiameter / 2) * (CraftConfig.filamentDiameter / 2);
-
+    private double buildTimeInMinutes = 0;
+    private double lastFeedrate = 1;
     private final Vector3 oldPos = new Vector3();
 
-    public Extrude(final GCodeOptimizer next)
+    public BuildTime(final GCodeOptimizer next)
     {
         super(next);
     }
@@ -44,12 +44,13 @@ public class Extrude extends GCodeOptimizer
         if(LineTypes.GCODE == line.getType())
         {
             final Gcode cmd = line.getCommand();
-            if(Gcode.EXTRUDE_TO_POSITION == cmd)
+            if(   (Gcode.EXTRUDE_TO_POSITION == cmd)
+               || (Gcode.MOVE_TO_POSITION == cmd) )
             {
-                // Lets extrude something,...
                 double x;
                 double y;
                 double z;
+                double feedrateInMmPerMinute;
                 if(true == line.hasX())
                 {
                     x = line.getX();
@@ -74,29 +75,24 @@ public class Extrude extends GCodeOptimizer
                 {
                     z = oldPos.z;
                 }
-                final double dist = oldPos.sub(new Vector3(x, y, z)).vSize();
-                final double filamentAmount = dist * CraftConfig.perimeterWidth * CraftConfig.layerHeight;
-                totalExtruderValue = totalExtruderValue + (filamentAmount/filamentMM3PerMM);
-                line.setExtrudate(totalExtruderValue);
+                if(true == line.hasFeedrate())
+                {
+                    feedrateInMmPerMinute = line.getFeedrate();
+                    lastFeedrate = feedrateInMmPerMinute;
+                }
+                else
+                {
+                    feedrateInMmPerMinute = lastFeedrate;
+                }
+                final double distInMm = oldPos.sub(new Vector3(x, y, z)).vSize();
+                oldPos.x = x;
+                oldPos.y = y;
+                oldPos.z = z;
+                final double timeOfStep = distInMm / feedrateInMmPerMinute;
+                // line.addComment("time used : " + timeOfStep);
+                buildTimeInMinutes = buildTimeInMinutes + timeOfStep;
             }
-            else if(Gcode.MOVE_TO_POSITION == cmd)
-            {
-                // TODO add support for extruder reverse so that the extruder does not dribble
-                // only move no Filament use, but new Position
-                if(true == line.hasX())
-                {
-                    oldPos.x = line.getX();
-                }
-                if(true == line.hasY())
-                {
-                    oldPos.y = line.getY();
-                }
-                if(true == line.hasZ())
-                {
-                    oldPos.z = line.getZ();
-                }
-            }
-            // else -> no move, no Filament consumption
+            // else -> no move -> no time consumption
         }
         // else we do nothing with this Line
         next.optimize(line);
@@ -105,8 +101,8 @@ public class Extrude extends GCodeOptimizer
     @Override
     public void close() throws IOException
     {
-        final DecimalFormat eFormat = new DecimalFormat("#.###");
-        final LineOfGCode line = new LineOfGCode("; Build consumes : " + eFormat.format(totalExtruderValue) + " mm Filament");
+        final LineOfGCode line = new LineOfGCode("; Build Time : "
+             + Tool.reportTime((long)(buildTimeInMinutes*60*1000)));
         next.optimize(line);
         next.close();
     }

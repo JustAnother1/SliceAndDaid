@@ -12,9 +12,12 @@
  * with this program; if not, see <http://www.gnu.org/licenses/>
  *
  */
-package daid.sliceAndDaid.gcode;
+package daid.sliceAndDaid.gcode.optimizers;
 
 import java.io.Writer;
+
+import daid.sliceAndDaid.gcode.GCodeFileWriter;
+import daid.sliceAndDaid.gcode.GCodeOptimizer;
 
 
 
