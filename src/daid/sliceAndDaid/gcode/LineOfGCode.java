@@ -39,6 +39,10 @@ public class LineOfGCode
     private boolean hasY = false;
     private double z;
     private boolean hasZ = false;
+    private double s;
+    private boolean hasS = false;
+    private int i_s;
+    private boolean has_I_S = false;
     private double feedrate;
     private boolean hasFeedrate = false;
     private double extrudate;
@@ -179,6 +183,28 @@ public class LineOfGCode
                 res.append("E");
                 res.append(eFormat.format(extrudate));
             }
+            // Z as fractional
+            if(true == hasS)
+            {
+                if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
+                   || (CraftConfig.GCODE_COMPACT == CraftConfig.gcodeType) )
+                {
+                    res.append(" ");
+                }
+                res.append("S");
+                res.append(xyzFormat.format(s));
+            }
+            // Z as integer
+            if(true == has_I_S)
+            {
+                if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
+                   || (CraftConfig.GCODE_COMPACT == CraftConfig.gcodeType) )
+                {
+                    res.append(" ");
+                }
+                res.append("S" + i_s);
+            }
+            // Comment
             if(CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
             {
                 if(true == hasComment)
@@ -303,6 +329,38 @@ public class LineOfGCode
     {
         this.z = z;
         hasZ = true;
+    }
+
+    public boolean hasS()
+    {
+        return hasS;
+    }
+
+    public double getS()
+    {
+        return s;
+    }
+
+    public void setS(final double s)
+    {
+        this.s = s;
+        hasS = true;
+    }
+
+    public boolean has_I_S()
+    {
+        return has_I_S;
+    }
+
+    public int get_I_S()
+    {
+        return i_s;
+    }
+
+    public void set_I_S(final int s)
+    {
+        this.i_s = s;
+        has_I_S = true;
     }
 
     public boolean hasFeedrate()

@@ -42,6 +42,8 @@ public final class GCodeOptimizerFactory
         opti = new Extrude(opti);
         // Speed
         opti = new SpeedTool(opti);
+        // Fan on
+        opti = new Fan(opti);
         // here go new Optimizers
         return opti;
     }

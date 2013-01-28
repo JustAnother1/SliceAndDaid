@@ -39,5 +39,13 @@ public enum Gcode
         {
             return "G1";
         }
+    },
+    FAN_SPEED
+    {
+        @Override
+        public String toString()
+        {
+            return "M106";
+        }
     }
 }
