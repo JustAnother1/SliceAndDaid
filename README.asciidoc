@@ -1,6 +1,5 @@
-Slice and Daid
-==============
-
+WHAT IS IT?
+-----------
 SliceAndDaid is a 3D slicer written in Java. It's a much faster replacement
 for skeinforge.
 
