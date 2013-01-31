@@ -12,10 +12,10 @@ HOW TO BUILD?
 -------------
 I've provided a simple ant build script.
 So running with ant installed should be a simple:
---------------------------------------
-$ ant
-$ java -jar SliceAndDaid.jar
---------------------------------------
+
++$ ant+
+
++$ java -jar SliceAndDaid.jar+
 
 There are no extra dependences, just java. Eclipse project files are also supplied.
 
