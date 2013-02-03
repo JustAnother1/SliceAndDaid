@@ -24,6 +24,7 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 
 import daid.sliceAndDaid.bitmap.PixelCode;
+import daid.sliceAndDaid.gcode.Position;
 import daid.sliceAndDaid.ui.MilliMeterGraphic;
 import daid.sliceAndDaid.util.Logger;
 import daid.sliceAndDaid.util.Segment2D;
@@ -323,6 +324,17 @@ public class Layer
     public void saveBitmapToTxt(final String fileName)
     {
         bitmap.toTxt(fileName);
+    }
+
+    public boolean lineBetweenPositionsHasPixelCodeOf(final Position start,
+                                                        final Position end,
+                                                        final PixelCode theCode)
+    {
+        final int startx = (int)(start.getX() * pixelPerMm);
+        final int starty = (int)(start.getY() * pixelPerMm);
+        final int endx = (int)(end.getX() * pixelPerMm);
+        final int endy = (int)(end.getY() * pixelPerMm);
+        return bitmap.lineBetweenPositionsHasPixelCodeOf(startx, starty, endx, endy, theCode);
     }
 
 }

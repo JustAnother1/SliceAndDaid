@@ -33,6 +33,12 @@ public final class CraftConfig
     {
     }
 
+    @Setting(level = Setting.LEVEL_STARTER, group = "Dimensions",
+            title = "Retraction Length (mm)",
+            description = "distance that the Filament will be retracted",
+            minValue = 0.0, maxValue = 10000.0)
+    public static double retractionLength = 4.0;
+
     @Setting(level = Setting.LEVEL_STARTER, group = "Layers",
             title = "Layer height (mm)",
             description = "Height of each sliced layer",

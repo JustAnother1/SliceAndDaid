@@ -16,6 +16,7 @@ package daid.sliceAndDaid.gcode.optimizers;
 
 import java.io.Writer;
 
+import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.gcode.GCodeFileWriter;
 import daid.sliceAndDaid.gcode.GCodeOptimizer;
 
@@ -32,18 +33,15 @@ public final class GCodeOptimizerFactory
     {
     }
 
-    public static GCodeOptimizer getAllActiveOptimizers(final Writer wr)
+    public static GCodeOptimizer getAllActiveOptimizers(final Writer wr, final LayerStack layers)
     {
-        GCodeOptimizer opti = new GCodeFileWriter(wr);
-        // last Optimizer shall be Build Time
-        // if configured to have build time TODO
-        opti = new BuildTime(opti);
-        // Extrude
+        GCodeOptimizer opti = new GCodeFileWriter(wr); // creates the G-Code File
+        final EnvironmentInformation ei = new EnvironmentInformation(opti, layers); // has always the most up to date information
+        opti = new BuildTime(ei);
         opti = new Extrude(opti);
-        // Speed
         opti = new SpeedTool(opti);
-        // Fan on
         opti = new Fan(opti);
+        opti = new Retract(opti, ei);
         // here go new Optimizers
         return opti;
     }

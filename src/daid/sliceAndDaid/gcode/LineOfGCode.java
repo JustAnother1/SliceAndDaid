@@ -97,11 +97,6 @@ public class LineOfGCode
     public LineOfGCode(final Gcode cmd)
     {
         lineType = LineTypes.GCODE;
-        if(cmd == Gcode.EXTRUDE_TO_POSITION)
-        {
-            // thats the difference between move and extrude
-            hasExtrodate = true;
-        }
         this.command = cmd;
     }
 
@@ -383,6 +378,11 @@ public class LineOfGCode
     {
         extrudate = ex;
         hasExtrodate = true;
+    }
+
+    public boolean hasExtrudate()
+    {
+        return hasExtrodate;
     }
 
     public double getExtrudate()

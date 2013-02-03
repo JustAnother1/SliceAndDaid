@@ -605,4 +605,43 @@ public class LayerBitmap
         default:return 0;
         }
     }
+
+    public boolean lineBetweenPositionsHasPixelCodeOf(int x0, int y0,
+                                                        final int x1, final int y1,
+                                                        final PixelCode theCode)
+    {
+        // Same Algorithm as Line Drawing (see above)
+        // Algorithm see https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+        if(theCode == getPixel(x0, y0))
+        {
+            return true;
+        }
+        final int dx = Math.abs(x1 - x0);
+        final int dy = Math.abs(y1 - y0);
+        int sx = 0;
+        int sy = 0;
+        if(x0 < x1) { sx = 1; } else { sx = -1; }
+        if(y0 < y1) { sy = 1; } else { sy = -1; }
+        int err = dx - dy;
+        int e2;
+        while(!((x0 == x1) && (y0 == y1)))
+        {
+            e2 = 2*err;
+            if(e2 > -dy)
+            {
+                err = err -dy;
+                x0 = x0 + sx;
+            }
+            if(e2 < dx)
+            {
+                err = err + dx;
+                y0 = y0 + sy;
+            }
+            if(theCode == getPixel(x0, y0))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

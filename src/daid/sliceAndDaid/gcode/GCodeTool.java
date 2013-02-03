@@ -35,6 +35,7 @@ public class GCodeTool
     private Pixel lastPosition = new Pixel(0,0);
     private LayerBitmap b;
     private LayerDirection curDir = LayerDirection.X_THEN_Y;
+    private Layer activeLayer = null;
 
     public GCodeTool()
     {
@@ -65,7 +66,7 @@ public class GCodeTool
     public void generateGCode(final LayerStack layers,
                                final Writer wr) throws IOException
     {
-        optimizers = GCodeOptimizerFactory.getAllActiveOptimizers(wr);
+        optimizers = GCodeOptimizerFactory.getAllActiveOptimizers(wr, layers);
         vec = new Vectorization(optimizers, layers);
         // Machine setup
         final LineOfGCode startGCode = new LineOfGCode(CraftConfig.startGCode);
@@ -78,15 +79,15 @@ public class GCodeTool
             try
             {
                 Logger.debug("**Starting with Layer {} !", i);
-                final Layer l = layers.get(i);
+                activeLayer = layers.get(i);
                 // move to Layers Z
                 final LineOfGCode moveZ = new LineOfGCode(Gcode.MOVE_TO_POSITION);
-                moveZ.setZ(l.getZ());
+                moveZ.setZ(activeLayer.getZ());
                 optimizers.optimize(moveZ);
                 event = new LineOfGCode(PrintSteps.NEW_LAYER, i);
                 optimizers.optimize(event);
                 // G-Code for Layer
-                b = l.getBitmap();
+                b = activeLayer.getBitmap();
                 b.selectPixelType(PixelCode.SKIRT_CODE);
                 if(true == b.hasMorePixels())
                 {
