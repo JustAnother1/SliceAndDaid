@@ -36,6 +36,12 @@ public class DirectionVector
     // | y -1 | y -1 | y -1 |
     // +------+------+------+
 
+    @Override
+    public String toString()
+    {
+        return "d" + direction + "(" + getX() + "," + getY() + ")";
+    }
+
     /**
      *
      */
@@ -101,6 +107,36 @@ public class DirectionVector
     public int getDirection()
     {
         return direction;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        return prime + direction;
+    }
+
+    @Override
+    public boolean equals(final Object obj)
+    {
+        if(this == obj)
+        {
+            return true;
+        }
+        if(obj == null)
+        {
+            return false;
+        }
+        if(!(obj instanceof DirectionVector))
+        {
+            return false;
+        }
+        final DirectionVector other = (DirectionVector) obj;
+        if(direction != other.direction)
+        {
+            return false;
+        }
+        return true;
     }
 
 }

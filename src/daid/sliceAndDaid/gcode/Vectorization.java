@@ -31,7 +31,7 @@ import daid.sliceAndDaid.util.Logger;
 public class Vectorization
 {
 
-    private GCodeOptimizer optimizers = null;
+    private final GCodeOptimizer optimizers;
     private final LayerStack layers;
     private LayerBitmap b;
     private int lastPrintDirection = 0;
@@ -61,6 +61,7 @@ public class Vectorization
      * 4. generate a G-Code to move to the end of this line.
      * 5. change all these Pixel to pixelCode printed.
      * 6. set lastPosition to end of Line.
+     * 7. start again at 1
      * return the lastPosition.
      *
      * @param b Bitmap of the current Layer.
@@ -71,27 +72,16 @@ public class Vectorization
      * @throws IOException if we can not write to the G-Code File.
      */
     public Pixel generatePathsFor(final LayerBitmap b,
-            final PixelCode pixelCode,
-            Pixel lastPosition,
-            final LayerDirection direction,
-            final RoutingAlgorithm routing) throws IOException
+                                   final PixelCode pixelCode,
+                                   Pixel lastPosition,
+                                   final LayerDirection direction,
+                                   final RoutingAlgorithm routing) throws IOException
     {
-        boolean useOutline = false;
         Logger.trace("Got Last Position of {} !", lastPosition);
         this.b = b;
         b.selectPixelType(pixelCode);
-        if(RoutingAlgorithm.AREA == routing)
-        {
-            // find closest Pixel to lastPosition that has the PicelCode
-            final Pixel start = b.getPixelWithCodeClosestTo(pixelCode, lastPosition);
-            // if this Pixel has less than 3 neighbors then switch to OUTLINE Routing!
-            if(3 > b.getNumberOfSameNeighbors(start, pixelCode))
-            {
-                Logger.debug("Using Outline routing instead of Area routing !");
-                useOutline = true;
-            }
-        }
         boolean increasing = true;
+
         // as long as this bitmap has more pixels of pixelCode do the following steps:
         while(true == b.hasMorePixels())
         {
@@ -103,38 +93,24 @@ public class Vectorization
             switch(routing)
             {
             case AREA:
-                if(true == useOutline)
+                Logger.debug("Area Routing");
+                // search for Lines from last position in direction of increasing values
+                PixelLine res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
+                // if that failed search again in direction of falling values.
+                if(null == res)
                 {
-                    Logger.debug("Outline Routing");
-                    line = getNextOutLineLineToPrint(pixelCode, lastPosition, direction, false); // important to have false here !
-                    if(null == line)
-                    {
-                        Logger.error("We did not find the Pixel !");
-                        b.dumpAreaAroundPixel(lastPosition);
-                        throw new IllegalArgumentException("We did not find the Pixel !");
-                    }
+                    Logger.debug("now other direction");
+                    increasing = !increasing;
+                    res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
                 }
-                else
+                // if still no line found then we are done return lastPosition
+                if(null == res)
                 {
-                    Logger.debug("Area Routing");
-                    // search for Lines from last position in direction of increasing values
-                    PixelLine res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
-                    // if that failed search again in direction of falling values.
-                    if(null == res)
-                    {
-                        Logger.debug("now decreasing");
-                        increasing = !increasing;
-                        res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
-                    }
-                    // if still no line found then we are done return lastPosition
-                    if(null == res)
-                    {
-                        Logger.error("We did not find the Pixel !");
-                        b.dumpAreaAroundPixel(lastPosition);
-                        throw new IllegalArgumentException("We did not find the Pixel !");
-                    }
-                    line = res;
+                    Logger.error("We did not find the Pixel !");
+                    b.dumpAreaAroundPixel(lastPosition);
+                    throw new IllegalArgumentException("We did not find the Pixel !");
                 }
+                line = res;
                 break;
 
             default:
@@ -184,8 +160,9 @@ public class Vectorization
         // - if the last Pixel has a different vector then the 3 before
         //   and if the last pixel has at lest 2 neighbors
         //   then remove that pixel from the Line.
-        if(4 < line.length()) // Vector is between two Pixels -> 4 Vectors need 5 Pixels!
+        if(4 < line.length()) // Vector is between two Pixels -> n Vectors need n+1 Pixels!
         {
+            Logger.trace("checking line");
             final int lastIndex = line.length() -1;
             final DirectionVector lastVec = line.get(lastIndex -1).getDirectionOf(line.get(lastIndex));
             final DirectionVector lineVec1 = line.get(lastIndex -2).getDirectionOf(line.get(lastIndex -1));
@@ -199,7 +176,25 @@ public class Vectorization
                 {
                     line.remove(lastIndex);
                 }
+                else
+                {
+                    Logger.trace("Number same neighbors is 1 or 0");
+                }
             }
+            else
+            {
+                /*
+                Logger.trace("Line is straight " + lastVec + ", " + lineVec1
+                             + ", " + lineVec2 + ", " + lineVec3 + " !");
+                Logger.trace("lineVec1.equals(lineVec2) = " + lineVec1.equals(lineVec2));
+                Logger.trace("lineVec1.equals(lineVec3) = " + lineVec1.equals(lineVec3));
+                Logger.trace("lineVec1.equals(lastVec) = " + lineVec1.equals(lastVec));
+                */
+            }
+        }
+        else
+        {
+            Logger.trace("Line is too short");
         }
         return line;
     }
@@ -213,7 +208,7 @@ public class Vectorization
         do{
             if(true == hasAtLeastOnePixel(pixelCode, searchStart, direction))
             {
-                return getNextLine(pixelCode, searchStart, direction, lastPosition);
+                return getNextAreaLine(pixelCode, searchStart, direction, lastPosition);
             }
             // else do another loop
             searchStart = getNextPlaceToSearch(direction, searchStart, searchDirectionIsIncreasingValues);
@@ -229,10 +224,10 @@ public class Vectorization
      * @return the collected pixels.
      * @throws IOException if moveToPixel() fails.
      */
-    private PixelLine getNextLine(final PixelCode pixelCode,
-                                   final Pixel searchStart,
-                                   final LayerDirection direction,
-                                   final Pixel lastPosition) throws IOException
+    private PixelLine getNextAreaLine(final PixelCode pixelCode,
+                                       final Pixel searchStart,
+                                       final LayerDirection direction,
+                                       final Pixel lastPosition) throws IOException
     {
         final Vector<Pixel> collectedPoints = new Vector<Pixel>();
         if(LayerDirection.X_THEN_Y == direction)
@@ -290,7 +285,14 @@ public class Vectorization
             Logger.debug("Trying Outline Routing");
             return getNextOutLineLineToPrint(pixelCode, searchStart, direction, false);
         }
+        // Turn the Line around if that way it can be printed faster
+        return optimizeLineDirection(searchStart, collectedPoints, lastPosition);
+    }
 
+    private PixelLine optimizeLineDirection(final Pixel searchStart,
+                                             final Vector<Pixel> collectedPoints,
+                                             final Pixel lastPosition) throws IOException
+    {
         final int distanceToFirst = searchStart.getDistanceTo(collectedPoints.get(0));
         final int distanceToLast = searchStart.getDistanceTo(collectedPoints.lastElement());
         final PixelLine line = new PixelLine();
@@ -319,7 +321,9 @@ public class Vectorization
         return line;
     }
 
-    private boolean hasAtLeastOnePixel(final PixelCode pixelCode, final Pixel searchStart, final LayerDirection direction)
+    private boolean hasAtLeastOnePixel(final PixelCode pixelCode,
+                                         final Pixel searchStart,
+                                         final LayerDirection direction)
     {
         // easy solution
         if(pixelCode == b.getPixel(searchStart.getX(), searchStart.getY()))
@@ -362,7 +366,9 @@ public class Vectorization
         }
     }
 
-    private Pixel getNextPlaceToSearch(final LayerDirection direction, final Pixel lastPlace, final boolean searchDirectionIsIncreasingValues)
+    private Pixel getNextPlaceToSearch(final LayerDirection direction,
+                                        final Pixel lastPlace,
+                                        final boolean searchDirectionIsIncreasingValues)
     {
         if(LayerDirection.X_THEN_Y == direction)
         {
@@ -433,11 +439,9 @@ public class Vectorization
     {
         final Pixel lastPosition = findOutLineStartPixelfor(pixelCode, startPosition, direction);
         Logger.trace("Optimizing last Position to {} !", lastPosition);
-        final int lastX = lastPosition.getX();
-        final int lastY = lastPosition.getY();
-        if(pixelCode != b.getPixel(lastX, lastY))
+        if(pixelCode != b.getPixel(lastPosition))
         {
-            b.dumpAreaAroundPixel(new Pixel(lastX, lastY));
+            b.dumpAreaAroundPixel(lastPosition);
             Logger.error("No more Pixels with that Pixel Code found !");
             throw new IllegalArgumentException("No more Pixels with that Pixel Code found !");
         }
@@ -455,7 +459,7 @@ public class Vectorization
                 Logger.trace("Checking in Direction {} !", nextDirection);
                 final PixelLine lineToCheck = new PixelLine(line);
                 curRes = checkInDirection(nextDirection, lineToCheck, pixelCode,
-                        lastX, lastY, needsDifferentNeighbor);
+                        lastPosition, needsDifferentNeighbor);
                 if(2 == curRes.length()) {poorSolution = curRes;}
                 if(2 < curRes.length())
                 {
@@ -474,7 +478,7 @@ public class Vectorization
                 Logger.trace("Checking in Direction {} !", nextDirection);
                 final PixelLine lineToCheck = new PixelLine(line);
                 curRes = checkInDirection(nextDirection, lineToCheck, pixelCode,
-                        lastX, lastY, needsDifferentNeighbor);
+                        lastPosition, needsDifferentNeighbor);
                 if(2 == curRes.length()) {poorSolution = curRes;}
                 if(2 < curRes.length())
                 {
@@ -488,7 +492,7 @@ public class Vectorization
             Logger.trace("Checking in Direction {} !", lastPrintDirection);
             final PixelLine lineToCheck = new PixelLine(line);
             curRes = checkInDirection(lastPrintDirection, lineToCheck, pixelCode,
-                    lastX, lastY, needsDifferentNeighbor);
+                    lastPosition, needsDifferentNeighbor);
             if(2 <= curRes.length())
             {
                 Logger.trace("Found Solution in last print direction");
@@ -503,8 +507,7 @@ public class Vectorization
     private PixelLine checkInDirection(final int nextDirection,
                                         final PixelLine line,
                                         final PixelCode pixelCode,
-                                        final int lastX,
-                                        final int lastY,
+                                        final Pixel lastPosition,
                                         final boolean needsDifferentNeighbor)
     {
         // +------+------+------+
@@ -516,32 +519,15 @@ public class Vectorization
         // +------+------+------+
         switch(nextDirection)
         {
-        case 1: return check(line, pixelCode,
-                lastX + dv1.getX(), lastY + dv1.getY(),
-                dv1, dv4, dv2, needsDifferentNeighbor);
-        case 2: return check(line, pixelCode,
-                lastX + dv2.getX(), lastY + dv2.getY(),
-                dv2, dv1, dv3, needsDifferentNeighbor);
-        case 3: return check(line, pixelCode,
-                lastX + dv3.getX(), lastY + dv3.getY(),
-                dv3, dv2, dv6, needsDifferentNeighbor);
-        case 4: return check(line, pixelCode,
-                lastX + dv4.getX(), lastY + dv4.getY(),
-                dv4, dv1, dv7, needsDifferentNeighbor);
-        case 6: return check(line, pixelCode,
-                lastX + dv6.getX(), lastY + dv6.getY(),
-                dv6, dv3, dv9, needsDifferentNeighbor);
-        case 7: return check(line, pixelCode,
-                lastX + dv7.getX(), lastY + dv7.getY(),
-                dv7, dv4, dv8, needsDifferentNeighbor);
-        case 8: return check(line, pixelCode,
-                lastX +dv8.getX(), lastY + dv8.getY(),
-                dv8, dv7, dv9, needsDifferentNeighbor);
-        case 9: return check(line, pixelCode,
-                lastX + dv9.getX(), lastY + dv9.getY(),
-                dv9, dv6, dv8, needsDifferentNeighbor);
-        default :
-            return null;
+        case 1: return check(line, pixelCode, lastPosition.add(dv1), dv1, dv4, dv2, needsDifferentNeighbor);
+        case 2: return check(line, pixelCode, lastPosition.add(dv2), dv2, dv1, dv3, needsDifferentNeighbor);
+        case 3: return check(line, pixelCode, lastPosition.add(dv3), dv3, dv2, dv6, needsDifferentNeighbor);
+        case 4: return check(line, pixelCode, lastPosition.add(dv4), dv4, dv1, dv7, needsDifferentNeighbor);
+        case 6: return check(line, pixelCode, lastPosition.add(dv6), dv6, dv3, dv9, needsDifferentNeighbor);
+        case 7: return check(line, pixelCode, lastPosition.add(dv7), dv7, dv4, dv8, needsDifferentNeighbor);
+        case 8: return check(line, pixelCode, lastPosition.add(dv8), dv8, dv7, dv9, needsDifferentNeighbor);
+        case 9: return check(line, pixelCode, lastPosition.add(dv9), dv9, dv6, dv8, needsDifferentNeighbor);
+        default : return null;
         }
     }
 
@@ -591,16 +577,16 @@ public class Vectorization
 
     private PixelLine check(PixelLine line,
                              final PixelCode pixelCode,
-                             final int pixelX, final int pixelY,
+                             final Pixel position,
                              final DirectionVector vect,
                              final DirectionVector altVect,
                              final DirectionVector alt2Vect,
                              final boolean needsDifferentNeighbor)
     {
-        if(pixelCode != b.getPixel(pixelX, pixelY))
+        if(pixelCode != b.getPixel(position))
         {
             // this Pixel is not anymore in the Line
-            // System.out.println("Pixel (" + pixelX + ", " + pixelY + ") is not part of the Line!");
+            Logger.debug("Pixel {} is not part of the Line!", position);
             return line;
         }
 
@@ -610,7 +596,7 @@ public class Vectorization
             for(int i = 1; i < 10; i++)
             {
                 final DirectionVector dv = new DirectionVector(i);
-                final PixelCode curPCode = b.getPixel(pixelX + dv.getX(), pixelY + dv.getY());
+                final PixelCode curPCode = b.getPixel(position.add(dv));
                 if(pixelCode != curPCode)
                 {
                     if(   (curPCode == PixelCode.EMPTY_CODE)
@@ -626,17 +612,16 @@ public class Vectorization
             if(false == foundDifferentNeighbor)
             {
                 // has no pixel with a different Pixel code as neighbor.
-                // System.out.println("Pixel (" + pixelX + ", " + pixelY + ") has no different neighbour !");
+                Logger.debug("Pixel {} has no different neighbor !", position);
                 return line;
             }
         }
         // else check not needed because I don't care
 
-        // System.out.println("Adding Pixel (" + pixelX + ", " + pixelY + ") to the Line.");
-        line.add(new Pixel(pixelX, pixelY));
+        Logger.debug("Adding Pixel {} to the Line.", position);
+        line.add(position);
         final int lineLength = line.length();
-        line = check(line, pixelCode,
-                     pixelX + vect.getX(), pixelY + vect.getY(),
+        line = check(line, pixelCode, position.add(vect),
                      vect, altVect, alt2Vect, needsDifferentNeighbor);
         if(lineLength == line.length())
         {
@@ -644,8 +629,7 @@ public class Vectorization
             // -> end of Line or line continues in direction of altVect/als2Vect
             if(true == isStraight(line, altVect))
             {
-                line = check(line, pixelCode,
-                        pixelX + altVect.getX(), pixelY + altVect.getY(),
+                line = check(line, pixelCode, position.add(altVect),
                         vect, altVect, alt2Vect, needsDifferentNeighbor);
             }
             // else altVect is not a possible continuation of the line
@@ -653,8 +637,7 @@ public class Vectorization
             {
                 if(true == isStraight(line, alt2Vect))
                 {
-                    line = check(line, pixelCode,
-                            pixelX + alt2Vect.getX(), pixelY + alt2Vect.getY(),
+                    line = check(line, pixelCode, position.add(alt2Vect),
                             vect, altVect, alt2Vect, needsDifferentNeighbor);
                 }
                 // else we reached the end of the Line.
@@ -673,7 +656,7 @@ public class Vectorization
         }
         if(2 > line.length())
         {
-            // only 2 point in the Line -> can only be straight
+            // only 2 points in the Line -> can only be straight
             return true;
         }
         final VectorChecker vc = new VectorChecker();

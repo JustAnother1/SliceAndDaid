@@ -28,5 +28,8 @@ pixelcodetoprint = FILLIN_CODE
 *O               O*
 *OOOOOOOOOOOOOOOOO*
 ===g-code===
-*G1 X4 Y-5*
+*G1 X1 Y1*
+*G1 X4 Y6 E0*
+*G1 X12 Y6 E0*
+*G1 X15 Y11 E0*
 ===Test end===

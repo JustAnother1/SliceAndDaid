@@ -248,6 +248,12 @@ public class LayerBitmap
         }
     }
 
+
+    public PixelCode getPixel(final Pixel position)
+    {
+        return getPixel(position.getX(), position.getY());
+    }
+
     public void toTxt(final String fileName)
     {
         try
@@ -368,7 +374,6 @@ public class LayerBitmap
         }
         else
         {
-            Logger.error("Caculation of Normal lead me to the middle of nowhere - I'm lost !");
             throw new IllegalArgumentException("Caculation of Normal lead me to the middle of nowhere - I'm lost !");
         }
     }
@@ -383,6 +388,9 @@ public class LayerBitmap
             }
         }
     }
+
+// START  START START START  START  START  START  START START START START START
+    // These functions effect each other and have to be called in the right Sequence !!!
 
     public void selectPixelType(final PixelCode searchCode)
     {
@@ -404,6 +412,8 @@ public class LayerBitmap
 
     public boolean hasMorePixels()
     {
+        // TODO might be optimized by having a list of Pixel with the PixelCode
+        // TODO There might be a problem is pixels are added without a new call to selectPixelType()
         do
         {
             if(getRawPixel(nextXRaw, nextYRaw) == curPixelType)
@@ -431,6 +441,7 @@ public class LayerBitmap
             return null;
         }
     }
+// END  END END END END END END END END END END END END END END END END END END
 
     public Pixel getPixelWithCodeClosestTo(final PixelCode pixelCode, final Pixel position)
     {

@@ -100,6 +100,11 @@ public final class Pixel
         return new Pixel(x + vec.getX(), y + vec.getY());
     }
 
+    public Pixel add(final DirectionVector dv)
+    {
+        return new Pixel(x + dv.getX(), y + dv.getY());
+    }
+
     @Override
     public String toString()
     {
@@ -127,5 +132,4 @@ public final class Pixel
     {
         return Math.abs(getX() - pixel.getX()) + Math.abs(getY() - pixel.getY());
     }
-
 }

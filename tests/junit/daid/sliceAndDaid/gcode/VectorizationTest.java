@@ -39,7 +39,7 @@ public class VectorizationTest
     @BeforeClass
     public static void setUpBeforeClass() throws Exception
     {
-        Logger.setLevel(Logger.LOG_LEVEL_MESSAGE);
+        Logger.setLevel(Logger.LOG_LEVEL_TRACE);
     }
 
     @Test

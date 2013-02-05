@@ -168,7 +168,7 @@ public class LineOfGCode
                 res.append(fFormat.format(feedrate));
             }
             // Extrudate E
-            if(true == hasExtrodate)
+            if((Gcode.EXTRUDE_TO_POSITION == command) || (true == hasExtrodate)) // To see difference between Move and Print in tests !
             {
                 if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
                    || (CraftConfig.GCODE_COMPACT == CraftConfig.gcodeType) )
