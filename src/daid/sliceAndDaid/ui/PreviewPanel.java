@@ -73,18 +73,18 @@ public class PreviewPanel extends JPanel
                     // at this time these could should have been replaced with PRINTED_CODE !
                     // If they are still there this is a problem !
                     mmg.setColor(Color.RED);
-                    mmg.fillRect(x * CraftConfig.perimeterWidth,
-                                 y * CraftConfig.perimeterWidth,
-                                 CraftConfig.perimeterWidth,
-                                 CraftConfig.perimeterWidth );
+                    mmg.fillRect(x * CraftConfig.nozzleWidth,
+                                 y * CraftConfig.nozzleWidth,
+                                 CraftConfig.nozzleWidth,
+                                 CraftConfig.nozzleWidth );
                     break;
 
                 case PRINTED_CODE:
                     mmg.setColor(Color.BLACK);
-                    mmg.fillRect((x * CraftConfig.perimeterWidth) - CraftConfig.perimeterWidth/2,
-                                 (y * CraftConfig.perimeterWidth) - CraftConfig.perimeterWidth/2,
-                                 CraftConfig.perimeterWidth,
-                                 CraftConfig.perimeterWidth );
+                    mmg.fillRect((x * CraftConfig.nozzleWidth) - CraftConfig.nozzleWidth/2,
+                                 (y * CraftConfig.nozzleWidth) - CraftConfig.nozzleWidth/2,
+                                 CraftConfig.nozzleWidth,
+                                 CraftConfig.nozzleWidth );
                     break;
 
                 default:

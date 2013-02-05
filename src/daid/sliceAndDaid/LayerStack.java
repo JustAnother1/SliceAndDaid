@@ -35,7 +35,7 @@ public class LayerStack
 
     public LayerStack()
     {
-        pixelPerMm = (1/CraftConfig.perimeterWidth);
+        pixelPerMm = (1/CraftConfig.nozzleWidth);
     }
 
     public LayerStack(final double pixelPerMm)

@@ -32,6 +32,17 @@ public final class CraftConfig
     private CraftConfig()
     {
     }
+    @Setting(level = Setting.LEVEL_NORMAL, group = "Dimensions",
+            title = "absolut X position of nozzle after Start G-Code (in mm)",
+            description = "print will start closest to this postition",
+            minValue = 0.0, maxValue = 10000.0)
+    public static double startPositionX = 105.0;
+
+    @Setting(level = Setting.LEVEL_NORMAL, group = "Dimensions",
+            title = "absolut Y position of nozzle after Start G-Code (in mm)",
+            description = "print will start closest to this postition",
+            minValue = 0.0, maxValue = 10000.0)
+    public static double startPositionY = 105.0;
 
     @Setting(level = Setting.LEVEL_STARTER, group = "Dimensions",
             title = "Retraction Length (mm)",
@@ -49,7 +60,7 @@ public final class CraftConfig
             title = "Width of the perimeter lines",
             description = "The width of the perimeter lines, a good value is the inner radius of your nozzle tip.",
             minValue = 0, maxValue = 10)
-    public static double perimeterWidth = 0.4;
+    public static double nozzleWidth = 0.4;
 
     @Setting(level = Setting.LEVEL_NORMAL, group = "Perimeter",
             title = "Perimeter line count",
@@ -115,8 +126,7 @@ public final class CraftConfig
             "G92 E0             ;zero the extruded length\n" +
             "G1 F200 E3         ;extrude 3mm\n" +
             "G92 E0             ;zero the extruded length again\n" +
-            "G1 F9000           ;set Speed to fast\n" +
-            "G1 X0 Y0 Z0 F9000  ;Move to center and down";
+            "G1 F9000           ;set Speed to fast\n";
 
 
     @Setting(level = Setting.LEVEL_HIDDEN,

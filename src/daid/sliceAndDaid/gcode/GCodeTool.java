@@ -31,15 +31,14 @@ public class GCodeTool
 {
     private GCodeOptimizer optimizers;
     private Vectorization vec;
-    // TODO let user configure Printers home Position
-    private Pixel lastPosition = new Pixel(0,0);
+    private Pixel lastPosition = new Pixel((int)(CraftConfig.startPositionX/CraftConfig.nozzleWidth),
+                                            (int)(CraftConfig.startPositionY/CraftConfig.nozzleWidth) );
     private LayerBitmap b;
     private LayerDirection curDir = LayerDirection.X_THEN_Y;
     private Layer activeLayer = null;
 
     public GCodeTool()
     {
-
     }
 
 

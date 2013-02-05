@@ -78,7 +78,7 @@ public class Extrude extends GCodeOptimizer
                     z = oldPos.z;
                 }
                 final double dist = oldPos.sub(new Vector3(x, y, z)).vSize();
-                final double filamentAmount = dist * CraftConfig.perimeterWidth * CraftConfig.layerHeight;
+                final double filamentAmount = dist * CraftConfig.nozzleWidth * CraftConfig.layerHeight;
                 totalExtruderValue = totalExtruderValue + (filamentAmount/filamentMM3PerMM);
                 line.setExtrudate(totalExtruderValue);
             }
