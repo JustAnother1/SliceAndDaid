@@ -24,8 +24,8 @@ pixelcodetoprint = OUTLINE_CODE
 *   OO       *
 *            *
 ===g-code===
-*G1 X1 Y7*
-*G1 X6 Y2 E0*
-*G1 X10 Y5*
-*G1 X3 Y8 E0*
+*G1 X6 Y2*
+*G1 X1 Y7 E0*
+*G1 X3 Y8*
+*G1 X10 Y5 E0*
 ===Test end===

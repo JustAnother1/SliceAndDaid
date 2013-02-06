@@ -230,7 +230,7 @@ public class VectorizationTest
                 final String fileName = f.getName();
                 if(true == fileName.matches(pattern))
                 {
-                    Logger.message("Found Test " + f.getName());
+                    Logger.message("!!!! Found Test " + f.getName() + " !!!!");
                     try
                     {
                         final TestCaseDefinitionDataFile testDefinition = new TestCaseDefinitionDataFile(f);
