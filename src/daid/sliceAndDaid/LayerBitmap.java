@@ -443,14 +443,38 @@ public class LayerBitmap
     }
 // END  END END END END END END END END END END END END END END END END END END
 
-    public Pixel getPixelWithCodeClosestTo(final PixelCode pixelCode, final Pixel position)
+    public Pixel getPixelWithCodeClosestTo(final PixelCode pixelCode, Pixel position)
     {
         // Easy solution
-        if(pixelCode == getPixel(position.getX(), position.getY()))
+        final PixelCode thisPositionsCode = getPixel(position.getX(), position.getY());
+        if(pixelCode == thisPositionsCode)
         {
             return position;
         }
-        // else Now we have to search
+        if(PixelCode.INVALID_CODE == thisPositionsCode)
+        {
+            // we are outside the layer so move to the closest corner
+            int x = position.getX();
+            if(x > this.getMaxX())
+            {
+                x = this.getMaxX();
+            }
+            else if(x < this.getMinX())
+            {
+                x = this.getMinX();
+            }
+            int y = position.getY();
+            if(y > this.getMaxY())
+            {
+                y = this.getMaxY();
+            }
+            else if(y < this.getMinY())
+            {
+                y = this.getMinY();
+            }
+            position = new Pixel(x,y);
+        }
+
         // TO IMPROVE: This is not the best algorithm but good enough for now.
         // Algorithm inspired by : http://stackoverflow.com/questions/307445/finding-closest-non-black-pixel-in-an-image-fast
         int maxDistance = width;
