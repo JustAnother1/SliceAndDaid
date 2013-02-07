@@ -468,6 +468,9 @@ public class Vectorization
                     return curRes;
                 }
             }
+            b.dumpAreaAroundPixel(lastPosition);
+            Logger.trace("Found only poor Solution");
+            return poorSolution; // the found poorSolution or null if nothing found
         }
         else
         {
@@ -487,21 +490,23 @@ public class Vectorization
                     return curRes;
                 }
             }
-            // if still no solution then check LastPrintDirection
-            Logger.trace("Falling back to checking last Direction");
-            Logger.trace("Checking in Direction {} !", lastPrintDirection);
-            final PixelLine lineToCheck = new PixelLine(line);
-            curRes = checkInDirection(lastPrintDirection, lineToCheck, pixelCode,
-                    lastPosition, needsDifferentNeighbor);
-            if(2 <= curRes.length())
+            if(null != poorSolution)
             {
-                Logger.trace("Found Solution in last print direction");
-                return curRes; // found a poor Solution
+                // better a poor solution then going back
+                Logger.trace("Found poor Solution in direction");
+                return poorSolution;
+            }
+            else
+            {
+                // if still no solution then check LastPrintDirection
+                Logger.trace("Falling back to checking last Direction");
+                Logger.trace("Checking in Direction {} !", lastPrintDirection);
+                final PixelLine lineToCheck = new PixelLine(line);
+                curRes = checkInDirection(lastPrintDirection, lineToCheck, pixelCode,
+                        lastPosition, needsDifferentNeighbor);
+                return curRes;
             }
         }
-        b.dumpAreaAroundPixel(lastPosition);
-        Logger.trace("Found only poor Solution");
-        return poorSolution; // the found poorSolution or null if nothing found
     }
 
     private PixelLine checkInDirection(final int nextDirection,
