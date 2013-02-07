@@ -217,10 +217,10 @@ public class OutLine extends BitmapOptimizer
         }
     }
 
-    /** curP is an outline Pixel. The question is if the pixel directly above curP also needs to ab outline Pixel.
+    /** curP is an Inside Pixel. The Pixel below curP is an Outline Pixel. Question is shall curP become an Outline Pixel?
      *
      * @param curP the outline Pixel
-     * @param maps the numShell Layers to scan
+     * @param maps the numShell Layers to scan all layers are below curP
      * @return true -> Make the Pixel outline; false -> pixel and continue to be inside
      */
     private boolean pixelMustChange(final Pixel curP, final LayerBitmap[] maps)
@@ -243,8 +243,10 @@ public class OutLine extends BitmapOptimizer
         // ..TTT..
         // ...T...
         // .......
-        // If all(numShell) pixels below are outline then this must not become outline
-        for(int i = 1; i < numShells; i++)
+        // None of the T marked Pixel may be Outside !
+
+        // If one of the numShells pixels below are outside then curP must become outline
+        for(int i = 0; i < numShells; i++)
         {
             if(true == maps[i].getPixel(curP).isOutside())
             {
@@ -252,47 +254,106 @@ public class OutLine extends BitmapOptimizer
             }
         }
 
-        /*
-         * TODO
         // right +x
-        for(int i = 1; i < numShells; i++) // CurP is already 0th shell
+        for(int m = 0; m < numShells; m++)
         {
-            if(PixelCode.OUTLINE_CODE != maps[i].getPixel(curP))
+            for(int i = 1; i < (numShells - m); i++)
             {
-                return true;
+                if(true == maps[m].getPixel(curP.getX() + i, curP.getY()).isOutside())
+                {
+                    return true;
+                }
             }
         }
         // fill triangle clockwise +x +y
-        for(int iy = 1; iy < numShells -1; iy++)
+        for(int m = 0; m < numShells; m++)
         {
-            for(int ix = 1; ix < (numShells -iy); ix++)
+            for(int iy = 1; iy < (numShells- m) -1; iy++)
             {
-                if(PixelCode.OUTLINE_CODE != maps[i].getPixel(curP))
+                for(int ix = 1; ix < ((numShells - m) -iy); ix++)
+                {
+                    if(true == maps[m].getPixel(curP.getX() + ix, curP.getY() +iy).isOutside())
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        // down +y
+        for(int m = 0; m < numShells; m++)
+        {
+            for(int i = 1; i < (numShells - m); i++)
+            {
+                if(true == maps[m].getPixel(curP.getX(), curP.getY() + i).isOutside())
                 {
                     return true;
                 }
             }
         }
         // fill triangle clockwise -x +y
-        for(int iy = 1; iy < numShells -1; iy++)
+        for(int m = 0; m < numShells; m++)
         {
-            for(int ix = 1; ix < numShells -iy; ix++)
+            for(int iy = 1; iy < (numShells - m) -1; iy++)
             {
-                if(PixelCode.OUTLINE_CODE != maps[i].getPixel(curP))
+                for(int ix = 1; ix < (numShells - m) -iy; ix++)
+                {
+                    if(true == maps[m].getPixel(curP.getX() - ix, curP.getY() +iy).isOutside())
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        // left -x
+        for(int m = 0; m < numShells; m++)
+        {
+            for(int i = 1; i < (numShells - m); i++)
+            {
+                if(true == maps[m].getPixel(curP.getX() - i, curP.getY()).isOutside())
                 {
                     return true;
                 }
             }
         }
-        // left -x
-        for(int i = 1; i < numShells; i++) // CurP is already 0th shell
+        // fill triangle clockwise -x -y
+        for(int m = 0; m < numShells; m++)
         {
-            if(PixelCode.OUTLINE_CODE != maps[i].getPixel(curP))
+            for(int iy = 1; iy < (numShells - m) -1; iy++)
             {
-                return true;
+                for(int ix = 1; ix < (numShells - m) -iy; ix++)
+                {
+                    if(true == maps[m].getPixel(curP.getX() - ix, curP.getY() - iy).isOutside())
+                    {
+                        return true;
+                    }
+                }
             }
         }
-        */
+        // up
+        for(int m = 0; m < numShells; m++)
+        {
+            for(int i = 1; i < (numShells - m); i++)
+            {
+                if(true == maps[m].getPixel(curP.getX(), curP.getY() - i).isOutside())
+                {
+                    return true;
+                }
+            }
+        }
+        // fill triangle clockwise +x -y
+        for(int m = 0; m < numShells; m++)
+        {
+            for(int iy = 1; iy < (numShells - m) -1; iy++)
+            {
+                for(int ix = 1; ix < (numShells - m) -iy; ix++)
+                {
+                    if(true == maps[m].getPixel(curP.getX() + ix, curP.getY() -iy).isOutside())
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
         // All check accomplished and no reason found to change the pixel
         return false;
     }
