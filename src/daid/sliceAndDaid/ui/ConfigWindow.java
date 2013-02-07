@@ -151,7 +151,8 @@ public class ConfigWindow extends JFrame
                             {
                                 SliceAndDaidMain.sliceModel(fc.getSelectedFile().toString(),
                                                             true, /* graphic result window after operation */
-                                                            false /* no picture files of Layers */);
+                                                            false, /* no picture files of Layers */
+                                                            true /* die on error */);
                                 logWindow.dispose();
                             }
                             catch (final Exception e)

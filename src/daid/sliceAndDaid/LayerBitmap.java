@@ -223,6 +223,18 @@ public class LayerBitmap
 
     /** set the Pixel to code if it had the value of oldCode.
      *
+     * @param position Pixels position on bitmap.
+     * @param code code to write.
+     * @param oldCode code the pixel has to have.
+     * @return true if change was made; false = Pixel does not have the value oldCode.
+     */
+    public boolean setPixel(final Pixel position, final PixelCode code, final PixelCode oldCode)
+    {
+        return setPixel(position.getX(), position.getY(), code, oldCode, true, true);
+    }
+
+    /** set the Pixel to code if it had the value of oldCode.
+     *
      * @param x Pixels x coordinate.
      * @param y Pixels y coordinate.
      * @param code code to write.

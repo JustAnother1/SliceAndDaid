@@ -20,7 +20,7 @@ package daid.sliceAndDaid.bitmap;
  */
 public enum PixelCode
 {
-    INVALID_CODE    // there has been an error
+    INVALID_CODE(true)    // there has been an error
     {
         @Override
         public String toString()
@@ -28,7 +28,7 @@ public enum PixelCode
             return "i";
         }
     },
-    EMPTY_CODE      // fresh unused Pixel
+    EMPTY_CODE(true)       // fresh unused Pixel
     {
         @Override
         public String toString()
@@ -36,7 +36,7 @@ public enum PixelCode
             return " ";
         }
     },
-    VECTOR_CODE     // The Model cuts the Layer here
+    VECTOR_CODE(false)     // The Model cuts the Layer here
     {
         @Override
         public String toString()
@@ -44,7 +44,7 @@ public enum PixelCode
             return "v";
         }
     },
-    INSIDE_CODE     // This is the Space inside the Model
+    INSIDE_CODE(false)     // This is the Space inside the Model
     {
         @Override
         public String toString()
@@ -52,7 +52,7 @@ public enum PixelCode
             return ".";
         }
     },
-    TEMPORAL_CODE   // This code is used in optimizers to detect which Pixel have already been changed.
+    TEMPORAL_CODE(false)   // This code is used in optimizers to detect which Pixel have already been changed.
     {
         @Override
         public String toString()
@@ -61,7 +61,7 @@ public enum PixelCode
         }
     },
     // Only the following Codes will be printed
-    OUTLINE_CODE    // Outline of Model shall be printed first
+    OUTLINE_CODE(false)    // Outline of Model shall be printed first
     {
         @Override
         public String toString()
@@ -69,7 +69,7 @@ public enum PixelCode
             return "O";
         }
     },
-    FILLIN_CODE     // Structure inside the Model that needs to be printed
+    FILLIN_CODE(false)     // Structure inside the Model that needs to be printed
     {
         @Override
         public String toString()
@@ -77,7 +77,7 @@ public enum PixelCode
             return "F";
         }
     },
-    SKIRT_CODE      // Skirt around the Model on Layer0
+    SKIRT_CODE(true)       // Skirt around the Model on Layer0
     {
         @Override
         public String toString()
@@ -86,12 +86,23 @@ public enum PixelCode
         }
     },
     // After the GCode Generation:
-    PRINTED_CODE     // This Pixel is part of the G-Code File and will be printed
+    PRINTED_CODE(false)     // This Pixel is part of the G-Code File and will be printed
     {
         @Override
         public String toString()
         {
             return "X";
         }
+    };
+
+    private final boolean isOutside;
+    private PixelCode(final boolean out)
+    {
+        this.isOutside = out;
+    }
+
+    public boolean isOutside()
+    {
+        return isOutside;
     }
 }

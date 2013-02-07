@@ -64,6 +64,8 @@ public class SliceAndDaidMain
                                               // line mode
             boolean createLayerPictureFiles = false; // big performance penalty
                                                      // -> only for debugging
+            boolean dieOnError = true; // stop working when something went wrong
+            // so that everybody sees that the result if there is any can not be used !
             boolean useTheGui = false;
 
             for(int i = 0; i < args.length; i++)
@@ -139,6 +141,11 @@ public class SliceAndDaidMain
                     {
                         useTheGui = true;
                     }
+                    else if(true == "-d".equals(args[i]))
+                    {
+                        // This is an undocumented feature strictly for debugging only !
+                        dieOnError = false;
+                    }
                     else
                     {
                         System.err.println("Invalid Parameter : " + args[i] + " try -h for help");
@@ -159,7 +166,7 @@ public class SliceAndDaidMain
                 // Do it now !
                 if(null != sourceFileName)
                 {
-                    sliceModel(sourceFileName, showResultWindow, createLayerPictureFiles);
+                    sliceModel(sourceFileName, showResultWindow, createLayerPictureFiles, dieOnError);
                 }
                 else
                 {
@@ -304,7 +311,10 @@ public class SliceAndDaidMain
         }
     }
 
-    public static void sliceModel(final String filename, final boolean showResultWindow, final boolean createLayerPictureFiles)
+    public static void sliceModel(final String filename,
+                                    final boolean showResultWindow,
+                                    final boolean createLayerPictureFiles,
+                                    final boolean dieOnError)
     {
         // The Slicing Process consists of these steps:
         final long startTime = System.currentTimeMillis();
@@ -354,7 +364,7 @@ public class SliceAndDaidMain
         //     7. optimize GCode (Speed,..)
         //     8. save G-Code to File
 
-        final String gGcodeFileName = createGCodes(filename, layers);
+        final String gGcodeFileName = createGCodes(filename, layers, dieOnError);
         if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("printed");
 
         // Post slicing
@@ -374,7 +384,7 @@ public class SliceAndDaidMain
         }
     }
 
-    private static String createGCodes(final String filename, final LayerStack layers)
+    private static String createGCodes(final String filename, final LayerStack layers, final boolean dieOnError)
     {
         final String gGcodeFileName;
         if(true == filename.toLowerCase().endsWith(".stl"))
@@ -393,8 +403,23 @@ public class SliceAndDaidMain
             // Put Version Information as comment into GCode File as help with debugging
             writeVersionInformationToGCodeFile(wr);
             final GCodeTool gt = new GCodeTool();
-            gt.generateGCode(layers, wr);
-            Logger.message("Created the GCode");
+            try
+            {
+                gt.generateGCode(layers, wr);
+                Logger.message("Created the GCode");
+            }
+            catch(final IllegalArgumentException e)
+            {
+                if(false == dieOnError)
+                {
+                    e.printStackTrace();
+                    Logger.error("GCode generation failed !");
+                }
+                else
+                {
+                    throw e;
+                }
+            }
         }
         catch(final IOException e)
         {

@@ -45,6 +45,14 @@ public class GCodeStep
         else
         {
             command = line.substring(0, indexOfStartOfComment);
+            String comment = line.substring(line.indexOf(';'));
+            comment = comment.toLowerCase();
+            if(true == comment.contains("layer"))
+            {
+                isNextLayerComment = true;
+            }
+            x = lastX;
+            y = lastY;
         }
         if(1 < command.length())
         {
@@ -81,18 +89,9 @@ public class GCodeStep
                 }
                 valid = true;
             }
+            // else not G1 -> ignore
         }
-        else
-        {
-            x = lastX;
-            y = lastY;
-            String comment = line.substring(line.indexOf(';'));
-            comment = comment.toLowerCase();
-            if(true == comment.contains("layer"))
-            {
-                isNextLayerComment = true;
-            }
-        }
+        // else  no command -> nothing to do
     }
 
     public Gcode getType()
