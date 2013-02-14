@@ -227,7 +227,7 @@ public class Layer
 
     public void drawAllSegmentsTo(final MilliMeterGraphic g)
     {
-        Logger.trace("Drawing {} segments !", modelSegmentList.size());
+        // Logger.trace("Drawing {} segments !", modelSegmentList.size());
         for (final Segment2D s : modelSegmentList)
         {
             g.setColor(Color.GREEN); // STL Vectors
