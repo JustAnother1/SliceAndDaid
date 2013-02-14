@@ -72,10 +72,18 @@ public class SliceAndDaidMain
             {
                 if(true == args[i].startsWith("--"))
                 {
-                    final String key = args[i].substring(2, args[i].indexOf(':'));
-                    final String value =args[i].substring(args[i].indexOf(':') + 1);
-                    System.out.println("Found key -" + key + "- and value -" + value + "- !");
-                    setField(key, value);
+                    if(-1 == args[i].indexOf(':'))
+                    {
+                        System.err.println("Invalid Parameter : " + args[i] + " try -h for help");
+                        System.exit(1);
+                    }
+                    else
+                    {
+                        final String key = args[i].substring(2, args[i].indexOf(':'));
+                        final String value =args[i].substring(args[i].indexOf(':') + 1);
+                        System.out.println("Found key -" + key + "- and value -" + value + "- !");
+                        setField(key, value);
+                    }
                 }
                 else if(true == args[i].startsWith("-"))
                 {
@@ -149,6 +157,7 @@ public class SliceAndDaidMain
                     else
                     {
                         System.err.println("Invalid Parameter : " + args[i] + " try -h for help");
+                        System.exit(1);
                     }
                 }
                 else
