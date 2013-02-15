@@ -43,6 +43,7 @@ public class SliceAndDaidMain
 
     public static void main(final String[] args) throws IOException
     {
+        @SuppressWarnings("unused")
         final SliceAndDaidMain main = new SliceAndDaidMain(args);
     }
 
@@ -74,8 +75,8 @@ public class SliceAndDaidMain
                 {
                     if(-1 == args[i].indexOf(':'))
                     {
-                        System.err.println("Invalid Parameter : " + args[i] + " try -h for help");
-                        System.exit(1);
+                        System.err.println("Invalid Parameter : " + args[i]);
+                        printHelpAndExit(2);
                     }
                     else
                     {
@@ -97,17 +98,7 @@ public class SliceAndDaidMain
                     }
                     else if(true == "-h".equals(args[i]))
                     {
-                        System.out.println("Usage: Java -jar SliceAndDaid.jar [Options] SourceDataFileName");
-                        System.out.println("Options can be:");
-                        System.out.println("  -v           - verbose output.");
-                        System.out.println("  -vv          - very verbose output.");
-                        System.out.println("  -h           - print this help.");
-                        System.out.println("  -p           - generate png-Files off all Layers in all steps.");
-                        System.out.println("  -showResult  - show graphic Window with result data.");
-                        System.out.println("  -g           - use the Graphic User Interafce.");
-                        System.out.println("  --key:value  - sets the configuration key to vaue.");
-                        System.out.println("  -l           - lists all configuration keys.");
-                        System.exit(0);
+                        printHelpAndExit(0);
                     }
                     else if(true == "-l".equals(args[i]))
                     {
@@ -156,8 +147,8 @@ public class SliceAndDaidMain
                     }
                     else
                     {
-                        System.err.println("Invalid Parameter : " + args[i] + " try -h for help");
-                        System.exit(1);
+                        System.err.println("Invalid Parameter : " + args[i]);
+                        printHelpAndExit(1);
                     }
                 }
                 else
@@ -183,6 +174,22 @@ public class SliceAndDaidMain
                 }
             }
         }
+    }
+
+    private void printHelpAndExit(final int code)
+    {
+        System.out.println("Usage: Java -jar SliceAndDaid.jar [Options] SourceDataFileName");
+        System.out.println("Options can be:");
+        System.out.println("  -v           - verbose output.");
+        System.out.println("  -vv          - very verbose output.");
+        System.out.println("  -h           - print this help.");
+        System.out.println("  -p           - generate png-Files off all Layers in all steps.");
+        System.out.println("  -showResult  - show graphic Window with result data.");
+        System.out.println("  -g           - use the Graphic User Interafce.");
+        System.out.println("  --key:value  - sets the configuration key to vaue.");
+        System.out.println("  -l           - lists all configuration keys.");
+        // -d to continue after exception will not be reported to user as used for debugging only !
+        System.exit(code);
     }
 
     private static void writeVersionInformationToGCodeFile(final Writer wr) throws IOException
