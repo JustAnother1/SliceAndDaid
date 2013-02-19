@@ -39,7 +39,7 @@ public class Infill extends BitmapOptimizer
     }
 
     @Override
-    public void optimize(final LayerStack layers)
+    public LayerStack optimize(final LayerStack layers)
     {
         for(int activeLayer = 0; activeLayer < layers.size(); activeLayer ++)
         {
@@ -121,6 +121,7 @@ public class Infill extends BitmapOptimizer
 
             }
         }
+        return layers;
     }
 
     private void drawLine(final LayerBitmap b, int startX,

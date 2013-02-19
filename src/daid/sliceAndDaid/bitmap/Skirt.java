@@ -31,7 +31,7 @@ public class Skirt extends BitmapOptimizer
     }
 
     @Override
-    public void optimize(final LayerStack layers)
+    public LayerStack optimize(final LayerStack layers)
     {
         final Layer l = layers.get(0);
         final double pixelPerMm = layers.getPixelPerMm();
@@ -44,6 +44,7 @@ public class Skirt extends BitmapOptimizer
                         bitmap.getMaxY() + skirtDistancePix,
                         PixelCode.SKIRT_CODE,
                         PixelCode.EMPTY_CODE);
+        return layers;
     }
 
     @Override

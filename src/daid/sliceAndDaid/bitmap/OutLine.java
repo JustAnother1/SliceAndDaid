@@ -36,7 +36,7 @@ public class OutLine extends BitmapOptimizer
     }
 
     @Override
-    public void optimize(final LayerStack layers)
+    public LayerStack optimize(final LayerStack layers)
     {
         this.layers = layers;
         int activeLayer = 0;
@@ -64,6 +64,7 @@ public class OutLine extends BitmapOptimizer
         {
             massiveLayer(activeLayer);
         }
+        return layers;
     }
 
     private void massiveLayer(final int activeLayer)

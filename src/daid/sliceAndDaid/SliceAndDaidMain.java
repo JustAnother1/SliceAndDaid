@@ -354,7 +354,7 @@ public class SliceAndDaidMain
         //     3. project triangles on Layers
         //         This is implemented SliceTool(functionality) and  LayerStack(Data) and Layer(Data)
         final SliceTool slicer = new SliceTool(m);
-        final LayerStack layers = slicer.sliceModel();
+        LayerStack layers = slicer.sliceModel();
         layers.dumpStackToText();
         Logger.message("Created the Layers");
         // if (true == createLayerPictureFiles) layers.dumpStackToLayerFiles("Sliced");
@@ -371,7 +371,7 @@ public class SliceAndDaidMain
         //     5. optimize Layer bitmaps (Infill, Skirt,...)
         for(int i = 0; i < bitOptis.length; i++)
         {
-            bitOptis[i].optimize(layers);
+            layers = bitOptis[i].optimize(layers);
         }
         if(true == createLayerPictureFiles) layers.dumpBitMapsToFiles("optimized");
         Logger.message("Optimized the Layers");
@@ -379,9 +379,9 @@ public class SliceAndDaidMain
         //     6. generate G-Code from bitmap
         //     7. optimize GCode (Speed,..)
         //     8. save G-Code to File
-
-        final String gGcodeFileName = createGCodes(filename, layers, dieOnError);
-        if (true == createLayerPictureFiles) layers.dumpBitMapsToFiles("printed");
+        final LayerStack slicedLayerStack = layers;
+        final String gGcodeFileName = createGCodes(filename, slicedLayerStack, dieOnError);
+        if (true == createLayerPictureFiles) slicedLayerStack.dumpBitMapsToFiles("printed");
 
         // Post slicing
         final long sliceTime = System.currentTimeMillis() - startTime;
@@ -394,7 +394,7 @@ public class SliceAndDaidMain
                 @Override
                 public void run()
                 {
-                        new PreviewFrame(layers, gGcodeFileName);
+                        new PreviewFrame(slicedLayerStack, gGcodeFileName);
                 }
             });
         }

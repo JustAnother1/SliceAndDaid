@@ -32,6 +32,6 @@ public abstract class BitmapOptimizer
         return 0;
     }
 
-    public abstract void optimize(LayerStack layers);
+    public abstract LayerStack optimize(LayerStack layers);
 
 }
