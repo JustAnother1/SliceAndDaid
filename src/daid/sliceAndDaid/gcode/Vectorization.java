@@ -77,10 +77,20 @@ public class Vectorization
                                    final LayerDirection direction,
                                    final RoutingAlgorithm routing) throws IOException
     {
-        Logger.trace("Got Last Position of {} !", lastPosition);
         this.b = b;
+        Logger.trace("Got Last Position of {} !", lastPosition);
+        lastPosition = findOutLineStartPixelfor(pixelCode, lastPosition, direction);
+        Logger.trace("Optimizing last Position to {} !", lastPosition);
+        if(pixelCode != b.getPixel(lastPosition))
+        {
+            b.dumpAreaAroundPixel(lastPosition);
+            Logger.error("No more Pixels with that Pixel Code found !");
+            throw new IllegalArgumentException("No more Pixels with that Pixel Code found !");
+        }
+
         b.selectPixelType(pixelCode);
         boolean increasing = true;
+
 
         // as long as this bitmap has more pixels of pixelCode do the following steps:
         while(true == b.hasMorePixels())
@@ -131,8 +141,27 @@ public class Vectorization
         // 4. generate a G-Code to move to the end of this line.
         // 5. change all these Pixel to pixelCode printed.
         // 6. set lastPosition to end of Line.
-            lastPosition = printTheFoundLine(line, lastPosition, pixelCode);
+            if(1 == line.length())
+            {
+                final Pixel p = line.get(0);
+                if(pixelCode == b.getPixel(p))
+                {
+                    // print the single pixel
+                    lastPosition = printTheFoundLine(line, lastPosition, pixelCode);
+                }
+                else
+                {
+                    // line length 1 only happens with Outline routing
+                    // as this pixel is already printed move to next available pixel to print
+                    lastPosition = findOutLineStartPixelfor(pixelCode, p, direction);
+                }
+            }
+            else
+            {
+                lastPosition = printTheFoundLine(line, lastPosition, pixelCode);
+            }
             Logger.trace("Moving last Position to {} !", lastPosition);
+
         }
         // return the lastPosition.
         return lastPosition;
@@ -146,10 +175,6 @@ public class Vectorization
         if(line.length() > 1)
         {
             lastPrintDirection = b.oppositeOf(((line.get(line.length() -2)).getDirectionOf(endOfLine)).getDirection());
-        }
-        else
-        {
-            throw new IllegalArgumentException("Found a Line of Length 1 !");
         }
         printToPixel(line, pixelCode);
         return endOfLine;
@@ -204,6 +229,19 @@ public class Vectorization
                                          final Pixel lastPosition,
                                          final LayerDirection direction) throws IOException
     {
+        // check if we are a Pixel next to an area
+        if(false == b.hasAreaAsNeigbour(lastPosition, pixelCode))
+        {
+            // we are not
+            if((PixelCode.PRINTED_CODE == b.getPixel(lastPosition)) ||(pixelCode == b.getPixel(lastPosition)))
+            {
+                // We still want to print here -> Outline Routing
+                Logger.debug("Pixel is not part of Area -> Outline Routing");
+                return getNextOutLineLineToPrint(pixelCode, lastPosition, direction, false);
+            }
+            // else Area Routing
+        }
+
         Pixel searchStart = lastPosition;
         do{
             if(true == hasAtLeastOnePixel(pixelCode, searchStart, direction))
@@ -432,19 +470,11 @@ public class Vectorization
     }
 
     private PixelLine getNextOutLineLineToPrint(final PixelCode pixelCode,
-                                                 final Pixel startPosition,
+                                                 final Pixel lastPosition,
                                                  final LayerDirection direction,
                                                  final boolean needsDifferentNeighbor
                                                  ) throws IOException
     {
-        final Pixel lastPosition = findOutLineStartPixelfor(pixelCode, startPosition, direction);
-        Logger.trace("Optimizing last Position to {} !", lastPosition);
-        if(pixelCode != b.getPixel(lastPosition))
-        {
-            b.dumpAreaAroundPixel(lastPosition);
-            Logger.error("No more Pixels with that Pixel Code found !");
-            throw new IllegalArgumentException("No more Pixels with that Pixel Code found !");
-        }
         final PixelLine line = new PixelLine();
         PixelLine curRes = null;
         PixelLine poorSolution = null;

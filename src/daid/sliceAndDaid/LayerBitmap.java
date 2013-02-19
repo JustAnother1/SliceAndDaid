@@ -612,6 +612,35 @@ public class LayerBitmap
         }
     }
 
+    public boolean hasAreaAsNeigbour(final Pixel start, final PixelCode pixelCode)
+    {
+        boolean lastPixelWasAHit = false;
+        int curDirection = 1;
+        for(int i = 0; i < 8; i++)
+        {
+            // search for pixel in neighbors
+            final DirectionVector dv = new DirectionVector(curDirection);
+            curDirection = getNextDirectionFor(curDirection);
+            if(pixelCode == this.getPixel(start.getX() + dv.getX(),
+                                           start.getY() + dv.getY()) )
+            {
+                if(true == lastPixelWasAHit)
+                {
+                    return true;
+                }
+                else
+                {
+                    lastPixelWasAHit = true;
+                }
+            }
+            else
+            {
+                lastPixelWasAHit = false;
+            }
+        }
+        return false;
+    }
+
     public int getNumberOfSameNeighbors(final Pixel start, final PixelCode pixelCode)
     {
         int numFound = 0;
