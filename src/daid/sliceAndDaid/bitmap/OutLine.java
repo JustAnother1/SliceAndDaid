@@ -90,84 +90,13 @@ public class OutLine extends BitmapOptimizer
         {
             final Pixel curP = b.getNextPixel();
             b.setPixel(curP, PixelCode.TEMPORAL_CODE, PixelCode.VECTOR_CODE);
-            // With numShells = 4 this shall be done:
-            // . = INSIDE; X = curP; T= Temporal
-            // ...T...
-            // ..TTT..
-            // .TTTTT.
-            // TTTXTTT
-            // .TTTTT.
-            // ..TTT..
-            // ...T...
 
-            // right +x
-            for(int i = 1; i < numShells; i++) // CurP is already 0th shell
+            for(int x = - numShells; x <=numShells; x++)
             {
-                b.setPixel(curP.getX() + i, curP.getY(),
-                           PixelCode.TEMPORAL_CODE,
-                           PixelCode.INSIDE_CODE);
-            }
-            // fill triangle clockwise +x +y
-            for(int iy = 1; iy < numShells -1; iy++)
-            {
-                for(int ix = 1; ix < (numShells -iy); ix++)
+                for(int y = - numShells; y <=numShells; y++)
                 {
-                    b.setPixel(curP.getX() + ix,
-                               curP.getY() + iy,
-                               PixelCode.TEMPORAL_CODE,
-                               PixelCode.INSIDE_CODE);
-                }
-            }
-            // down +y
-            for(int i = 1; i < numShells; i++) // CurP is already 0th shell
-            {
-                b.setPixel(curP.getX(), curP.getY() + i,
-                           PixelCode.TEMPORAL_CODE,
-                           PixelCode.INSIDE_CODE);
-            }
-            // fill triangle clockwise -x +y
-            for(int iy = 1; iy < numShells -1; iy++)
-            {
-                for(int ix = 1; ix < numShells -iy; ix++)
-                {
-                    b.setPixel(curP.getX() - ix,
-                               curP.getY() + iy,
-                               PixelCode.TEMPORAL_CODE,
-                               PixelCode.INSIDE_CODE);
-                }
-            }
-            // left -x
-            for(int i = 1; i < numShells; i++) // CurP is already 0th shell
-            {
-                b.setPixel(curP.getX() - i, curP.getY(),
-                           PixelCode.TEMPORAL_CODE,
-                           PixelCode.INSIDE_CODE);
-            }
-            // fill triangle clockwise -x -y
-            for(int iy = 1; iy < numShells -1; iy++)
-            {
-                for(int ix = 1; ix < numShells -iy; ix++)
-                {
-                    b.setPixel(curP.getX() - ix,
-                               curP.getY() - iy,
-                               PixelCode.TEMPORAL_CODE,
-                               PixelCode.INSIDE_CODE);
-                }
-            }
-            // up
-            for(int i = 1; i < numShells; i++) // CurP is already 0th shell
-            {
-                b.setPixel(curP.getX(), curP.getY() - i,
-                           PixelCode.TEMPORAL_CODE,
-                           PixelCode.INSIDE_CODE);
-            }
-            // fill triangle clockwise +x -y
-            for(int iy = 1; iy < numShells -1; iy++)
-            {
-                for(int ix = 1; ix < numShells -iy; ix++)
-                {
-                    b.setPixel(curP.getX() + ix,
-                               curP.getY() - iy,
+                    b.setPixel(curP.getX() + x,
+                               curP.getY() + y,
                                PixelCode.TEMPORAL_CODE,
                                PixelCode.INSIDE_CODE);
                 }
@@ -177,12 +106,21 @@ public class OutLine extends BitmapOptimizer
 
     private void checkForNosesAndBridges(final int activeLayer, final boolean down)
     {
+        System.out.println("**** Checking for Noses and Bridges ** Start ** Layer " + activeLayer + " in direction down = " + down + "***");
         final Layer l = layers.get(activeLayer);
         final LayerBitmap b = l.getBitmap();
         final LayerBitmap[] maps = new LayerBitmap[numShells];
         for(int i = 0; i < numShells; i++)
         {
-            final Layer la = layers.get(activeLayer - (i + 1));
+            Layer la;
+            if(true == down)
+            {
+                la = layers.get(activeLayer - (i + 1));
+            }
+            else
+            {
+                la = layers.get(activeLayer + (i + 1));
+            }
             maps[i] = la.getBitmap();
         }
         b.selectPixelType(PixelCode.INSIDE_CODE);
@@ -200,13 +138,16 @@ public class OutLine extends BitmapOptimizer
             case EMPTY_CODE:
             case SKIRT_CODE:
                 // This Pixel is in the nose -> has to be outline
+                System.out.println("Found Nose !");
                 b.setPixel(curP, PixelCode.OUTLINE_CODE, PixelCode.INSIDE_CODE);
                 break;
 
             case OUTLINE_CODE:
                 // Might be edge of Node so lets see ...
+                System.out.println("Checking,...");
                 if(true == pixelMustChange(curP, maps))
                 {
+                    System.out.println("..found !");
                     b.setPixel(curP, PixelCode.OUTLINE_CODE, PixelCode.INSIDE_CODE);
                 }
                 break;
@@ -215,9 +156,11 @@ public class OutLine extends BitmapOptimizer
                 throw new IllegalArgumentException("Did not expect the PixelCode " + type + " in nose check !");
             }
         }
+        System.out.println("**** Checking for Noses and Bridges ** End *****");
     }
 
-    /** curP is an Inside Pixel. The Pixel below curP is an Outline Pixel. Question is shall curP become an Outline Pixel?
+    /** curP is an Inside Pixel. The Pixel below curP is an Outline Pixel.
+     * Question is shall curP become an Outline Pixel?
      *
      * @param curP the outline Pixel
      * @param maps the numShell Layers to scan all layers are below curP
@@ -225,136 +168,19 @@ public class OutLine extends BitmapOptimizer
      */
     private boolean pixelMustChange(final Pixel curP, final LayerBitmap[] maps)
     {
-        // With numShells = 4 this shall be checked:
-        // . = not checked; X = curP; T= may not be outside
-        // This is 3 Dimensional therefore side view(x-z/y-z):
-        // TTTXTTT
-        // .TTTTT.
-        // ..TTT..
-        // ...T...
-        //
-        // top View(x-y)
-        // .......
-        // ...T...
-        // ..TTT..
-        // .TTTTT.
-        // TTTXTTT
-        // .TTTTT.
-        // ..TTT..
-        // ...T...
-        // .......
-        // None of the T marked Pixel may be Outside !
-
-        // If one of the numShells pixels below are outside then curP must become outline
-        for(int i = 0; i < numShells; i++)
-        {
-            if(true == maps[i].getPixel(curP).isOutside())
-            {
-                return true;
-            }
-        }
-
-        // right +x
         for(int m = 0; m < numShells; m++)
         {
-            for(int i = 1; i < (numShells - m); i++)
+            for(int y = - numShells; y <= numShells; y++)
             {
-                if(true == maps[m].getPixel(curP.getX() + i, curP.getY()).isOutside())
+                for(int x = - numShells; x <= numShells; x++)
                 {
-                    return true;
-                }
-            }
-        }
-        // fill triangle clockwise +x +y
-        for(int m = 0; m < numShells; m++)
-        {
-            for(int iy = 1; iy < (numShells- m) -1; iy++)
-            {
-                for(int ix = 1; ix < ((numShells - m) -iy); ix++)
-                {
-                    if(true == maps[m].getPixel(curP.getX() + ix, curP.getY() +iy).isOutside())
+                    if(true == maps[m].getPixel(curP.getX() + x, curP.getY() + y).isOutside())
                     {
                         return true;
                     }
                 }
             }
         }
-        // down +y
-        for(int m = 0; m < numShells; m++)
-        {
-            for(int i = 1; i < (numShells - m); i++)
-            {
-                if(true == maps[m].getPixel(curP.getX(), curP.getY() + i).isOutside())
-                {
-                    return true;
-                }
-            }
-        }
-        // fill triangle clockwise -x +y
-        for(int m = 0; m < numShells; m++)
-        {
-            for(int iy = 1; iy < (numShells - m) -1; iy++)
-            {
-                for(int ix = 1; ix < (numShells - m) -iy; ix++)
-                {
-                    if(true == maps[m].getPixel(curP.getX() - ix, curP.getY() +iy).isOutside())
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        // left -x
-        for(int m = 0; m < numShells; m++)
-        {
-            for(int i = 1; i < (numShells - m); i++)
-            {
-                if(true == maps[m].getPixel(curP.getX() - i, curP.getY()).isOutside())
-                {
-                    return true;
-                }
-            }
-        }
-        // fill triangle clockwise -x -y
-        for(int m = 0; m < numShells; m++)
-        {
-            for(int iy = 1; iy < (numShells - m) -1; iy++)
-            {
-                for(int ix = 1; ix < (numShells - m) -iy; ix++)
-                {
-                    if(true == maps[m].getPixel(curP.getX() - ix, curP.getY() - iy).isOutside())
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        // up
-        for(int m = 0; m < numShells; m++)
-        {
-            for(int i = 1; i < (numShells - m); i++)
-            {
-                if(true == maps[m].getPixel(curP.getX(), curP.getY() - i).isOutside())
-                {
-                    return true;
-                }
-            }
-        }
-        // fill triangle clockwise +x -y
-        for(int m = 0; m < numShells; m++)
-        {
-            for(int iy = 1; iy < (numShells - m) -1; iy++)
-            {
-                for(int ix = 1; ix < (numShells - m) -iy; ix++)
-                {
-                    if(true == maps[m].getPixel(curP.getX() + ix, curP.getY() -iy).isOutside())
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        // All check accomplished and no reason found to change the pixel
         return false;
     }
 
