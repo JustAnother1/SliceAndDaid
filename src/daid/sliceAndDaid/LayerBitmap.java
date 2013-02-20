@@ -16,6 +16,7 @@ package daid.sliceAndDaid;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Stack;
 
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
@@ -311,7 +312,11 @@ public class LayerBitmap
 
     private PixelCode getRawPixel(final int xRaw, final int yRaw)
     {
-        if((xRaw < width) && (yRaw < height))
+        if((0 > xRaw) || (0 > yRaw))
+        {
+            return PixelCode.INVALID_CODE;
+        }
+        else if((xRaw < width) && (yRaw < height))
         {
             return bitmap[xRaw + (yRaw * width)];
         }
@@ -332,18 +337,47 @@ public class LayerBitmap
      */
     private void fill4(final int xRaw, final int yRaw, final PixelCode oldColor, final PixelCode newColor)
     {
-        // If we get Stack Problems due to recursion
-        // then replace with a Queue based Algorithm.
-        if (getRawPixel(xRaw,yRaw) == oldColor)
+        class rawPixel
         {
-            bitmap[xRaw + (yRaw * width)] = newColor;
-            fill4(xRaw, yRaw + 1, oldColor, newColor); // down
-            fill4(xRaw - 1, yRaw, oldColor, newColor); // left
-            fill4(xRaw, yRaw - 1, oldColor, newColor); // up
-            fill4(xRaw + 1, yRaw, oldColor, newColor); // right
+            final int x;
+            final int y;
+            public rawPixel(final int x, final int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
         }
-        return;
-      }
+
+
+        if (getRawPixel(xRaw,yRaw) != oldColor)
+        {
+            return;
+        }
+
+        final Stack<rawPixel> pixelsToFill = new Stack<rawPixel>();
+        pixelsToFill.push(new rawPixel(xRaw,yRaw));
+        do{
+            final rawPixel p = pixelsToFill.pop();
+            bitmap[p.x + (p.y * width)] = newColor;
+            if(getRawPixel(p.x, p.y +1) == oldColor)
+            {
+                pixelsToFill.push(new rawPixel(p.x,p.y +1));
+            }
+            if(getRawPixel(p.x +1,p.y) == oldColor)
+            {
+                pixelsToFill.push(new rawPixel(p.x+1,p.y));
+            }
+            if(getRawPixel(p.x,p.y -1) == oldColor)
+            {
+                pixelsToFill.push(new rawPixel(p.x,p.y -1));
+            }
+            if(getRawPixel(p.x-1,p.y) == oldColor)
+            {
+                pixelsToFill.push(new rawPixel(p.x-1,p.y));
+            }
+        }while(false == pixelsToFill.isEmpty());
+    }
+
 
     public void markInsideStartingAt(final int x, final int y)
     {
