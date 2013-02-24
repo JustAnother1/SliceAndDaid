@@ -32,7 +32,7 @@ public class LayerBitmap
     // (x/y)Raw are Coordinates with no negative values for direct access into bitmap
     // (x/y) are coordinates with 0.0 in the center
     // The raw Coordinates are used only inside this class and may not leak !
-    public static final int DUMP_DISTANCE = 4; // Size of Dumps
+    public static final int DUMP_DISTANCE = 20; // Size of Dumps
     private final PixelCode[] bitmap;
     private final int xoffset;
     private final int yoffset;
@@ -574,26 +574,68 @@ public class LayerBitmap
         return null;
     }
 
+    private String getXIndexLine(final Pixel target)
+    {
+        final int start = target.getX() - DUMP_DISTANCE;
+        final StringBuffer sb = new StringBuffer();
+        sb.append("   ");
+        if(0 > start)
+        {
+            if(0 != start%5)
+            {
+                for(int i = 0; i < Math.abs(start%5); i++)
+                {
+                    sb.append(" ");
+                }
+            }
+        }
+        else
+        {
+            if(0 != start%5)
+            {
+                for(int i = 0; i < (5 -Math.abs(start%5)); i++)
+                {
+                    sb.append(" ");
+                }
+            }
+        }
+        for(int i = start; i <= (target.getX() + DUMP_DISTANCE); i++)
+        {
+            if(0 == i%5)
+            {
+                sb.append(String.format("%5d", i));
+            }
+        }
+        return sb.toString();
+    }
+
     public void dumpAreaAroundPixel(final Pixel target)
     {
         // dump should look lie this: Distance = 4
-        // Pixel = ?? is (25,23)
-        // +---------+
-        // |FFFFO   K|
-        // |FFFFO   K|
-        // |FFFFO   K|
-        // |FFFFO   K|
-        // |OOOO?   K|
-        // |        K|
-        // |        K|
-        // |        K|
-        // |KKKKKKKKK|
-        // +---------+
-        final PixelCode tpc = this.getPixel(target.getX(), target.getY());
-        Logger.debug("Pixel(" + tpc + ") = ? is " + target);
+        //      Pixel = ?? is (25,23)
+        //        25
+        //      +---------+
+        //      |FFFFO   K|
+        //      |FFFFO   K|
+        //   25 |FFFFO   K|
+        //      |FFFFO   K|
+        //      |OOOO?   K|
+        //      |        K|
+        //      |        K|
+        //   20 |        K|
+        //      |KKKKKKKKK|
+        //      +---------+
 
+        // now the implementation:
+
+        // Pixel = ?? is (25,23)
+        final PixelCode tpc = this.getPixel(target.getX(), target.getY());
+        Logger.debug("     Pixel(" + tpc + ") = ? is " + target);
+        //      25
+        Logger.debug(getXIndexLine(target));
+        //      +---------+
         StringBuffer sb = new StringBuffer();
-        sb.append("+");
+        sb.append("      +");
         for(int i = 0; i < (2 * DUMP_DISTANCE) + 1; i++)
         {
             sb.append("-");
@@ -601,10 +643,20 @@ public class LayerBitmap
         sb.append("+");
         final String headline= sb.toString();
         Logger.debug(headline);
+        //      |FFFFO   K|
         for(int y = target.getY() + DUMP_DISTANCE; y >= target.getY() - DUMP_DISTANCE; y--)
         {
             sb = new StringBuffer();
-            sb.append("|");
+            if(0 == y%5)
+            {
+                // every 5th line (0,5,10,15,...)
+                sb.append(String.format("%5d", y));
+            }
+            else
+            {
+                sb.append("     ");
+            }
+            sb.append(" |");
             for(int x = target.getX() - DUMP_DISTANCE; x <=  target.getX() + DUMP_DISTANCE; x++)
             {
                 if((x == target.getX()) && (y == target.getY()))
@@ -620,6 +672,7 @@ public class LayerBitmap
             sb.append("|");
             Logger.debug(sb.toString());
         }
+        //      +---------+
         Logger.debug(headline);
     }
 
