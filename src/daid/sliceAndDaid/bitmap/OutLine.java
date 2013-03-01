@@ -107,7 +107,6 @@ public class OutLine extends BitmapOptimizer
 
     private void checkForNosesAndBridges(final int activeLayer, final boolean down)
     {
-        System.out.println("**** Checking for Noses and Bridges ** Start ** Layer " + activeLayer + " in direction down = " + down + "***");
         final Layer l = layers.get(activeLayer);
         final LayerBitmap b = l.getBitmap();
         final LayerBitmap[] maps = new LayerBitmap[numShells];
@@ -131,25 +130,19 @@ public class OutLine extends BitmapOptimizer
             final PixelCode type = maps[0].getPixel(curP);
             switch(type)
             {
-            case FILLIN_CODE:
-            case INSIDE_CODE:
-                // This pixel is somewhere in the middle of the Object -> no change
-                break;
-
             case EMPTY_CODE:
             case SKIRT_CODE:
-                // This Pixel is in the nose -> has to be outline
-                System.out.println("Found Nose !");
-                b.setPixel(curP, PixelCode.OUTLINE_CODE, PixelCode.INSIDE_CODE);
+                // This Pixel is in the nose -> has to be printed
+                b.setPixel(curP, PixelCode.FILLIN_CODE, PixelCode.INSIDE_CODE);
                 break;
 
+            case FILLIN_CODE:
+            case INSIDE_CODE:
             case OUTLINE_CODE:
                 // Might be edge of Node so lets see ...
-                System.out.println("Checking,...");
                 if(true == pixelMustChange(curP, maps))
                 {
-                    System.out.println("..found !");
-                    b.setPixel(curP, PixelCode.OUTLINE_CODE, PixelCode.INSIDE_CODE);
+                    b.setPixel(curP, PixelCode.FILLIN_CODE, PixelCode.INSIDE_CODE);
                 }
                 break;
 
@@ -157,7 +150,6 @@ public class OutLine extends BitmapOptimizer
                 throw new IllegalArgumentException("Did not expect the PixelCode " + type + " in nose check !");
             }
         }
-        System.out.println("**** Checking for Noses and Bridges ** End *****");
     }
 
     /** curP is an Inside Pixel. The Pixel below curP is an Outline Pixel.
