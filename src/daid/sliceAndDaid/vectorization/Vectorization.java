@@ -12,7 +12,7 @@
  * with this program; if not, see <http://www.gnu.org/licenses/>
  *
  */
-package daid.sliceAndDaid.gcode;
+package daid.sliceAndDaid.vectorization;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -22,6 +22,9 @@ import daid.sliceAndDaid.LayerDirection;
 import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
+import daid.sliceAndDaid.gcode.GCodeOptimizer;
+import daid.sliceAndDaid.gcode.Gcode;
+import daid.sliceAndDaid.gcode.LineOfGCode;
 import daid.sliceAndDaid.util.Logger;
 
 /**
@@ -35,6 +38,7 @@ public class Vectorization
     private final LayerStack layers;
     private LayerBitmap b;
     private int lastPrintDirection = 0;
+    public static final int MAX_MISSED_PIXELS = 100;
 
     private final DirectionVector dv1 = new DirectionVector(1);
     private final DirectionVector dv2 = new DirectionVector(2);
@@ -96,28 +100,67 @@ public class Vectorization
         while(true == b.hasMorePixels())
         {
             Logger.trace("** start get next Line **");
+            // which routing algorithm do we use this time?
+            RoutingAlgorithm usedAlgorythm = routing;
+            if(RoutingAlgorithm.AREA == routing)
+            {
+                // check if we are a Pixel next to an area
+                if(false == b.hasAreaAsNeigbour(lastPosition, pixelCode))
+                {
+                    // we are not
+                    if((PixelCode.PRINTED_CODE == b.getPixel(lastPosition)) ||(pixelCode == b.getPixel(lastPosition)))
+                    {
+                        // We still want to print here -> Outline Routing
+                        Logger.debug("Pixel is not part of Area -> Outline Routing");
+                        usedAlgorythm = RoutingAlgorithm.OUTLINE;
+                    }
+                    // else Area Routing
+                }
+            }
+
+
         // 1. find pixel of "pixelCode" closest to lastPosition.
         // 2. find a pixel next to the first that has the same pixelCode.
         // 3. find more pixels in the same direction ( so that they form a line) with the same pixelCode.
             PixelLine line;
-            switch(routing)
+            switch(usedAlgorythm)
             {
             case AREA:
                 Logger.debug("Area Routing");
+                // find starting Pixel
+                Pixel startPosition = getNextAreaLineStartPositionFor(lastPosition, pixelCode, direction, increasing);
+                if(null == startPosition)
+                {
+                    increasing = !increasing;
+                    startPosition = getNextAreaLineStartPositionFor(lastPosition, pixelCode, direction, increasing);
+                    if(null ==startPosition)
+                    {
+                        Logger.debug("we are done with this PixelCode on this Layer");
+                        return lastPosition;
+                    }
+                }
+                // Move to Start
+                if(false == lastPosition.equals(startPosition))
+                {
+                    moveToPixel(startPosition);
+                    lastPosition = startPosition;
+                }
+
                 // search for Lines from last position in direction of increasing values
-                PixelLine res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
+                PixelLine res = getNextAreaLine(pixelCode, lastPosition, direction, lastPosition);
+
                 // if that failed search again in direction of falling values.
                 if(null == res)
                 {
                     Logger.debug("now other direction");
                     increasing = !increasing;
-                    res = searchForAreaLine(increasing, pixelCode, lastPosition, direction);
+                    res = getNextAreaLine(pixelCode, lastPosition, direction, lastPosition);
                 }
                 // if still no line found then we are done return lastPosition
                 if(null == res)
                 {
+                    b.setPixel(lastPosition.getX(), lastPosition.getY(), PixelCode.INVALID_CODE);
                     Logger.error("We did not find the Pixel !");
-                    b.dumpAreaAroundPixel(lastPosition);
                     throw new IllegalArgumentException("We did not find the Pixel !");
                 }
                 line = res;
@@ -129,8 +172,8 @@ public class Vectorization
                 line = getNextOutLineLineToPrint(pixelCode, lastPosition, direction, true);
                 if(null == line)
                 {
+                    b.setPixel(lastPosition.getX(), lastPosition.getY(), PixelCode.INVALID_CODE);
                     Logger.error("We did not find the Pixel !");
-                    b.dumpAreaAroundPixel(lastPosition);
                     throw new IllegalArgumentException("We did not find the Pixel !");
                 }
                 break;
@@ -167,6 +210,26 @@ public class Vectorization
         return lastPosition;
     }
 
+    private Pixel getNextAreaLineStartPositionFor(final Pixel lastPosition,
+                                                   final PixelCode pixelCode,
+                                                   final LayerDirection direction,
+                                                   final boolean increasing)
+    {
+        Pixel startPosition = lastPosition;
+        do{
+            Logger.debug("Checking if {} can be start of Line", startPosition);
+            if(true == hasAtLeastOnePixel(pixelCode, startPosition, direction))
+            {
+                // found the start -> end the loop
+                Logger.debug("Found start of Line at {} !", startPosition);
+                return startPosition;
+            }
+            // else do another loop
+            startPosition = getNextPlaceToSearch(direction, startPosition, increasing);
+        }while(null != startPosition); //not reached end of Layer
+        return null;
+    }
+
     private Pixel printTheFoundLine(final PixelLine line,
                                      final Pixel lastPosition,
                                      final PixelCode pixelCode) throws IOException
@@ -199,6 +262,7 @@ public class Vectorization
             {
                 if(1 < b.getNumberOfSameNeighbors(line.get(lastIndex), pixelCode))
                 {
+                    // the last pixel should better go to the next line
                     line.remove(lastIndex);
                 }
                 else
@@ -206,52 +270,13 @@ public class Vectorization
                     Logger.trace("Number same neighbors is 1 or 0");
                 }
             }
-            else
-            {
-                /*
-                Logger.trace("Line is straight " + lastVec + ", " + lineVec1
-                             + ", " + lineVec2 + ", " + lineVec3 + " !");
-                Logger.trace("lineVec1.equals(lineVec2) = " + lineVec1.equals(lineVec2));
-                Logger.trace("lineVec1.equals(lineVec3) = " + lineVec1.equals(lineVec3));
-                Logger.trace("lineVec1.equals(lastVec) = " + lineVec1.equals(lastVec));
-                */
-            }
+            // else ok
         }
         else
         {
             Logger.trace("Line is too short");
         }
         return line;
-    }
-
-    private PixelLine searchForAreaLine(final boolean searchDirectionIsIncreasingValues,
-                                         final PixelCode pixelCode,
-                                         final Pixel lastPosition,
-                                         final LayerDirection direction) throws IOException
-    {
-        // check if we are a Pixel next to an area
-        if(false == b.hasAreaAsNeigbour(lastPosition, pixelCode))
-        {
-            // we are not
-            if((PixelCode.PRINTED_CODE == b.getPixel(lastPosition)) ||(pixelCode == b.getPixel(lastPosition)))
-            {
-                // We still want to print here -> Outline Routing
-                Logger.debug("Pixel is not part of Area -> Outline Routing");
-                return getNextOutLineLineToPrint(pixelCode, lastPosition, direction, false);
-            }
-            // else Area Routing
-        }
-
-        Pixel searchStart = lastPosition;
-        do{
-            if(true == hasAtLeastOnePixel(pixelCode, searchStart, direction))
-            {
-                return getNextAreaLine(pixelCode, searchStart, direction, lastPosition);
-            }
-            // else do another loop
-            searchStart = getNextPlaceToSearch(direction, searchStart, searchDirectionIsIncreasingValues);
-        }while(null != searchStart); //not reached end of Layer
-        return null;
     }
 
     /** collect all pixels on this row/column that have the pixelCode.

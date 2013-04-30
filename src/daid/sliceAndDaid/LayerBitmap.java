@@ -20,8 +20,8 @@ import java.util.Stack;
 
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
-import daid.sliceAndDaid.gcode.DirectionVector;
 import daid.sliceAndDaid.util.Logger;
+import daid.sliceAndDaid.vectorization.DirectionVector;
 
 /**
  * @author Lars P&ouml;tter

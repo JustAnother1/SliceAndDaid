@@ -26,6 +26,8 @@ import daid.sliceAndDaid.bitmap.PixelCode;
 import daid.sliceAndDaid.config.CraftConfig;
 import daid.sliceAndDaid.gcode.optimizers.GCodeOptimizerFactory;
 import daid.sliceAndDaid.util.Logger;
+import daid.sliceAndDaid.vectorization.RoutingAlgorithm;
+import daid.sliceAndDaid.vectorization.Vectorization;
 
 public class GCodeTool
 {
@@ -33,7 +35,7 @@ public class GCodeTool
     private Vectorization vec;
     private Pixel lastPosition = new Pixel((int)(CraftConfig.startPositionX/CraftConfig.nozzleWidth),
                                             (int)(CraftConfig.startPositionY/CraftConfig.nozzleWidth) );
-    private LayerBitmap b;
+    private LayerBitmap curLayerBitmap;
     private LayerDirection curDir = LayerDirection.X_THEN_Y;
     private Layer activeLayer = null;
 
@@ -50,13 +52,14 @@ public class GCodeTool
         Logger.debug("**Starting with " + curStep);
         final LineOfGCode event = new LineOfGCode(curStep, 0);
         optimizers.optimize(event);
-        lastPosition = vec.generatePathsFor(b,
+        lastPosition = vec.generatePathsFor(curLayerBitmap,
                                             codeToPrint,
                                             lastPosition,
                                             curDir,
                                             router);
-        b.selectPixelType(codeToPrint);
-        if(true == b.hasMorePixels())
+        // check if all pixels have been printed
+        curLayerBitmap.selectPixelType(codeToPrint);
+        if(true == curLayerBitmap.hasMorePixels())
         {
             throw new IllegalArgumentException("Routing the " + curStep + " failed !");
         }
@@ -81,30 +84,32 @@ public class GCodeTool
                 activeLayer = layers.get(i);
                 // move to Layers Z
                 final LineOfGCode moveZ = new LineOfGCode(Gcode.MOVE_TO_POSITION);
+                moveZ.setX(lastPosition.getX() / layers.getPixelPerMm());
+                moveZ.setY(lastPosition.getY() / layers.getPixelPerMm());
                 moveZ.setZ(activeLayer.getZ());
                 optimizers.optimize(moveZ);
                 event = new LineOfGCode(PrintSteps.NEW_LAYER, i);
                 optimizers.optimize(event);
                 // G-Code for Layer
-                b = activeLayer.getBitmap();
-                b.selectPixelType(PixelCode.SKIRT_CODE);
-                if(true == b.hasMorePixels())
+                curLayerBitmap = activeLayer.getBitmap();
+                curLayerBitmap.selectPixelType(PixelCode.SKIRT_CODE);
+                if(true == curLayerBitmap.hasMorePixels())
                 {
                     // Skirt
                     printLayerPart(PrintSteps.SKIRT,
                                    PixelCode.SKIRT_CODE,
                                    RoutingAlgorithm.OUTLINE);
                 }
-                b.selectPixelType(PixelCode.OUTLINE_CODE);
-                if(true == b.hasMorePixels())
+                curLayerBitmap.selectPixelType(PixelCode.OUTLINE_CODE);
+                if(true == curLayerBitmap.hasMorePixels())
                 {
                     // Outer Wall
                     printLayerPart(PrintSteps.WALL,
                                    PixelCode.OUTLINE_CODE,
                                    RoutingAlgorithm.OUTLINE);
                 }
-                b.selectPixelType(PixelCode.FILLIN_CODE);
-                if(true == b.hasMorePixels())
+                curLayerBitmap.selectPixelType(PixelCode.FILLIN_CODE);
+                if(true == curLayerBitmap.hasMorePixels())
                 {
                     // Fill
                     printLayerPart(PrintSteps.FILL,

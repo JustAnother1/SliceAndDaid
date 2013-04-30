@@ -14,7 +14,8 @@
  */
 package daid.sliceAndDaid.bitmap;
 
-import daid.sliceAndDaid.gcode.DirectionVector;
+import daid.sliceAndDaid.vectorization.DirectionVector;
+
 
 /**
  * @author Lars P&ouml;tter

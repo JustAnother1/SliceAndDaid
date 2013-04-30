@@ -178,7 +178,7 @@ public class LineOfGCode
                 res.append("E");
                 res.append(eFormat.format(extrudate));
             }
-            // Z as fractional
+            // S as fractional
             if(true == hasS)
             {
                 if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)
@@ -189,7 +189,7 @@ public class LineOfGCode
                 res.append("S");
                 res.append(xyzFormat.format(s));
             }
-            // Z as integer
+            // S as integer
             if(true == has_I_S)
             {
                 if(   (CraftConfig.GCODE_FULL == CraftConfig.gcodeType)

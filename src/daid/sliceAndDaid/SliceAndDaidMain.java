@@ -421,7 +421,9 @@ public class SliceAndDaidMain
             final GCodeTool gt = new GCodeTool();
             try
             {
+                Logger.setLevel(Logger.LOG_LEVEL_TRACE); // TODO remove
                 gt.generateGCode(layers, wr);
+                Logger.setLevel(Logger.LOG_LEVEL_MESSAGE); // TODO remove
                 Logger.message("Created the GCode");
             }
             catch(final IllegalArgumentException e)
