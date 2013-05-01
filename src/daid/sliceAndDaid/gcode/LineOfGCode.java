@@ -49,6 +49,7 @@ public class LineOfGCode
     private boolean hasExtrodate = false;
     private String comment;
     private boolean hasComment = false;
+    private int parameter;
 
 
     public LineOfGCode(final String rawLine)
@@ -73,6 +74,7 @@ public class LineOfGCode
             break;
 
         case NEW_LAYER:
+            this.parameter = parameter;
             comment = "layer " + parameter;
             break;
 
@@ -92,6 +94,11 @@ public class LineOfGCode
             comment ="ERROR: Something went wrong !";
             break;
         }
+    }
+
+    public int getParameter()
+    {
+        return parameter;
     }
 
     public LineOfGCode(final Gcode cmd)

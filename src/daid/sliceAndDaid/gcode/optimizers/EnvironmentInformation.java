@@ -30,7 +30,7 @@ import daid.sliceAndDaid.gcode.PrintSteps;
  */
 public class EnvironmentInformation extends GCodeOptimizer
 {
-    private int layerIndex = -1;
+    private int layerIndex = 0;
     private final LayerStack layers;
     private double x;
     private double y;
@@ -55,7 +55,7 @@ public class EnvironmentInformation extends GCodeOptimizer
         {
             if(PrintSteps.NEW_LAYER == line.getNextStep())
             {
-                layerIndex ++;
+                layerIndex = line.getParameter();
             }
         }
         else if(LineTypes.GCODE == line.getType())
