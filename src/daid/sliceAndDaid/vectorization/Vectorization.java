@@ -647,11 +647,15 @@ public class Vectorization
                                      final Pixel position,
                                      final boolean needsDifferentNeighbor)
     {
+        final PixelCode pc =  b.getPixel(position);
         Logger.debug("Checking Pixel {}.", position);
-        if(pixelCode != b.getPixel(position))
+        Logger.debug("Pixel is a  \"{}\".", pc);
+
+        if(false == pc.equals(pixelCode))
         {
             // this Pixel is not anymore in the Line
             Logger.debug("Pixel {} is not part of the Line!", position);
+            Logger.debug("Searched code is \"{}\".", pixelCode);
             return false;
         }
 
