@@ -37,6 +37,7 @@ public class Vectorization
     private final GCodeOptimizer optimizers;
     private final LayerStack layers;
     private LayerBitmap b;
+    private boolean mustBeOutside =false;
     private int lastPrintDirection = 0;
     public static final int MAX_MISSED_PIXELS = 100;
 
@@ -82,6 +83,14 @@ public class Vectorization
                                    final RoutingAlgorithm routing) throws IOException
     {
         boolean increasing = true;
+        if(RoutingAlgorithm.OUTLINE == routing)
+        {
+            mustBeOutside = true;
+        }
+        else
+        {
+            mustBeOutside = false;
+        }
         this.b = b;
         b.selectPixelType(pixelCode);
 
@@ -176,7 +185,7 @@ public class Vectorization
             default:
             case OUTLINE:
                 Logger.debug("Outline Routing");
-                line = getNextOutLineLineToPrint(pixelCode, lastPosition, direction, true);
+                line = getNextOutLineLineToPrint(pixelCode, lastPosition, direction, mustBeOutside);
                 if(null == line)
                 {
                     b.setPixel(lastPosition.getX(), lastPosition.getY(), PixelCode.INVALID_CODE);
@@ -353,7 +362,7 @@ public class Vectorization
         {
             // found only a short line -> Outline Routing
             Logger.debug("Trying Outline Routing");
-            return getNextOutLineLineToPrint(pixelCode, searchStart, direction, false);
+            return getNextOutLineLineToPrint(pixelCode, searchStart, direction, mustBeOutside);
         }
         // Turn the Line around if that way it can be printed faster
         return optimizeLineDirection(searchStart, collectedPoints, lastPosition);
@@ -514,58 +523,46 @@ public class Vectorization
 
         if(0 == lastPrintDirection)
         {
-            int nextDirection = 3; // random choice
-            for(int i = 0; i < 8; i++)
+            lastPrintDirection = 3; // random choice
+        }
+
+        int nextDirection = lastPrintDirection;
+        for(int i = 0; i < 7; i++)
+        {
+            nextDirection = b.getNextDirectionFor(nextDirection);
+            Logger.trace("Checking in Direction {} !", nextDirection);
+            final PixelLine lineToCheck = new PixelLine(line);
+            curRes = checkInDirection(nextDirection, lineToCheck, pixelCode,
+                    lastPosition, needsDifferentNeighbor);
+            if(2 == curRes.length()) {poorSolution = curRes;}
+            if(2 < curRes.length())
             {
-                nextDirection = b.getNextDirectionFor(nextDirection);
-                Logger.trace("Checking in Direction {} !", nextDirection);
-                final PixelLine lineToCheck = new PixelLine(line);
-                curRes = checkInDirection(nextDirection, lineToCheck, pixelCode,
-                        lastPosition, needsDifferentNeighbor);
-                if(2 == curRes.length()) {poorSolution = curRes;}
-                if(2 < curRes.length())
-                {
-                    Logger.trace("Found Solution in direction {} !", nextDirection);
-                    lastPrintDirection = b.oppositeOf(nextDirection);
-                    return curRes;
-                }
+                Logger.trace("Found Solution in direction {} !", nextDirection);
+                lastPrintDirection = b.oppositeOf(nextDirection);
+                return curRes;
             }
-            b.dumpAreaAroundPixel(lastPosition);
-            Logger.trace("Found only poor Solution");
-            return poorSolution; // the found poorSolution or null if nothing found
+        }
+        if(null != poorSolution)
+        {
+            // better a poor solution then going back
+            Logger.trace("Found poor Solution in direction");
+            return poorSolution;
         }
         else
         {
-            int nextDirection = lastPrintDirection;
-            for(int i = 0; i < 7; i++)
+            // if still no solution then check LastPrintDirection
+            Logger.trace("Falling back to checking last Direction");
+            Logger.trace("Checking in Direction {} !", lastPrintDirection);
+            final PixelLine lineToCheck = new PixelLine(line);
+            curRes = checkInDirection(lastPrintDirection, lineToCheck, pixelCode,
+                    lastPosition, needsDifferentNeighbor);
+            if(null == curRes)
             {
-                nextDirection = b.getNextDirectionFor(nextDirection);
-                Logger.trace("Checking in Direction {} !", nextDirection);
-                final PixelLine lineToCheck = new PixelLine(line);
-                curRes = checkInDirection(nextDirection, lineToCheck, pixelCode,
-                        lastPosition, needsDifferentNeighbor);
-                if(2 == curRes.length()) {poorSolution = curRes;}
-                if(2 < curRes.length())
-                {
-                    Logger.trace("Found Solution in direction {} !", nextDirection);
-                    lastPrintDirection = b.oppositeOf(nextDirection);
-                    return curRes;
-                }
-            }
-            if(null != poorSolution)
-            {
-                // better a poor solution then going back
-                Logger.trace("Found poor Solution in direction");
-                return poorSolution;
+                // line with single Pixel
+                return line;
             }
             else
             {
-                // if still no solution then check LastPrintDirection
-                Logger.trace("Falling back to checking last Direction");
-                Logger.trace("Checking in Direction {} !", lastPrintDirection);
-                final PixelLine lineToCheck = new PixelLine(line);
-                curRes = checkInDirection(lastPrintDirection, lineToCheck, pixelCode,
-                        lastPosition, needsDifferentNeighbor);
                 return curRes;
             }
         }
