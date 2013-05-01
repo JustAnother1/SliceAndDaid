@@ -27,6 +27,7 @@ import daid.sliceAndDaid.LayerDirection;
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
 import daid.sliceAndDaid.util.Logger;
+import daid.sliceAndDaid.vectorization.RoutingAlgorithm;
 
 /**
  * @author Lars P&ouml;tter
@@ -249,15 +250,35 @@ public class TestCaseDefinitionDataFile
         return pixelPerMm;
     }
 
+    private void printShouldIs(final GCodeOptimizerStub gCodeStub)
+    {
+        Logger.message("Expected G-Codes(" + GCodes.size() + "):");
+        for(int i = 0; i < GCodes.size(); i++)
+        {
+            Logger.message((GCodes.get(i)).trim());
+        }
+        Logger.message("End of expected G-Codes!");
+
+        Logger.message("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
+        for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
+        {
+            final LineOfGCode gl = gCodeStub.getCodeLine(i);
+            Logger.message(gl.toString());
+        }
+        Logger.message("End of generated G-Codes!");
+    }
+
     public boolean sameGCodes(final GCodeOptimizerStub gCodeStub)
     {
         if(GCodes.size() != gCodeStub.getNumberReceivedGCodes())
         {
+            printShouldIs(gCodeStub);
             Logger.error("Generated wrong Number of G-Codes ! expected : " + GCodes.size() + ", created : " + gCodeStub.getNumberReceivedGCodes() + " !");
             return false;
         }
         for(int i = 0; i < GCodes.size(); i++)
         {
+            printShouldIs(gCodeStub);
             final String shouldLine = (GCodes.get(i)).trim();
             final String isLine = (gCodeStub.getCodeLine(i)).toString();
             if(false == shouldLine.equals(isLine))

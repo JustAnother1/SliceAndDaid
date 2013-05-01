@@ -14,6 +14,8 @@
  */
 package daid.sliceAndDaid.vectorization;
 
+import daid.sliceAndDaid.util.Logger;
+
 
 /**
  * @author Lars P&ouml;tter
@@ -72,15 +74,18 @@ public class VectorChecker
                     {
                         // A Vector that is not the Main and not the Alternative
                         // -> can not be a straight line !
+                        Logger.debug("A Vector that is not the Main and not the Alternative"
+                                   + " -> can not be a straight line !");
                         isStraight = false;
                     }
                     else
                     {
                         // Straight lines have a constant pattern of Vectors.
                         // Example: mmAmmAmmA, or mAmAmA or mmmAmmmAmmmA
-                        if(1 <  Math.abs(frequency - numMains))
+                        // mamma is still straight therefore difference must be greater than 2
+                        if(2 <  Math.abs(frequency - numMains))
                         {
-                            // Pattern is not the same -> not straight !
+                            Logger.debug("Pattern is not the same -> not straight !");
                             isStraight = false;
                         }
                         else

@@ -12,7 +12,7 @@
  * with this program; if not, see <http://www.gnu.org/licenses/>
  *
  */
-package daid.sliceAndDaid.gcode;
+package daid.sliceAndDaid.vectorization;
 
 import static org.junit.Assert.fail;
 
@@ -28,7 +28,11 @@ import daid.sliceAndDaid.LayerDirection;
 import daid.sliceAndDaid.LayerStack;
 import daid.sliceAndDaid.bitmap.Pixel;
 import daid.sliceAndDaid.bitmap.PixelCode;
+import daid.sliceAndDaid.gcode.GCodeOptimizerStub;
+import daid.sliceAndDaid.gcode.LineOfGCode;
+import daid.sliceAndDaid.gcode.TestCaseDefinitionDataFile;
 import daid.sliceAndDaid.util.Logger;
+
 
 /**
  * @author Lars P&ouml;tter
@@ -189,6 +193,7 @@ public class VectorizationTest
             }
             if(1 != gCodeStub.getNumberReceivedGCodes())
             {
+                printGeneratedGCodes(gCodeStub);
                 fail("Generated G-Codes without reason !");
             }
             if(false == gCodeStub.codeIsAExtrude(0))
@@ -245,6 +250,17 @@ public class VectorizationTest
         }
     }
 
+    private void printGeneratedGCodes(final GCodeOptimizerStub gCodeStub)
+    {
+        Logger.message("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
+        for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
+        {
+            final LineOfGCode gl = gCodeStub.getCodeLine(i);
+            Logger.message(gl.toString());
+        }
+        Logger.message("End of generated G-Codes!");
+    }
+
     private void executeTest(final TestCaseDefinitionDataFile testDefinition) throws IOException
     {
         Logger.message("Starting Execution...");
@@ -270,25 +286,12 @@ public class VectorizationTest
         if(false == res.equals(testDefinition.getEndPosition()))
         {
             l.saveBitmapToTxt("junit_problem_" + testDefinition.getName() + ".txt");
-            Logger.message("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
-            for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
-            {
-                final LineOfGCode gl = gCodeStub.getCodeLine(i);
-                Logger.message(gl.toString());
-            }
-            Logger.message("End of generated G-Codes!");
+            printGeneratedGCodes(gCodeStub);
         }
         if(false == testDefinition.sameGCodes(gCodeStub))
         {
             l.saveBitmapToTxt("junit_problem_" + testDefinition.getName() + ".txt");
-            Logger.message("Generated G-Codes(" + gCodeStub.getNumberReceivedGCodes() + "):");
-            for(int i = 0; i < gCodeStub.getNumberReceivedGCodes(); i++)
-            {
-                final LineOfGCode gl = gCodeStub.getCodeLine(i);
-                Logger.message(gl.toString());
-            }
-            Logger.message("End of generated G-Codes!");
-            fail("Generated wrong G-Code!");
+            fail(testDefinition.getName() + ": Generated wrong G-Code!");
         }
     }
 

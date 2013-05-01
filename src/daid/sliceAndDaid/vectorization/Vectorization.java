@@ -81,20 +81,27 @@ public class Vectorization
                                    final LayerDirection direction,
                                    final RoutingAlgorithm routing) throws IOException
     {
+        boolean increasing = true;
         this.b = b;
+        b.selectPixelType(pixelCode);
+
         Logger.trace("Got Last Position of {} !", lastPosition);
         lastPosition = findOutLineStartPixelfor(pixelCode, lastPosition, direction);
         Logger.trace("Optimizing last Position to {} !", lastPosition);
         if(pixelCode != b.getPixel(lastPosition))
         {
-            b.dumpAreaAroundPixel(lastPosition);
-            Logger.error("No more Pixels with that Pixel Code found !");
-            throw new IllegalArgumentException("No more Pixels with that Pixel Code found !");
+            if(true == b.hasMorePixels())
+            {
+                b.dumpAreaAroundPixel(lastPosition);
+                Logger.error("No more Pixels with that Pixel Code found !");
+                throw new IllegalArgumentException("No more Pixels with that Pixel Code found !");
+            }
+            else
+            {
+                // nothing to do, so already done !
+                return lastPosition;
+            }
         }
-
-        b.selectPixelType(pixelCode);
-        boolean increasing = true;
-
 
         // as long as this bitmap has more pixels of pixelCode do the following steps:
         while(true == b.hasMorePixels())
@@ -624,30 +631,28 @@ public class Vectorization
         final LineDetection ld = new LineDetection(b);
         target = ld.getPixelOfClosestEndOfLine(target, pixelCode);
 
-        // Present the result
-        b.dumpAreaAroundPixel(target);
-
-        // move to StartPosition
-        if(false == lastPosition.isNeighborOf(target))
+        if(    (lastPosition.getX() != target.getX())
+            || (lastPosition.getY() != target.getY()) )
         {
+            // Present the result
+            b.dumpAreaAroundPixel(target);
+
+            // move to StartPosition
             moveToPixel(target);
         }
         return target;
     }
 
-    private PixelLine check(PixelLine line,
-                             final PixelCode pixelCode,
-                             final Pixel position,
-                             final DirectionVector vect,
-                             final DirectionVector altVect,
-                             final DirectionVector alt2Vect,
-                             final boolean needsDifferentNeighbor)
+    private boolean testPixelForLine(final PixelCode pixelCode,
+                                     final Pixel position,
+                                     final boolean needsDifferentNeighbor)
     {
+        Logger.debug("Checking Pixel {}.", position);
         if(pixelCode != b.getPixel(position))
         {
             // this Pixel is not anymore in the Line
             Logger.debug("Pixel {} is not part of the Line!", position);
-            return line;
+            return false;
         }
 
         if(true == needsDifferentNeighbor)
@@ -673,37 +678,78 @@ public class Vectorization
             {
                 // has no pixel with a different Pixel code as neighbor.
                 Logger.debug("Pixel {} has no different neighbor !", position);
-                return line;
+                return false;
             }
         }
         // else check not needed because I don't care
 
-        Logger.debug("Adding Pixel {} to the Line.", position);
-        line.add(position);
-        final int lineLength = line.length();
-        line = check(line, pixelCode, position.add(vect),
-                     vect, altVect, alt2Vect, needsDifferentNeighbor);
-        if(lineLength == line.length())
+        // all checks passed
+        return true;
+    }
+
+    private PixelLine check(final PixelLine line,
+                             final PixelCode pixelCode,
+                             Pixel position,
+                             final DirectionVector vect,
+                             final DirectionVector altVect,
+                             final DirectionVector alt2Vect,
+                             final boolean needsDifferentNeighbor)
+    {
+        if(false == testPixelForLine(pixelCode,
+                                     position,
+                                     needsDifferentNeighbor))
         {
-            // Line does not continue in direction of vect
-            // -> end of Line or line continues in direction of altVect/als2Vect
-            if(true == isStraight(line, altVect))
+            return line;
+        }
+        // else
+        for(;;)
+        {
+            // adding this pixel
+            Logger.debug("Adding Pixel {} to the Line.", position);
+            line.add(position);
+
+            // check the 3 possible next pixels
+            if(true == testPixelForLine(pixelCode,
+                                         position.add(vect),
+                                         needsDifferentNeighbor))
             {
-                line = check(line, pixelCode, position.add(altVect),
-                        vect, altVect, alt2Vect, needsDifferentNeighbor);
+                // line continues here
+                position = position.add(vect);
             }
-            // else altVect is not a possible continuation of the line
-            if(lineLength == line.length())
+            else
             {
-                if(true == isStraight(line, alt2Vect))
+                // Line does not continue in direction of vect
+                // -> end of Line or line continues in direction of altVect/als2Vect
+                Logger.debug("alt: {}.", position.add(altVect));
+                if((true == isStraight(line, altVect)) &&
+                   (true == testPixelForLine(pixelCode,
+                                                position.add(altVect),
+                                                needsDifferentNeighbor)))
                 {
-                    line = check(line, pixelCode, position.add(alt2Vect),
-                            vect, altVect, alt2Vect, needsDifferentNeighbor);
+                   // line continues here
+                   position = position.add(altVect);
                 }
-                // else we reached the end of the Line.
+                else
+                {
+                    // else altVect is not a possible continuation of the line
+                    // but alt2Vect could be ...
+                    Logger.debug("alt2: {}.", position.add(alt2Vect));
+                    if( (true == isStraight(line, alt2Vect)) &&
+                        (true == testPixelForLine(pixelCode,
+                                                  position.add(alt2Vect),
+                                                  needsDifferentNeighbor)) )
+                    {
+                       // line continues here
+                       position = position.add(alt2Vect);
+                    }
+                    else
+                    {
+                        // end of line reached !
+                        return line;
+                    }
+                }
             }
         }
-        return line;
     }
 
     private boolean isStraight(final PixelLine line,
@@ -711,12 +757,12 @@ public class Vectorization
     {
         if(null == line)
         {
-            // No Line -> not straight
+            Logger.debug("No Line -> not straight");
             return false;
         }
         if(2 > line.length())
         {
-            // only 2 points in the Line -> can only be straight
+            Logger.debug("only 2 points in the Line -> can only be straight");
             return true;
         }
         final VectorChecker vc = new VectorChecker();
@@ -740,6 +786,7 @@ public class Vectorization
             }
             if(false == vc.isStraight())
             {
+                Logger.debug("without last vector -> not straight !");
                 return false;
             }
             lastPixel = curP;
@@ -748,10 +795,12 @@ public class Vectorization
         vc.addVector(lastVector);
         if(false == vc.isStraight())
         {
+            Logger.debug("last vector -> not straight !");
             return false;
         }
         else
         {
+            Logger.debug("last vector -> straight !");
             return true;
         }
     }
